@@ -30,11 +30,10 @@ function positionCharacter(){
  const y=ending?$("ready-area").offsetTop-65.10:long?102:Math.max(96,(anchor.getBoundingClientRect().top-bounds.top)/scale-76.4);
  const angle=ending?2.566:long?-22:0;
  const target="translate3d("+x+"px,"+y+"px,0) rotate("+angle+"deg)";
- if(actor.hidden){actor.style.transition="none";actor.style.transform=target;actor.hidden=false;actor.getBoundingClientRect();actor.style.removeProperty("transition");}
- else if(actor.style.transform!==target)actor.style.transform=target;
+ actor.style.transition="none";actor.style.transform=target;actor.hidden=false;
 }
 
-function updateChatLayout(){const inset=parseFloat(getComputedStyle(root).getPropertyValue("--keyboard-offset"))||0;const extra=parseFloat(getComputedStyle(root).getPropertyValue("--composer-extra"))||0;const rows=Array.from(list.children);const content=rows.reduce((n,r)=>n+r.offsetHeight,0)+Math.max(0,rows.length-1)*12.48;const full=content+76.4>Math.max(0,514.8-inset-extra);root.classList.toggle("is-long-chat",full);positionCharacter();}
+function updateChatLayout(){const inset=parseFloat(getComputedStyle(root).getPropertyValue("--keyboard-offset"))||0;const extra=parseFloat(getComputedStyle(root).getPropertyValue("--composer-extra"))||0;const rows=Array.from(list.children);const content=rows.reduce((n,r)=>n+r.offsetHeight,0)+Math.max(0,rows.length-1)*12.48;const full=content+76.4>Math.max(0,514.8-inset-extra);root.classList.toggle("is-long-chat",full);positionCharacter();requestAnimationFrame(positionCharacter);}
 function render({bottom=true}={}){list.replaceChildren();const first=state.messages.findIndex(m=>m.role==="ai");
 state.messages.forEach((m,index)=>{const row=document.createElement("div");row.className="lx-row "+m.role;if(index===newRow)row.classList.add("lx-arriving");if(index===first)row.dataset.characterAnchor="true";row.append(messageBubble(m));if(m.role==="ai"&&m.versions&&index===state.messages.length-1&&!pending){const tools=document.createElement("div");tools.className="lx-tools";if(m.version>0)tools.append(button("이전 답변","‹",()=>version(index,-1)));tools.append(button("답변 재생성",m.version===0&&m.versions.length===1?"first":"retry",()=>regenerate(index)));if(m.version<m.versions.length-1)tools.append(button("다음 답변","›",()=>version(index,1)));tools.dataset.multiple=String(m.versions.length>1);row.append(tools)}list.append(row)});
 if(pending){const dots=document.createElement("div");dots.className="lx-loading";dots.setAttribute("aria-label","응답 생성 중");for(let i=0;i<4;i++)dots.append(document.createElement("i"));const row=document.createElement("div");row.className="lx-row ai";row.append(dots);list.append(row)}
