@@ -188,3 +188,16 @@
 .lx-emergency #chat-character[data-mode="peek"] img{animation:lx-character-peek 4.8s ease-in-out infinite}
 @keyframes lx-character-peek{0%,100%{transform:translate3d(0,0,0) rotate(-.35deg)}50%{transform:translate3d(2px,-2px,0) rotate(.35deg)}}
 @media(prefers-reduced-motion:reduce){.lx-emergency #chat-character[data-mode="peek"] img{animation:none}}
+
+/* Departure halo: preserve all three original gradient shapes and animate their wrappers. */
+.lx-departure .lx-echo{animation:none;pointer-events:none;overflow:visible}
+.lx-departure .lx-halo-ring{transform-box:fill-box;transform-origin:center;animation:lx-halo-wave 4.8s ease-in-out infinite;will-change:transform,opacity}
+.lx-departure .lx-halo-inner{--halo-scale:1.075;animation-delay:0s}
+.lx-departure .lx-halo-middle{--halo-scale:1.055;animation-delay:-4.15s}
+.lx-departure .lx-halo-outer{--halo-scale:1.04;animation-delay:-3.5s}
+@keyframes lx-halo-wave{
+ 0%,100%{transform:scale(.985);opacity:.88}
+ 36%{transform:scale(var(--halo-scale));opacity:1}
+ 70%{transform:scale(1);opacity:.72}
+}
+@media(prefers-reduced-motion:reduce){.lx-departure .lx-halo-ring{animation:none;transform:none;opacity:1}}
