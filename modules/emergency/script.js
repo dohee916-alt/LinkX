@@ -1,3 +1,4 @@
+import {keys,labels} from "./keyboard-layout.js";
 import {messageBubble} from "./components.js";
 import {playDiamond} from "./diamond-glow.js?v=1";
 import {navigate,params} from "../../shared/navigation.js";
@@ -24,9 +25,9 @@ function generate(){clearTimeout(timer);state.error=null;pending=true;render();t
 function send(){if(state.phase!=="chat")return;if(pending){clearTimeout(timer);pending=false;render();return}const text=input.value.trim();if(!text)return;input.value="";resizeComposer();if(!state.messages.length){clearTimeout(greetingTimer);state.messages.push({role:"ai",text:greeting})}state.messages.push({role:"user",text});state.turn++;generate()}
 function departure(){$("diamond-glow").hidden=true;clearTimeout(timer);pending=false;state.phase="departure";root.classList.remove("is-transition");root.classList.add("is-departure");for(const id of ["chat","ready-area","composer"])$(id).hidden=true;$("departure").hidden=false;$("departure-title").textContent=state.departureReason==="timeout"?"이제 진짜 가보자":"잘 다녀와!";clearTimeout(departureTimer);preserve()}
 function positionAt(now=Date.now()){return TRAVEL*Math.min(1,Math.max(0,(now-state.startedAt)/DURATION))}
-function setReadyX(x){$("ready").style.setProperty("--ready-x",x+"px");root.style.setProperty("--light-x",(20.8+x+69.16)+"px")}
+function setReadyX(x){$("ready-motion").style.setProperty("--travel-x",x+"px")}
 function tick(){if(state.phase!=="chat")return;const x=positionAt();setReadyX(x);if(x>=TRAVEL){if(!state.timedOut){state.timedOut=true;clearTimeout(timer);pending=false;state.error=null;newRow=state.messages.length;state.messages.push({role:"ai",text:replies[2]});render()}ready("timeout");return}frameId=requestAnimationFrame(tick)}
-function ready(reason="manual"){if(state.phase!=="chat")return;state.departureReason=reason==="timeout"?"timeout":"manual";state.frozenX=positionAt();setReadyX(state.frozenX);cancelAnimationFrame(frameId);clearTimeout(greetingTimer);state.phase="transition";clearTimeout(timer);pending=false;const bx=20.8+state.frozenX+69.16;const by=$("ready-area").offsetTop+$("ready").offsetTop+24.96;input.blur();root.classList.add("is-transition");preserve();playDiamond($("diamond-glow"),bx,by,departure)}
+function ready(reason="manual"){if(state.phase!=="chat")return;state.departureReason=reason==="timeout"?"timeout":"manual";state.frozenX=positionAt();setReadyX(state.frozenX);cancelAnimationFrame(frameId);clearTimeout(greetingTimer);state.phase="transition";clearTimeout(timer);pending=false;const bx=20.8+state.frozenX+69.16;const by=$("ready-area").offsetTop+$("ready-motion").offsetTop+24.96;input.blur();root.classList.add("is-transition");preserve();playDiamond($("diamond-glow"),bx,by,departure)}
 function showGreeting(){if(state.phase!=="chat"||state.messages.length)return;newRow=0;state.messages.push({role:"ai",text:greeting});render()}
 $("composer").addEventListener("submit",e=>{e.preventDefault();send()});$("saved").onclick=goSaved;$("back").onclick=()=>{$("confirm").hidden=false};$("continue").onclick=()=>{$("confirm").hidden=true};$("leave").onclick=home;$("ready").onclick=()=>ready("manual");$("returned").onclick=()=>{saveConversation({id:state.id,type:"emergency",messages:state.messages,title:state.messages.find(m=>m.role==="user")?.text||greeting});updateStore({emergencyDraft:null});navigate("home")};
 $("mic").onclick=()=>{const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){showNotice("이 브라우저에서는 음성 입력을 지원하지 않아요.");return}try{const s=new Speech();s.lang="ko-KR";s.onresult=e=>input.value=e.results[0][0].transcript;s.onerror=()=>showNotice("음성 입력을 사용할 수 없어요.");s.start()}catch{showNotice("음성 입력을 사용할 수 없어요.")}};
@@ -40,6 +41,8 @@ function fitFrame(){const w=window.visualViewport?.width??window.innerWidth,h=wi
 fitFrame();
 
 let baselineHeight=window.visualViewport?.height||window.innerHeight;
+const nativeTouch=matchMedia("(pointer:coarse)").matches && navigator.maxTouchPoints>0;
+let previewKeyboard=false;
 let keyboardOpen=false;
 function resizeComposer(){
  const composer=$("composer");
@@ -61,12 +64,17 @@ function keyboardLayout(){
  const scale=Math.min(window.innerWidth/390,baselineHeight/844,1);
  root.style.setProperty("--lx-frame-scale",scale);
  const keyboardHeight=focused?Math.max(0,baselineHeight-height):0;
+ root.style.setProperty("--layout-height",baselineHeight+"px");
  keyboardOpen=keyboardHeight>100;
+ previewKeyboard=focused&&!nativeTouch&&!keyboardOpen;
+ root.classList.toggle("is-desktop-keyboard",previewKeyboard);
+ $("preview-keyboard").hidden=!previewKeyboard;
  root.style.setProperty("--keyboard-offset",keyboardOpen?Math.min(420,keyboardHeight/scale)+"px":"0px");
  resizeComposer();
 }
 input.addEventListener("input",resizeComposer);
 input.addEventListener("focus",()=>{baselineHeight=Math.max(baselineHeight,window.visualViewport?.height||window.innerHeight);keyboardLayout()});
+$("composer").addEventListener("click",e=>{if(!e.target.closest("button")&&state.phase==="chat")input.focus()});
 input.addEventListener("blur",()=>{setTimeout(keyboardLayout,250)});
 input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
 window.visualViewport?.addEventListener("resize",keyboardLayout);
@@ -79,3 +87,6 @@ input.addEventListener("input",updateSendState);
 input.addEventListener("focus",updateSendState);
 input.addEventListener("blur",updateSendState);
 updateSendState();
+
+for(const k of keys){const label=labels.find(l=>Math.abs(l.x-k.x)<.01&&Math.abs(l.y-k.y)<8);const b=document.createElement("button");b.type="button";b.tabIndex=-1;b.setAttribute("aria-label",label?.text||k.name);Object.assign(b.style,{left:k.x+"px",top:k.y+"px",width:k.w+"px",height:k.h+"px"});b.addEventListener("pointerdown",e=>e.preventDefault());b.addEventListener("click",()=>{const name=k.name.split(" / ")[1];if(name==="Return"){input.blur();keyboardLayout();return}if(name==="Delete"){const a=input.selectionStart,z=input.selectionEnd;input.setRangeText("",a===z?Math.max(0,a-1):a,z,"end")}else if(name==="Space"){input.setRangeText(" ",input.selectionStart,input.selectionEnd,"end")}else if(name.length===1&&label){input.setRangeText(label.text,input.selectionStart,input.selectionEnd,"end")}else{return}input.dispatchEvent(new Event("input",{bubbles:true}));input.focus()});$("keyboard-keys").append(b)}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.activeElement===input){input.blur();keyboardLayout()}});
