@@ -11,7 +11,7 @@ function goSaved(){preserve();navigate("saved",{tab:"emergency",from:"emergency"
 function home(){clearTimeout(timer);clearTimeout(departureTimer);preserve();navigate("home")}
 function showNotice(text){$("notice").textContent=text;$("notice").hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$("notice").hidden=true,2500)}
 function render({bottom=true}={}){list.replaceChildren();const first=state.messages.findIndex(m=>m.role==="ai");
-state.messages.forEach((m,index)=>{const row=document.createElement("div");row.className="lx-row "+m.role;if(index===newRow)row.classList.add("lx-arriving");if(index===first){const c=document.createElement("div");c.className="lx-character";const i=document.createElement("img");i.src="../../assets/emergency/character.png";i.alt="";c.append(i);row.append(c)}const bubble=document.createElement("div");bubble.className="lx-bubble";bubble.textContent=m.text;row.append(bubble);if(m.role==="ai"&&m.versions&&index===state.messages.length-1&&!pending){const tools=document.createElement("div");tools.className="lx-tools";if(m.versions.length>1)tools.append(button("이전 답변","‹",()=>version(index,-1)));tools.append(button("답변 재생성","⟲",()=>regenerate(index)));if(m.versions.length>1)tools.append(button("다음 답변","›",()=>version(index,1)));row.append(tools)}list.append(row)});
+state.messages.forEach((m,index)=>{const row=document.createElement("div");row.className="lx-row "+m.role;if(index===newRow)row.classList.add("lx-arriving");if(index===first){const c=document.createElement("div");c.className="lx-character";const i=document.createElement("img");i.src="../../assets/emergency/character.png";i.alt="";c.append(i);row.append(c)}const bubble=document.createElement("div");bubble.className="lx-bubble";const label=document.createElement("span");label.className="lx-bubble-text";label.textContent=m.text;bubble.append(label);row.append(bubble);if(m.role==="ai"&&m.versions&&index===state.messages.length-1&&!pending){const tools=document.createElement("div");tools.className="lx-tools";if(m.versions.length>1)tools.append(button("이전 답변","‹",()=>version(index,-1)));tools.append(button("답변 재생성","⟲",()=>regenerate(index)));if(m.versions.length>1)tools.append(button("다음 답변","›",()=>version(index,1)));row.append(tools)}list.append(row)});
 if(pending){const dots=document.createElement("div");dots.className="lx-loading";dots.setAttribute("aria-label","응답 생성 중");for(let i=0;i<4;i++)dots.append(document.createElement("i"));const row=document.createElement("div");row.className="lx-row ai";row.append(dots);list.append(row)}
 if(state.error){const row=document.createElement("div");row.className="lx-error-row";const e=document.createElement("span");e.className="lx-error";e.textContent=errors[state.error]||errors.general;row.append(e,button("다시 시도","⟲",()=>generate()));list.append(row)}
 newRow=-1;$("send").setAttribute("aria-label",pending?"생성 중지":"전송");$("send").replaceChildren();if(pending){const stop=document.createElement("span");stop.textContent="■";$("send").append(stop)}else{const a=document.createElement("img");a.src="../../assets/emergency/send.svg";a.alt="";$("send").append(a)}
@@ -19,7 +19,7 @@ if(bottom)requestAnimationFrame(()=>chat.scrollTop=chat.scrollHeight);preserve()
 function version(index,delta){const m=state.messages[index];m.version=(m.version+delta+m.versions.length)%m.versions.length;m.text=m.versions[m.version];render()}
 function regenerate(index){const m=state.messages[index];if(!m.versions)return;const next=alternatives[m.versions.length%alternatives.length];if(m.versions.length<alternatives.length)m.versions.push(next);m.version=(m.version+1)%m.versions.length;m.text=m.versions[m.version];render()}
 function generate(){clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown){state.errorShown=true;state.error=forced;render();return}const text=replies[Math.min(state.turn-1,1)]||replies[0];const m={role:"ai",text};if(state.turn===1){m.versions=[text];m.version=0}newRow=state.messages.length;state.messages.push(m);render()},800)}
-function send(){if(state.phase!=="chat")return;if(pending){clearTimeout(timer);pending=false;render();return}const text=input.value.trim();if(!text)return;input.value="";if(!state.messages.length){clearTimeout(greetingTimer);state.messages.push({role:"ai",text:greeting})}state.messages.push({role:"user",text});state.turn++;generate()}
+function send(){if(state.phase!=="chat")return;if(pending){clearTimeout(timer);pending=false;render();return}const text=input.value.trim();if(!text)return;input.value="";resizeComposer();if(!state.messages.length){clearTimeout(greetingTimer);state.messages.push({role:"ai",text:greeting})}state.messages.push({role:"user",text});state.turn++;generate()}
 function departure(){clearTimeout(timer);pending=false;state.phase="departure";root.classList.remove("is-transition");root.classList.add("is-departure");for(const id of ["chat","ready-area","composer"])$(id).hidden=true;$("departure").hidden=false;$("departure-title").textContent="이제 진짜 가보자";clearTimeout(departureTimer);departureTimer=setTimeout(()=>$("departure-title").textContent="잘 다녀와!",2600);preserve()}
 function positionAt(now=Date.now()){return TRAVEL*Math.min(1,Math.max(0,(now-state.startedAt)/DURATION))}
 function setReadyX(x){$("ready").style.setProperty("--ready-x",x+"px");root.style.setProperty("--light-x",(20.8+x+69.16)+"px")}
@@ -34,5 +34,40 @@ const preview=query.get("preview");if(preview){if(["long","scroll","loading","er
 if(state.phase==="departure"||preview==="departure")departure();else{state.phase="chat";render();if(resumed){requestAnimationFrame(()=>chat.scrollTop=resumed.scroll??chat.scrollHeight)}if(isPreview){const p={long:90,scroll:90,loading:66.83,error:66.83,regenerate:19.79,transition:45,input:5.35,confirm:0};state.startedAt=Date.now()-(p[preview]||0)*1000;setReadyX(positionAt());if(preview==="transition")ready()}else{tick();if(!state.messages.length)greetingTimer=setTimeout(showGreeting,100)}}
 
 // Fit the original Figma frame as one coordinate space; never individually shift its children.
-function fitFrame(){const w=window.visualViewport?.width??window.innerWidth,h=window.visualViewport?.height??window.innerHeight;root.style.setProperty("--lx-frame-scale",Math.min(w/390,h/844,1));}
-fitFrame();window.addEventListener("resize",fitFrame);window.visualViewport?.addEventListener("resize",fitFrame);
+function fitFrame(){const w=window.visualViewport?.width??window.innerWidth,h=window.visualViewport?.height??window.innerHeight;root.style.setProperty("--lx-frame-scale",Math.min(w/390,window.innerHeight/844,1));}
+fitFrame();
+
+let baselineHeight=window.visualViewport?.height||window.innerHeight;
+let keyboardOpen=false;
+function resizeComposer(){
+ const composer=$("composer");
+ composer.classList.remove("is-expanded");
+ input.style.height="23px";
+ let height=input.scrollHeight;
+ const expanded=height>24;
+ if(expanded){composer.classList.add("is-expanded");input.style.height="23px";height=Math.min(115,input.scrollHeight);}
+ input.style.height=Math.max(23,height)+"px";
+ const extra=expanded?Math.max(29.12,Math.round(height/23)*23+4):0;
+ root.style.setProperty("--composer-extra",extra+"px");
+ requestAnimationFrame(()=>chat.scrollTop=chat.scrollHeight);
+}
+function keyboardLayout(){
+ const viewport=window.visualViewport;
+ const focused=document.activeElement===input;
+ const height=viewport?.height||window.innerHeight;
+ if(!focused&&height>baselineHeight-100)baselineHeight=Math.max(baselineHeight,height);
+ const scale=Math.min(window.innerWidth/390,baselineHeight/844,1);
+ root.style.setProperty("--lx-frame-scale",scale);
+ const keyboardHeight=focused?Math.max(0,baselineHeight-height):0;
+ keyboardOpen=keyboardHeight>100;
+ root.style.setProperty("--keyboard-offset",keyboardOpen?Math.min(420,keyboardHeight/scale)+"px":"0px");
+ resizeComposer();
+}
+input.addEventListener("input",resizeComposer);
+input.addEventListener("focus",()=>{baselineHeight=Math.max(baselineHeight,window.visualViewport?.height||window.innerHeight);keyboardLayout()});
+input.addEventListener("blur",()=>{setTimeout(keyboardLayout,250)});
+input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
+window.visualViewport?.addEventListener("resize",keyboardLayout);
+window.addEventListener("resize",keyboardLayout);
+document.fonts?.ready.then(resizeComposer);
+resizeComposer();
