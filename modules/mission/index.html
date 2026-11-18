@@ -102,7 +102,7 @@ const LOAD_TIMEOUT = 15000;  // 15초 이상 로딩 → 오류
 
 const API = window.LinkXMissionReward = {
   onNavigate: null,          // (id) => true 를 돌려주면 그 화면은 합친 쪽에서 처리
-  start, go, screens: S
+  start, go, screens: S, current:()=>cur, inspect(id){if(!S[id])return;clearTimers();show(id,0);clearTimers();}, resume(){if(cur&&S[cur]?.auto){const a=S[cur].auto;go(a.go,a.t,a.e)}}
 };
 
 let phone, animEl, cur = null, stacks = {}, raf = 0, prevBeforeGroup = null, timers = [], loaded = {}, failed = {};
