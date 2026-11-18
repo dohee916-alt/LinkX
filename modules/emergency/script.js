@@ -38,22 +38,30 @@ function regenerate(index){if(state.timedOut)return;const m=state.messages[index
 const autoDemo=query.get("auto")!=="0"&&!isPreview;
 let demoTimer=null,typing=false,demoCancelled=false;
 function stopDemo(){clearTimeout(demoTimer);typing=false;demoCancelled=true}
+// Emulate Korean IME composition: onset, vowel, then final consonant.
+function typingFrames(text){
+ const onset="ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ", frames=[];let prefix="";
+ for(const ch of text){const n=ch.charCodeAt(0)-0xAC00;
+  if(n>=0&&n<11172){const l=Math.floor(n/588),v=Math.floor(n%588/28),t=n%28;frames.push(prefix+onset[l]);if(t)frames.push(prefix+String.fromCharCode(0xAC00+l*588+v*28));}
+  prefix+=ch;frames.push(prefix);
+ }return frames;
+}
 function scheduleDemo(delay=900){
  if(!autoDemo||demoCancelled||state.phase!=="chat"||state.timedOut||state.error||pending||state.turn>=exampleUser.length)return;
  clearTimeout(demoTimer);
  demoTimer=setTimeout(()=>{
   if(demoCancelled||state.phase!=="chat"||state.timedOut||state.error||pending||input.value||!$("confirm").hidden)return;
-  const chars=Array.from(exampleUser[state.turn]);let i=0;typing=true;input.focus();
+  const chars=typingFrames(exampleUser[state.turn]);let i=0;typing=true;input.focus();
   function step(){if(!typing||demoCancelled||state.phase!=="chat"||state.timedOut)return;
-   input.value=chars.slice(0,++i).join("");input.dispatchEvent(new Event("input",{bubbles:true}));
-   if(i<chars.length)demoTimer=setTimeout(step,420);
+   input.value=chars[i++];input.dispatchEvent(new Event("input",{bubbles:true}));
+   if(i<chars.length)demoTimer=setTimeout(step,95);
    else{typing=false;demoTimer=setTimeout(()=>{if(!demoCancelled&&state.phase==="chat"){input.blur();send()}},650)}
   }step();
  },delay);
 }
 input.addEventListener("beforeinput",()=>stopDemo());
 
-function generate(){if(state.timedOut||state.phase!=="chat")return;clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown&&state.turn>=Number(query.get("errorTurn")||2)){state.errorShown=true;state.error=forced;render();return}const text=replies[Math.min(state.turn-1,1)]||replies[0];const m={role:"ai",text};if(state.turn===1){m.versions=[text];m.version=0}newRow=state.messages.length;state.messages.push(m);render();scheduleDemo(8000)},800)}
+function generate(){if(state.timedOut||state.phase!=="chat")return;clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown&&state.turn>=Number(query.get("errorTurn")||2)){state.errorShown=true;state.error=forced;render();return}const text=replies[Math.min(state.turn-1,1)]||replies[0];const m={role:"ai",text};if(state.turn===1){m.versions=[text];m.version=0}newRow=state.messages.length;state.messages.push(m);render();scheduleDemo(4500)},800)}
 function send(){if(state.phase!=="chat"||state.timedOut)return;clearTimeout(demoTimer);typing=false;if(pending){stopDemo();clearTimeout(timer);pending=false;render();return}const text=input.value.trim();if(!text)return;input.value="";resizeComposer();if(!state.messages.length){clearTimeout(greetingTimer);state.messages.push({role:"ai",text:greeting})}state.messages.push({role:"user",text});state.turn++;generate()}
 function departure(){$("diamond-glow").hidden=true;clearTimeout(timer);pending=false;state.phase="departure";$("chat-character").hidden=true;root.classList.remove("is-transition");root.classList.add("is-departure");for(const id of ["chat","ready-area","composer"])$(id).hidden=true;$("departure").hidden=false;$("departure-title").textContent=state.departureReason==="timeout"?"이제 진짜 가보자":"잘 다녀와!";clearTimeout(departureTimer);preserve()}
 function positionAt(now=Date.now()){return TRAVEL*Math.min(1,Math.max(0,(now-state.startedAt)/DURATION))}
