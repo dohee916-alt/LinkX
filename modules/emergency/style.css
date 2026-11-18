@@ -85,3 +85,37 @@
 .lx-emergency .lx-emergency__stars{z-index:-1}
 .lx-emergency.is-transition .lx-ready{left:var(--ready-x,0px);transform:none;transition:none}
 .lx-emergency.is-transition::after{content:none}
+
+/* Exact Figma layer geometry (390x844). Text outlines for immutable labels;
+   dynamic user / AI messages retain semantic, editable text and Hug sizing. */
+.lx-emergency .lx-primary{position:relative;width:138.32px;height:49.92px;min-width:138.32px;min-height:49.92px;line-height:26px;padding:0;box-sizing:border-box}
+.lx-emergency .lx-ready{position:absolute;top:-2.08px;left:var(--ready-x,0px);transform:none}
+.lx-emergency .lx-ready .lx-flame{position:absolute;left:17.14px;top:14.56px;width:20.8px;height:20.8px}
+.lx-emergency .lx-vector-label{position:absolute;display:block;font-size:0;line-height:0;color:transparent;background-repeat:no-repeat;background-size:100% 100%;pointer-events:none}
+.lx-emergency .lx-ready-label{left:42.75px;top:16.57px;width:74.74px;height:18.63px;background-image:url("../../assets/emergency/label-ready.svg")}
+.lx-emergency #returned{position:absolute;left:125.84px;top:754.72px}
+.lx-emergency #returned .lx-vector-label{left:31px;top:16.57px;width:74.11px;height:18.63px;background-image:url("../../assets/emergency/label-returned.svg")}
+.lx-emergency #leave .lx-vector-label{left:22.90px;top:16.57px;width:90.04px;height:18.38px;background-image:url("../../assets/emergency/label-leave.svg")}
+.lx-emergency #continue .lx-flame{position:absolute;left:17.64px;top:14.56px;width:20.8px;height:20.8px}
+.lx-emergency #continue .lx-vector-label{left:43.31px;top:16.57px;width:73px;height:18.38px;background-image:url("../../assets/emergency/label-continue.svg")}
+.lx-emergency .lx-bubble{width:fit-content;max-width:312px;min-width:0;line-height:23px;box-sizing:border-box;display:block;padding:12.48px 16.64px 12.48px 17.68px}
+.lx-emergency .lx-bubble-text{display:block;width:fit-content;max-width:277.68px;line-height:23px;font-weight:500;font-size:15px;text-align:justify;text-align-last:start;white-space:pre-wrap;overflow-wrap:anywhere}
+.lx-emergency .lx-bubble.is-greeting{width:297.32px;height:47.96px;max-width:297.32px;position:relative}
+.lx-emergency .lx-bubble.is-greeting .lx-bubble-text{position:absolute;left:17.68px;top:12.48px;width:263px;height:23px;color:transparent;font-size:0;line-height:0}
+.lx-emergency .lx-bubble.is-greeting .lx-bubble-text::after{content:"";position:absolute;left:.54px;top:5.40px;width:261.25px;height:14px;background:url("../../assets/emergency/label-greeting.svg") center/100% 100% no-repeat}
+.lx-emergency .lx-row.user .lx-bubble{padding:12.48px 15.96px 12.48px 17.52px}
+.lx-emergency .lx-composer{padding:0}
+.lx-emergency .lx-composer #mic{position:absolute;left:13.52px;top:15.6px;width:24.96px;height:24.96px}
+.lx-emergency .lx-composer #message{position:absolute;left:45.76px;top:16.58px;width:248.56px;height:23px;line-height:23px;padding:0;margin:0}
+.lx-emergency .lx-composer #message:placeholder-shown:not(:focus){top:19.08px;height:18px;font-size:12px;line-height:18px}
+.lx-emergency .lx-composer #message::placeholder{font-size:12px;line-height:18px;color:#677083}
+.lx-emergency .lx-composer #message:focus::placeholder{color:transparent;opacity:0}
+.lx-emergency .lx-composer #send{position:absolute;left:301.6px;top:9.36px;right:auto;bottom:auto;width:37.44px;height:37.44px;padding:0;display:grid;place-items:center}
+.lx-emergency .lx-composer #send img{width:21.394px;height:21.394px;display:block}
+.lx-emergency .lx-composer #send[data-send-state="active"]{background:linear-gradient(180deg,#2A60C5 0%,#2F2BCC 100%)}
+.lx-emergency .lx-composer #send[data-send-state="draft"]{background:linear-gradient(180deg,#C0D6FF 0%,#8E8CD7 100%)}
+.lx-emergency .lx-composer #send[data-send-state="stop"]{background:var(--lx-gradient)}
+.lx-emergency .lx-composer #send[data-send-state="stop"] img{width:12.48px;height:12.48px}
+.lx-emergency .lx-composer.is-expanded #message{left:16.64px;top:13.52px;width:315.12px;max-width:315.12px}
+.lx-emergency .lx-composer.is-expanded #mic{top:auto;bottom:14px}
+.lx-emergency .lx-composer.is-expanded #send{top:auto;bottom:5.2px}

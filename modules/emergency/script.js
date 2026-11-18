@@ -12,10 +12,10 @@ function goSaved(){preserve();navigate("saved",{tab:"emergency",from:"emergency"
 function home(){clearTimeout(timer);clearTimeout(departureTimer);preserve();navigate("home")}
 function showNotice(text){$("notice").textContent=text;$("notice").hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$("notice").hidden=true,2500)}
 function render({bottom=true}={}){list.replaceChildren();const first=state.messages.findIndex(m=>m.role==="ai");
-state.messages.forEach((m,index)=>{const row=document.createElement("div");row.className="lx-row "+m.role;if(index===newRow)row.classList.add("lx-arriving");if(index===first){const c=document.createElement("div");c.className="lx-character";const i=document.createElement("img");i.src="../../assets/emergency/character.png";i.alt="";c.append(i);row.append(c)}const bubble=document.createElement("div");bubble.className="lx-bubble";const label=document.createElement("span");label.className="lx-bubble-text";label.textContent=m.text;bubble.append(label);row.append(bubble);if(m.role==="ai"&&m.versions&&index===state.messages.length-1&&!pending){const tools=document.createElement("div");tools.className="lx-tools";if(m.versions.length>1)tools.append(button("이전 답변","‹",()=>version(index,-1)));tools.append(button("답변 재생성","⟲",()=>regenerate(index)));if(m.versions.length>1)tools.append(button("다음 답변","›",()=>version(index,1)));row.append(tools)}list.append(row)});
+state.messages.forEach((m,index)=>{const row=document.createElement("div");row.className="lx-row "+m.role;if(index===newRow)row.classList.add("lx-arriving");if(index===first){const c=document.createElement("div");c.className="lx-character";const i=document.createElement("img");i.src="../../assets/emergency/character.png";i.alt="";c.append(i);row.append(c)}const bubble=document.createElement("div");bubble.className="lx-bubble"+(m.text===greeting?" is-greeting":"");const label=document.createElement("span");label.className="lx-bubble-text";label.textContent=m.text;bubble.append(label);row.append(bubble);if(m.role==="ai"&&m.versions&&index===state.messages.length-1&&!pending){const tools=document.createElement("div");tools.className="lx-tools";if(m.versions.length>1)tools.append(button("이전 답변","‹",()=>version(index,-1)));tools.append(button("답변 재생성","⟲",()=>regenerate(index)));if(m.versions.length>1)tools.append(button("다음 답변","›",()=>version(index,1)));row.append(tools)}list.append(row)});
 if(pending){const dots=document.createElement("div");dots.className="lx-loading";dots.setAttribute("aria-label","응답 생성 중");for(let i=0;i<4;i++)dots.append(document.createElement("i"));const row=document.createElement("div");row.className="lx-row ai";row.append(dots);list.append(row)}
 if(state.error){const row=document.createElement("div");row.className="lx-error-row";const e=document.createElement("span");e.className="lx-error";e.textContent=errors[state.error]||errors.general;row.append(e,button("다시 시도","⟲",()=>generate()));list.append(row)}
-newRow=-1;$("send").setAttribute("aria-label",pending?"생성 중지":"전송");$("send").replaceChildren();if(pending){const stop=document.createElement("span");stop.textContent="■";$("send").append(stop)}else{const a=document.createElement("img");a.src="../../assets/emergency/send.svg";a.alt="";$("send").append(a)}
+newRow=-1;updateSendState();$("send").setAttribute("aria-label",pending?"생성 중지":"전송");$("send").replaceChildren();if(pending){const stop=document.createElement("img");stop.src="../../assets/emergency/label-stop.svg";stop.alt="";$("send").append(stop)}else{const a=document.createElement("img");a.src="../../assets/emergency/send.svg";a.alt="";$("send").append(a)}
 if(bottom)requestAnimationFrame(()=>chat.scrollTop=chat.scrollHeight);preserve()}
 function version(index,delta){const m=state.messages[index];m.version=(m.version+delta+m.versions.length)%m.versions.length;m.text=m.versions[m.version];render()}
 function regenerate(index){const m=state.messages[index];if(!m.versions)return;const next=alternatives[m.versions.length%alternatives.length];if(m.versions.length<alternatives.length)m.versions.push(next);m.version=(m.version+1)%m.versions.length;m.text=m.versions[m.version];render()}
@@ -44,7 +44,7 @@ function resizeComposer(){
  const composer=$("composer");
  composer.classList.remove("is-expanded");
  input.style.height="23px";
- let height=input.scrollHeight;
+ let height=input.value?input.scrollHeight:23;
  const expanded=height>24;
  if(expanded){composer.classList.add("is-expanded");input.style.height="23px";height=Math.min(115,input.scrollHeight);}
  input.style.height=Math.max(23,height)+"px";
@@ -72,3 +72,9 @@ window.visualViewport?.addEventListener("resize",keyboardLayout);
 window.addEventListener("resize",keyboardLayout);
 document.fonts?.ready.then(resizeComposer);
 resizeComposer();
+
+function updateSendState(){const b=$("send");b.dataset.sendState=pending?"stop":input.value.trim()?(document.activeElement===input?"active":"draft"):"idle"}
+input.addEventListener("input",updateSendState);
+input.addEventListener("focus",updateSendState);
+input.addEventListener("blur",updateSendState);
+updateSendState();
