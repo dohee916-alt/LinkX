@@ -182,3 +182,9 @@
 .lx-emergency #chat-character img{display:block;width:137px;height:123px;object-fit:contain;animation:lx-character-float 4.8s ease-in-out infinite;transform-origin:50% 65%}
 @keyframes lx-character-float{0%,100%{transform:translate3d(0,0,0) rotate(-.45deg)}50%{transform:translate3d(0,-3px,0) rotate(.45deg)}}
 @media(prefers-reduced-motion:reduce){.lx-emergency #chat-character{transition:none}.lx-emergency #chat-character img{animation:none}}
+
+/* Keep the peek behind the chat and clipped by the phone frame. */
+.lx-emergency #chat-character[data-mode="peek"]{transform-origin:50% 50%}
+.lx-emergency #chat-character[data-mode="peek"] img{animation:lx-character-peek 4.8s ease-in-out infinite}
+@keyframes lx-character-peek{0%,100%{transform:translate3d(0,0,0) rotate(-.35deg)}50%{transform:translate3d(2px,-2px,0) rotate(.35deg)}}
+@media(prefers-reduced-motion:reduce){.lx-emergency #chat-character[data-mode="peek"] img{animation:none}}

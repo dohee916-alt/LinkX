@@ -23,9 +23,13 @@ function positionCharacter(){
  const long=root.classList.contains("is-long-chat");
  const scale=root.getBoundingClientRect().width/390||1;
  const bounds=root.getBoundingClientRect();
- const x=long?257.27:4;
- const y=long?$("ready-area").offsetTop-65.10:Math.max(96,(anchor.getBoundingClientRect().top-bounds.top)/scale-76.4);
- const target="translate3d("+x+"px,"+y+"px,0) rotate("+(long?2.566:0)+"deg)";
+ const ending=state.timedOut===true;
+ const mode=ending?"ending":long?"peek":"greeting";
+ actor.dataset.mode=mode;
+ const x=ending?257.27:long?322:4;
+ const y=ending?$("ready-area").offsetTop-65.10:long?102:Math.max(96,(anchor.getBoundingClientRect().top-bounds.top)/scale-76.4);
+ const angle=ending?2.566:long?-22:0;
+ const target="translate3d("+x+"px,"+y+"px,0) rotate("+angle+"deg)";
  if(actor.hidden){actor.style.transition="none";actor.style.transform=target;actor.hidden=false;actor.getBoundingClientRect();actor.style.removeProperty("transition");}
  else if(actor.style.transform!==target)actor.style.transform=target;
 }
