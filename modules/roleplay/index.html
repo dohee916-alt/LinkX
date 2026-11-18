@@ -350,11 +350,7 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
   </div>
 </div>
 
-<aside class="help">
-  <b>LINKY · 롤플레잉모드</b><br>
-  <kbd>G</kbd> 기기 틀 보기 · <kbd>E</kbd> 답변 생성 중 오류 내기 · <kbd>R</kbd> 처음부터
-  <div class="now">지금 상태: <b id="stateName">빈 화면</b></div>
-</aside>
+
 
 <script>
 (() => {
@@ -428,7 +424,7 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
     suggestText.classList.toggle('off', !canSuggest || !suggest);
     if (canSuggest) suggestText.textContent = SUGGEST[state];
 
-    $('#stateName').textContent = SCREENS[state].name + (suggest ? ', 추천 문장 보기' : '');
+    
   }
 
   function go(next) {
