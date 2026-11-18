@@ -145,7 +145,8 @@ function build(){
     if (f){ location.hash = f; start(f); }
     if (x !== undefined){ location.search = x ? '?force=' + x : ''; }   // 다시 열림 · 지금 흐름(#) 유지
   });
-  root.appendChild(dev);
+  // Flow controls are provided by the outer prototype navigator.
+  if(window.parent===window)root.appendChild(dev);
   addEventListener('resize', fit); fit();
 }
 function fit(){
