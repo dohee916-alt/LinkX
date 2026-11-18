@@ -21,3 +21,26 @@
 .lx-confirm-panel{top:223.08px;left:.24px;height:175px;width:349px}
 .lx-departure{position:absolute;inset:49.92px 20.8px 16.64px}
 .lx-departure .lx-primary{margin-top:100px}
+
+/* Keep the full 390x844 canvas, including the blank 49.92px Figma status-bar slot.
+   Position the scaled canvas from the viewport center, never from an auto-sized grid track. */
+.lx-emergency-page{position:relative;display:block;width:100%;height:100dvh;min-height:0;overflow:hidden}
+.lx-emergency{position:absolute;left:50%;top:50%;width:390px;height:844px;min-width:390px;min-height:844px;max-width:none;max-height:none;transform:translate(-50%,-50%) scale(var(--lx-frame-scale,1));transform-origin:center center;border-radius:33.28px;padding:0}
+.lx-status-reserved{position:absolute;inset:0 0 auto;height:49.92px;pointer-events:none}
+.lx-emergency .lx-nav{position:absolute;top:58.24px;left:20.8px;margin:0;width:348.4px;height:29.12px;overflow:hidden}
+.lx-emergency .lx-nav #back{left:-4.16px;top:2.08px;width:24.96px;height:24.96px}
+.lx-emergency .lx-nav #saved{right:1.04px;top:2.08px;width:27.04px;height:27.04px}
+.lx-chat{top:170.56px;height:514.8px}
+.lx-messages{padding-top:76.4px}
+.lx-character{bottom:100%;margin-bottom:-46.6px}
+.lx-row:first-child .lx-bubble{min-width:297.32px;max-width:297.32px}
+.lx-bubble{line-height:23px}
+.lx-departure{inset:0;display:block}
+.lx-departure .lx-breath{position:absolute;left:70.2px;top:237.12px;margin:0}
+.lx-departure .lx-echo{width:390px;height:412.29px;left:124.8px;top:124.8px;animation:none;transform:translate(-50%,-50%)}
+.lx-departure .lx-depart-character{width:357.19px;height:287.51px;left:-57.93px;top:-16.55px;transform:none;opacity:1}
+.lx-departure h1{position:absolute;left:20.8px;top:511.68px;width:348.4px;margin:0}
+.lx-departure p{position:absolute;left:20.8px;top:558.96px;width:348.4px;margin:0;line-height:23px}
+.lx-departure .lx-primary{position:absolute;left:125.84px;top:754.72px;margin:0}
+.lx-confirm-card>img{left:-19.76px;top:20.08px;width:390px;height:436px;object-fit:contain}
+.lx-confirm-panel{justify-content:flex-start;padding-top:36.72px}
