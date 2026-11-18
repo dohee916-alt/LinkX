@@ -201,3 +201,15 @@
 /* Keep the character anchored without chasing keyboard/composer changes. */
 .lx-emergency #chat-character{transition:none!important;will-change:auto}
 .lx-emergency #chat-character img,.lx-emergency #chat-character[data-mode="peek"] img{animation:none!important;transform:none}
+
+/* Character and bubble now share one layout coordinate system. */
+.lx-emergency .lx-chat{left:4px;width:365.2px;padding-left:16.8px}
+.lx-emergency #chat-character{position:absolute;transition:none!important;animation:none!important;transform:none;pointer-events:none;z-index:0}
+.lx-emergency #chat-character[data-mode="greeting"]{left:-16.8px;top:-76.4px;transform:none}
+.lx-emergency [data-character-anchor]>.lx-bubble{position:relative;z-index:1}
+.lx-emergency .lx-arriving[data-character-anchor]{animation:lx-message-enter 180ms ease-out both}
+.lx-emergency .lx-arriving[data-character-anchor]>.lx-bubble{animation:none}
+.lx-emergency #chat-character[data-mode="peek"]{left:322px;top:102px;transform:rotate(-22deg)}
+.lx-emergency #chat-character[data-mode="ending"]{left:257.27px;top:calc(641.06px - var(--composer-extra,0px) - var(--keyboard-offset,0px));transform:rotate(2.566deg)}
+.lx-emergency #chat-character img{animation:none!important;transform:none!important}
+@media(prefers-reduced-motion:reduce){.lx-emergency .lx-arriving[data-character-anchor]{animation:none}}
