@@ -175,3 +175,10 @@
 .lx-emergency .lx-loading i:nth-child(2){background:#5f61d4}
 .lx-emergency .lx-loading i:nth-child(3){background:#bab2ff}
 .lx-emergency .lx-loading i:nth-child(4){background:#565bae}
+
+/* One character stays alive across all chat layouts. Movement and floating are separated. */
+.lx-emergency #chat-character{position:absolute;left:0;top:0;width:137px;height:123px;z-index:0;pointer-events:none;transform-origin:50% 50%;transition:transform 960ms cubic-bezier(.22,.72,.25,1);will-change:transform}
+.lx-emergency #chat-character[hidden]{display:none!important}
+.lx-emergency #chat-character img{display:block;width:137px;height:123px;object-fit:contain;animation:lx-character-float 4.8s ease-in-out infinite;transform-origin:50% 65%}
+@keyframes lx-character-float{0%,100%{transform:translate3d(0,0,0) rotate(-.45deg)}50%{transform:translate3d(0,-3px,0) rotate(.45deg)}}
+@media(prefers-reduced-motion:reduce){.lx-emergency #chat-character{transition:none}.lx-emergency #chat-character img{animation:none}}
