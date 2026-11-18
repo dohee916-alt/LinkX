@@ -159,3 +159,19 @@
 .lx-emergency.is-long-chat:not(.is-departure) .lx-long-character{display:block}
 .lx-emergency .lx-chat,.lx-emergency .lx-ready-area,.lx-emergency .lx-composer{z-index:1}
 .lx-emergency .lx-composer{z-index:2}
+
+/* Exact Figma regeneration controls: 22.88 high, 4.16 below bubble. */
+.lx-emergency .lx-row{gap:4.16px}
+.lx-emergency .lx-tools{position:relative;width:348.4px;height:22.88px;min-height:22.88px;display:block;flex:none}
+.lx-emergency .lx-micro{position:relative;display:block;width:19.76px;height:19.76px;min-width:19.76px;padding:0!important;border:0;background:none;flex:none}
+.lx-emergency .lx-micro img{display:block;width:100%;height:100%;object-fit:contain}
+.lx-emergency .lx-tools .lx-micro{position:absolute;top:1.56px;left:0}
+.lx-emergency .lx-tools[data-multiple=true] .lx-retry{left:22.88px}
+.lx-emergency .lx-tools .lx-prev,.lx-emergency .lx-tools .lx-next{width:8.32px;min-width:8.32px;height:14.56px;top:4.16px}
+.lx-emergency .lx-tools .lx-prev{left:3.12px}
+.lx-emergency .lx-tools .lx-next{left:53.04px}
+.lx-emergency .lx-error-row{display:flex;align-items:center;gap:4.88px;min-height:35.36px}
+.lx-emergency .lx-loading i:nth-child(1){background:#34318b}
+.lx-emergency .lx-loading i:nth-child(2){background:#5f61d4}
+.lx-emergency .lx-loading i:nth-child(3){background:#bab2ff}
+.lx-emergency .lx-loading i:nth-child(4){background:#565bae}
