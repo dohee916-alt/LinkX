@@ -1,7 +1,7 @@
 import {navigate,params,returnFromSaved,syncScrollEdges} from "../../shared/navigation.js?v=edges1";
 import {getStore,removeConversation} from "../../shared/store.js";
 const $=id=>document.getElementById(id),q=params(),frame=$("frame"),scroll=$("scroll");
-let sortCloseTimer=null;let tab=q.get("tab")==="saved"?"saved":"emergency",sort="new",opened=false,examples={emergency:[],saved:[]};
+let sortCloseTimer=null;let tab=q.get("tab")==="saved"?"saved":"emergency",sort=q.get("sort")==="old"?"old":"new",opened=q.get("menu")==="1",examples={emergency:[],saved:[]};
 const demo=q.get("preview")!=="empty";
 const key="linkx:saved-demo-removed";
 let removed=[];try{removed=JSON.parse(sessionStorage.getItem(key)||"[]")}catch{}
