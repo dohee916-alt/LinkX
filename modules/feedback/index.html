@@ -21,5 +21,5 @@ if(n===10||n===11){const card=ph.querySelector('.ai:last-child');if(card){let ho
 if(n===12){hit(27,697,32,32,()=>{saved=true;go(13,true)},'북마크');hit(67,697,32,32,()=>go(10,true),'다시 생성');hit(330,240,60,440,()=>go(11),'닫기')}
 if(saved&&[13,14,15].includes(n)&&!ph.querySelector('.ic')){const b=document.createElement('div');b.className='b ic';b.style.cssText='left:27px;top:697px;width:32px;height:32px';b.textContent='★';ph.append(b)}
 if(n===11)action('미션 완료 보고',()=>go(22,true));if(play)resume()}
-window.LinkXFeedback={go,current:()=>cur,resume};function fit(){frame.style.transform='scale('+Math.min(1,innerWidth/390,innerHeight/844)+')'}addEventListener('resize',fit);fit();go(1,true);
+window.LinkXFeedback={go,current:()=>cur,resume};function fit(){frame.style.transform='scale('+Math.min(1,innerWidth/390,innerHeight/844)+')'}addEventListener('resize',fit);fit();go(new URLSearchParams(location.search).get('entry')==='returned'?10:1,true);
 </script></html>
