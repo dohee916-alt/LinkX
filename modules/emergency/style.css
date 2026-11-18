@@ -197,3 +197,7 @@
 .lx-departure .lx-halo-outer{animation-delay:1.6s}
 @keyframes lx-halo-wave{0%{transform:scale(.35);opacity:0}25%{opacity:1}100%{transform:scale(1.1);opacity:0}}
 @media(prefers-reduced-motion:reduce){.lx-departure .lx-halo-ring{animation:none;transform:none;opacity:1}}
+
+/* Keep the character anchored without chasing keyboard/composer changes. */
+.lx-emergency #chat-character{transition:none!important;will-change:auto}
+.lx-emergency #chat-character img,.lx-emergency #chat-character[data-mode="peek"] img{animation:none!important;transform:none}
