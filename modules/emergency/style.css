@@ -34,7 +34,7 @@
 .lx-chat{top:170.56px;height:514.8px}
 .lx-messages{padding-top:76.4px}
 .lx-character{bottom:100%;margin-bottom:-46.6px}
-.lx-row:first-child .lx-bubble{min-width:297.32px;max-width:297.32px}
+
 .lx-bubble{line-height:23px}
 .lx-departure{inset:0;display:block}
 .lx-departure .lx-breath{position:absolute;left:70.2px;top:237.12px;margin:0}
@@ -100,9 +100,6 @@
 .lx-emergency #continue .lx-vector-label{left:43.31px;top:16.57px;width:73px;height:18.38px;background-image:url("../../assets/emergency/label-continue.svg")}
 .lx-emergency .lx-bubble{width:fit-content;max-width:312px;min-width:0;line-height:23px;box-sizing:border-box;display:block;padding:12.48px 16.64px 12.48px 17.68px}
 .lx-emergency .lx-bubble-text{display:block;width:fit-content;max-width:277.68px;line-height:23px;font-weight:500;font-size:15px;text-align:justify;text-align-last:start;white-space:pre-wrap;overflow-wrap:anywhere}
-.lx-emergency .lx-bubble.is-greeting{width:297.32px;height:47.96px;max-width:297.32px;position:relative}
-.lx-emergency .lx-bubble.is-greeting .lx-bubble-text{position:absolute;left:17.68px;top:12.48px;width:263px;height:23px;color:transparent;font-size:0;line-height:0}
-.lx-emergency .lx-bubble.is-greeting .lx-bubble-text::after{content:"";position:absolute;left:.54px;top:5.40px;width:261.25px;height:14px;background:url("../../assets/emergency/label-greeting.svg") center/100% 100% no-repeat}
 .lx-emergency .lx-row.user .lx-bubble{padding:12.48px 15.96px 12.48px 17.52px}
 .lx-emergency .lx-composer{padding:0}
 .lx-emergency .lx-composer #mic{position:absolute;left:13.52px;top:15.6px;width:24.96px;height:24.96px}
@@ -119,3 +116,8 @@
 .lx-emergency .lx-composer.is-expanded #message{left:16.64px;top:13.52px;width:315.12px;max-width:315.12px}
 .lx-emergency .lx-composer.is-expanded #mic{top:auto;bottom:14px}
 .lx-emergency .lx-composer.is-expanded #send{top:auto;bottom:5.2px}
+
+/* Shared Hug message component. No first-message exception or image text. */
+.lx-emergency .lx-row .lx-bubble{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;width:fit-content;height:auto;min-width:0;max-width:312px;flex:none;padding:12.48px 16.64px 12.48px 17.68px;box-sizing:border-box}
+.lx-emergency .lx-bubble .lx-bubble-text{display:block;position:static;width:fit-content;max-width:277.68px;height:auto;margin:0;padding:0;color:inherit;font-family:"IBM Plex Sans KR",sans-serif;font-size:15px;font-weight:500;line-height:23px;text-align:justify;text-align-last:start;white-space:pre-wrap;overflow-wrap:anywhere;letter-spacing:0}
+.lx-emergency .lx-row.user .lx-bubble{padding:12.48px 15.96px 12.48px 17.52px}
