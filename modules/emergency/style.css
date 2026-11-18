@@ -44,3 +44,11 @@
 .lx-departure .lx-primary{position:absolute;left:125.84px;top:754.72px;margin:0}
 .lx-confirm-card>img{left:-19.76px;top:20.08px;width:390px;height:436px;object-fit:contain}
 .lx-confirm-panel{justify-content:flex-start;padding-top:36.72px}
+
+/* Time-based progress, independent of the number of chat turns. */
+.lx-emergency .lx-ready{left:var(--ready-x,0px);transform:none;transition:none}
+.lx-emergency.is-transition .lx-ready{left:var(--ready-x,0px);transform:none;transition:box-shadow .45s ease,background-color .45s ease;box-shadow:0 0 42px 14px #f8f3e6,inset 0 0 8px #fff}
+.lx-emergency.is-transition::after{background:radial-gradient(ellipse at var(--light-x,89.96px) 729.04px,rgba(248,243,230,.88),transparent 66%)}
+.lx-arriving .lx-bubble,.lx-arriving .lx-character{animation:lx-message-enter 180ms ease-out both}
+@keyframes lx-message-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.lx-arriving .lx-bubble,.lx-arriving .lx-character{animation:none}}

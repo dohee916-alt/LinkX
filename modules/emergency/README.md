@@ -9,3 +9,6 @@
 ## 아직 검증할 사항
 AI 응답은 Figma 문구를 이용한 시연 데이터이며 실제 AI 호출 없음. 입력 중 OS 키보드는 브라우저 네이티브 키보드 사용. 버튼 이동 비율 및 전환 시간은 임시 값이며 원본 프로토타입 타이밍 확인 필요. 캐릭터 꼬리 동작은 별도 확인 필요. 다녀왔어/나가기의 실제 팀원 목적지는 공통 navigation에서 변경.
 원본 Figma 에셋은 현재 로컬 다운로드 DNS 오류로 미등록. assets/emergency에 정확한 원본을 추가하고 브라우저 화면 확인 필요. 현재 CSS와 기능은 구현 초안이며 픽셀 검수 완료본이 아님.
+
+## Timing / separate scenarios
+Normal entry starts a 90s clock and reveals the greeting after 100ms with a 180ms fade-up (8px); no scenario is automatically replayed. The ready control travels 210.08px linearly over 90s and freezes at the tapped coordinate. At expiry it stays on the right and adds only the timeout message. Error/loading/regeneration/long/scroll/confirm are independent QA previews, not a sequence. Preview state does not overwrite stored conversations. Sources: Microsoft custom chat interface uses 180ms ease-out fadeUp (https://learn.microsoft.com/en-us/power-pages/getting-started/create-custom-chat-interface); SAP Fiori microinteraction timing 100–200ms (https://www.sap.com/design-system/fiori-design-web/v1-136/foundations/interaction/motion-design-overview).
