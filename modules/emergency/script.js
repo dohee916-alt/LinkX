@@ -11,7 +11,7 @@ let timer=null,departureTimer=null,pending=false,noticeTimer=null; let greetingT
 const preserve=()=>{if(!isPreview)updateStore({emergencyDraft:{...state,scroll:chat.scrollTop,draft:input.value,pending}})};
 function button(label,text,fn){const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",label);const icon={"이전 답변":"prev","다음 답변":"next","다시 시도":"retry","답변 재생성":text==="first"?"retryFirst":"retry"}[label];if(icon){b.className="lx-micro lx-"+icon;const im=document.createElement("img");im.src="../../assets/emergency/"+icon+".svg";im.alt="";b.append(im)}else b.textContent=text;b.onclick=fn;return b}
 function goSaved(){preserve();openSaved("emergency",{resume:1})}
-function home(){clearTimeout(finalTimer);clearTimeout(timer);clearTimeout(departureTimer);preserve();navigate("home")}
+function home(){stopDemo();clearTimeout(finalTimer);clearTimeout(timer);clearTimeout(departureTimer);preserve();navigate("home")}
 function showNotice(text){$("notice").textContent=text;$("notice").hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$("notice").hidden=true,2500)}
 
 // Single persistent character: motion wrapper and independent gentle floating child.
@@ -43,17 +43,36 @@ newRow=-1;updateSendState();$("send").setAttribute("aria-label",pending?"생성 
 updateChatLayout();requestAnimationFrame(()=>{if(bottom)chat.scrollTop=chat.scrollHeight;syncScrollEdges(chat);positionCharacter();preserve()});preserve()}
 function version(index,delta){if(state.timedOut)return;const m=state.messages[index];m.version=Math.max(0,Math.min(m.versions.length-1,m.version+delta));m.text=m.versions[m.version];render()}
 function regenerate(index){if(state.timedOut)return;const m=state.messages[index];if(!m.versions)return;const next=alternatives[m.versions.length%alternatives.length];if(m.versions.length<alternatives.length)m.versions.push(next);m.version=(m.version+1)%m.versions.length;m.text=m.versions[m.version];render()}
-function generate(){if(state.timedOut||state.phase!=="chat")return;clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown){state.errorShown=true;state.error=forced;render();return}const text=replies[Math.min(state.turn-1,1)]||replies[0];const m={role:"ai",text};if(state.turn===1){m.versions=[text];m.version=0}newRow=state.messages.length;state.messages.push(m);render()},800)}
-function send(){if(state.phase!=="chat"||state.timedOut)return;if(pending){clearTimeout(timer);pending=false;render();return}const text=input.value.trim();if(!text)return;input.value="";resizeComposer();if(!state.messages.length){clearTimeout(greetingTimer);state.messages.push({role:"ai",text:greeting})}state.messages.push({role:"user",text});state.turn++;generate()}
+
+const autoDemo=query.get("auto")!=="0"&&!isPreview;
+let demoTimer=null,typing=false,demoCancelled=false;
+function stopDemo(){clearTimeout(demoTimer);typing=false;demoCancelled=true}
+function scheduleDemo(delay=900){
+ if(!autoDemo||demoCancelled||state.phase!=="chat"||state.timedOut||state.error||pending||state.turn>=exampleUser.length)return;
+ clearTimeout(demoTimer);
+ demoTimer=setTimeout(()=>{
+  if(demoCancelled||state.phase!=="chat"||state.timedOut||state.error||pending||input.value||!$("confirm").hidden)return;
+  const chars=Array.from(exampleUser[state.turn]);let i=0;typing=true;input.focus();
+  function step(){if(!typing||demoCancelled||state.phase!=="chat"||state.timedOut)return;
+   input.value=chars.slice(0,++i).join("");input.dispatchEvent(new Event("input",{bubbles:true}));
+   if(i<chars.length)demoTimer=setTimeout(step,55);
+   else{typing=false;demoTimer=setTimeout(()=>{if(!demoCancelled&&state.phase==="chat"){input.blur();send()}},650)}
+  }step();
+ },delay);
+}
+input.addEventListener("beforeinput",()=>stopDemo());
+
+function generate(){if(state.timedOut||state.phase!=="chat")return;clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown&&state.turn>=Number(query.get("errorTurn")||2)){state.errorShown=true;state.error=forced;render();return}const text=replies[Math.min(state.turn-1,1)]||replies[0];const m={role:"ai",text};if(state.turn===1){m.versions=[text];m.version=0}newRow=state.messages.length;state.messages.push(m);render();scheduleDemo(1800)},800)}
+function send(){if(state.phase!=="chat"||state.timedOut)return;clearTimeout(demoTimer);typing=false;if(pending){stopDemo();clearTimeout(timer);pending=false;render();return}const text=input.value.trim();if(!text)return;input.value="";resizeComposer();if(!state.messages.length){clearTimeout(greetingTimer);state.messages.push({role:"ai",text:greeting})}state.messages.push({role:"user",text});state.turn++;generate()}
 function departure(){$("diamond-glow").hidden=true;clearTimeout(timer);pending=false;state.phase="departure";$("chat-character").hidden=true;root.classList.remove("is-transition");root.classList.add("is-departure");for(const id of ["chat","ready-area","composer"])$(id).hidden=true;$("departure").hidden=false;$("departure-title").textContent=state.departureReason==="timeout"?"이제 진짜 가보자":"잘 다녀와!";clearTimeout(departureTimer);preserve()}
 function positionAt(now=Date.now()){return TRAVEL*Math.min(1,Math.max(0,(now-state.startedAt)/DURATION))}
 let readyAnimation=null;function setReadyX(x){$("ready-motion").style.transform="translate3d("+x+"px,0,0)"}
 function tick(){if(state.phase!=="chat")return;clearTimeout(finalTimer);const remaining=DURATION-(Date.now()-state.startedAt);if(remaining<=FINAL_LEAD)showFinal();else finalTimer=setTimeout(showFinal,remaining-FINAL_LEAD);const x=positionAt();setReadyX(x);if(x>=TRAVEL){finishTimer();return}readyAnimation=$("ready-motion").animate([{transform:"translate3d("+x+"px,0,0)"},{transform:"translate3d("+TRAVEL+"px,0,0)"}],{duration:DURATION*(1-x/TRAVEL),easing:"linear",fill:"forwards"});readyAnimation.onfinish=finishTimer}
-function showFinal(){if(state.phase!=="chat"||state.timedOut)return;state.timedOut=true;clearTimeout(timer);clearTimeout(greetingTimer);pending=false;state.error=null;newRow=state.messages.length;state.messages.push({role:"ai",text:replies[2]});input.blur();input.readOnly=true;render()}
+function showFinal(){if(state.phase!=="chat"||state.timedOut)return;stopDemo();input.value="";resizeComposer();state.timedOut=true;clearTimeout(timer);clearTimeout(greetingTimer);pending=false;state.error=null;newRow=state.messages.length;state.messages.push({role:"ai",text:replies[2]});input.blur();input.readOnly=true;render()}
 function finishTimer(){if(state.phase!=="chat")return;showFinal();ready("timeout")}
-function ready(reason="manual"){if(state.phase!=="chat")return;clearTimeout(finalTimer);state.departureReason=reason==="timeout"?"timeout":"manual";state.frozenX=readyAnimation?new DOMMatrixReadOnly(getComputedStyle($("ready-motion")).transform).m41:positionAt();if(readyAnimation){readyAnimation.cancel();readyAnimation=null}setReadyX(state.frozenX);cancelAnimationFrame(frameId);clearTimeout(greetingTimer);state.phase="transition";clearTimeout(timer);pending=false;const bx=20.8+state.frozenX+69.16;const by=$("ready-area").offsetTop+$("ready-motion").offsetTop+24.96;input.blur();root.classList.add("is-transition");preserve();playDiamond($("diamond-glow"),bx,by,departure)}
-function showGreeting(){if(state.phase!=="chat"||state.messages.length)return;newRow=0;state.messages.push({role:"ai",text:greeting});render()}
-$("composer").addEventListener("submit",e=>{e.preventDefault();send()});$("saved").onclick=goSaved;$("back").onclick=()=>{$("confirm").hidden=false};$("continue").onclick=()=>{$("confirm").hidden=true};$("leave").onclick=home;$("ready").onclick=()=>ready("manual");$("returned").onclick=()=>{saveConversation({id:state.id,type:"emergency",messages:state.messages,title:state.messages.find(m=>m.role==="user")?.text||greeting});updateStore({emergencyDraft:null});navigate("home")};
+function ready(reason="manual"){if(state.phase!=="chat")return;stopDemo();clearTimeout(finalTimer);state.departureReason=reason==="timeout"?"timeout":"manual";state.frozenX=readyAnimation?new DOMMatrixReadOnly(getComputedStyle($("ready-motion")).transform).m41:positionAt();if(readyAnimation){readyAnimation.cancel();readyAnimation=null}setReadyX(state.frozenX);cancelAnimationFrame(frameId);clearTimeout(greetingTimer);state.phase="transition";clearTimeout(timer);pending=false;const bx=20.8+state.frozenX+69.16;const by=$("ready-area").offsetTop+$("ready-motion").offsetTop+24.96;input.blur();root.classList.add("is-transition");preserve();playDiamond($("diamond-glow"),bx,by,departure)}
+function showGreeting(){if(state.phase!=="chat"||state.messages.length)return;newRow=0;state.messages.push({role:"ai",text:greeting});render();scheduleDemo(1000)}
+$("composer").addEventListener("submit",e=>{e.preventDefault();send()});$("saved").onclick=goSaved;$("back").onclick=()=>{$("confirm").hidden=false};$("continue").onclick=()=>{$("confirm").hidden=true;scheduleDemo()};$("leave").onclick=home;$("ready").onclick=()=>ready("manual");$("returned").onclick=()=>{saveConversation({id:state.id,type:"emergency",messages:state.messages,title:state.messages.find(m=>m.role==="user")?.text||greeting});updateStore({emergencyDraft:null});location.href="../feedback/index.html?entry=returned"};
 $("mic").onclick=()=>{const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){showNotice("이 브라우저에서는 음성 입력을 지원하지 않아요.");return}try{const s=new Speech();s.lang="ko-KR";s.onresult=e=>input.value=e.results[0][0].transcript;s.onerror=()=>showNotice("음성 입력을 사용할 수 없어요.");s.start()}catch{showNotice("음성 입력을 사용할 수 없어요.")}};
 window.addEventListener("pagehide",preserve);chat.addEventListener("scroll",()=>{state.scroll=chat.scrollTop;syncScrollEdges(chat);positionCharacter()},{passive:true});
 // Development-only preview states for Figma QA (not a visible production screen).
