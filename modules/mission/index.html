@@ -173,6 +173,7 @@ function groupReady(g){
 }
 function go(id, t = .28, e = 'ease-out'){
   if (!S[id]) return;
+  if(id==='main'){location.href='../main/index.html';return;}
   clearTimers();
   if (API.onNavigate && API.onNavigate(id) === true) return;
   const g = S[id].g, from = (cur && S[cur]) ? cur : null;
