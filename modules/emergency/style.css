@@ -143,3 +143,6 @@
 .lx-emergency .lx-chat[data-has-above="true"][data-has-below="true"]{mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)!important;-webkit-mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)!important}
 
 .lx-emergency #returned .lx-vector-label{left:50%;transform:translateX(-50%);width:74.11px;height:18.63px;top:16.57px}
+
+.lx-emergency #ready-motion{contain:none;transition:none!important;will-change:transform;backface-visibility:hidden}
+.lx-emergency #ready-motion .lx-ready{transition:none!important;animation:none!important}

@@ -39,7 +39,7 @@
 .saved-menu button[data-sort=old] img{top:6px}
 .saved-menu button:first-child:after{bottom:0}
 .saved-menu button:hover{background:none}
-.saved-frame[data-tab=emergency] .saved-menu button[data-sort=old]{background:url("../../assets/saved/menuShade.svg") center/146px 41px no-repeat}
+
 #empty h2{font:600 16px/24px "IBM Plex Sans KR",sans-serif}
 #empty p{font:500 12px/18px "IBM Plex Sans KR",sans-serif;color:#4e4e4e}
 #empty[data-tab=saved] #empty-icon{left:166.47px;top:372px;width:57.06px;height:55px}
@@ -52,3 +52,10 @@
 .saved-frame[data-tab] .saved-scroll[data-has-above="true"]{mask-image:linear-gradient(180deg,transparent,#000 8%,#000 100%)!important;-webkit-mask-image:linear-gradient(180deg,transparent,#000 8%,#000 100%)!important}
 .saved-frame[data-tab] .saved-scroll[data-has-below="true"]{mask-image:linear-gradient(180deg,#000 0%,#000 92%,transparent)!important;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 92%,transparent)!important}
 .saved-frame[data-tab] .saved-scroll[data-has-above="true"][data-has-below="true"]{mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)!important;-webkit-mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)!important}
+
+.saved-frame .saved-tabs{background:rgba(160,144,204,.3);box-shadow:inset 0 0 7px #f8f3e6;border-radius:26px}
+.saved-frame[data-tab=saved][data-empty=true] .saved-tabs{background:rgba(160,144,204,.3)}
+.saved-frame .saved-tabs #emergency-tab[aria-selected=true]{background:linear-gradient(180deg,rgba(248,243,230,.3),transparent 38.3%),linear-gradient(90deg,#2a60c5,#2f2bc8);box-shadow:inset 0 0 2px #f8f3e6}
+.saved-frame .saved-tabs #saved-tab[aria-selected=true]{background:linear-gradient(90deg,#9180c3,#352897);box-shadow:inset 0 0 2px #f8f3e6}
+.saved-frame .saved-menu button{background:none}
+.saved-frame .saved-menu button.is-pressed,.saved-frame .saved-menu button:active{background:url("../../assets/saved/menuShade.svg") center/146px 41px no-repeat}
