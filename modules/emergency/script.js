@@ -13,12 +13,13 @@ function button(label,text,fn){const b=document.createElement("button");b.type="
 function goSaved(){preserve();openSaved("emergency",{resume:1})}
 function home(){clearTimeout(timer);clearTimeout(departureTimer);preserve();navigate("home")}
 function showNotice(text){$("notice").textContent=text;$("notice").hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$("notice").hidden=true,2500)}
+function updateChatLayout(){const inset=parseFloat(getComputedStyle(root).getPropertyValue("--keyboard-offset"))||0;const extra=parseFloat(getComputedStyle(root).getPropertyValue("--composer-extra"))||0;const rows=Array.from(list.children);const content=rows.reduce((n,r)=>n+r.offsetHeight,0)+Math.max(0,rows.length-1)*12.48;const full=content+76.4>Math.max(0,514.8-inset-extra);root.classList.toggle("is-long-chat",full);}
 function render({bottom=true}={}){list.replaceChildren();const first=state.messages.findIndex(m=>m.role==="ai");
 state.messages.forEach((m,index)=>{const row=document.createElement("div");row.className="lx-row "+m.role;if(index===newRow)row.classList.add("lx-arriving");if(index===first){const c=document.createElement("div");c.className="lx-character";const i=document.createElement("img");i.src="../../assets/emergency/character.png";i.alt="";c.append(i);row.append(c)}row.append(messageBubble(m));if(m.role==="ai"&&m.versions&&index===state.messages.length-1&&!pending){const tools=document.createElement("div");tools.className="lx-tools";if(m.versions.length>1)tools.append(button("이전 답변","‹",()=>version(index,-1)));tools.append(button("답변 재생성","⟲",()=>regenerate(index)));if(m.versions.length>1)tools.append(button("다음 답변","›",()=>version(index,1)));row.append(tools)}list.append(row)});
 if(pending){const dots=document.createElement("div");dots.className="lx-loading";dots.setAttribute("aria-label","응답 생성 중");for(let i=0;i<4;i++)dots.append(document.createElement("i"));const row=document.createElement("div");row.className="lx-row ai";row.append(dots);list.append(row)}
 if(state.error){const row=document.createElement("div");row.className="lx-error-row";const e=document.createElement("span");e.className="lx-error";e.textContent=errors[state.error]||errors.general;row.append(e,button("다시 시도","⟲",()=>generate()));list.append(row)}
 newRow=-1;updateSendState();$("send").setAttribute("aria-label",pending?"생성 중지":"전송");$("send").replaceChildren();if(pending){const stop=document.createElement("img");stop.src="../../assets/emergency/label-stop.svg";stop.alt="";$("send").append(stop)}else{const a=document.createElement("img");a.src="../../assets/emergency/send.svg";a.alt="";$("send").append(a)}
-requestAnimationFrame(()=>{if(bottom)chat.scrollTop=chat.scrollHeight;syncScrollEdges(chat);preserve()});preserve()}
+updateChatLayout();requestAnimationFrame(()=>{if(bottom)chat.scrollTop=chat.scrollHeight;syncScrollEdges(chat);preserve()});preserve()}
 function version(index,delta){const m=state.messages[index];m.version=(m.version+delta+m.versions.length)%m.versions.length;m.text=m.versions[m.version];render()}
 function regenerate(index){const m=state.messages[index];if(!m.versions)return;const next=alternatives[m.versions.length%alternatives.length];if(m.versions.length<alternatives.length)m.versions.push(next);m.version=(m.version+1)%m.versions.length;m.text=m.versions[m.version];render()}
 function generate(){clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown){state.errorShown=true;state.error=forced;render();return}const text=replies[Math.min(state.turn-1,1)]||replies[0];const m={role:"ai",text};if(state.turn===1){m.versions=[text];m.version=0}newRow=state.messages.length;state.messages.push(m);render()},800)}
@@ -41,7 +42,7 @@ if(state.phase==="departure"||preview==="departure")departure();else{state.phase
 function fitFrame(){const w=window.visualViewport?.width??window.innerWidth,h=window.visualViewport?.height??window.innerHeight;root.style.setProperty("--lx-frame-scale",Math.min(w/390,window.innerHeight/844,1));}
 fitFrame();
 new ResizeObserver(()=>syncScrollEdges(chat)).observe(chat);
-new ResizeObserver(()=>syncScrollEdges(chat)).observe(list);
+new ResizeObserver(()=>{updateChatLayout();syncScrollEdges(chat)}).observe(list);
 
 let baselineHeight=window.visualViewport?.height||window.innerHeight;
 const nativeTouch=matchMedia("(pointer:coarse)").matches && navigator.maxTouchPoints>0;
@@ -53,11 +54,11 @@ function resizeComposer(){
  input.style.height="23px";
  let height=input.value?input.scrollHeight:23;
  const expanded=height>24;
- if(expanded){composer.classList.add("is-expanded");input.style.height="23px";height=Math.min(115,input.scrollHeight);}
+ if(expanded){composer.classList.add("is-expanded");input.style.height="23px";height=Math.min(69,input.scrollHeight);}
  input.style.height=Math.max(23,height)+"px";
- const extra=expanded?Math.max(29.12,Math.round(height/23)*23+4):0;
+ const extra=expanded?Math.min(72.96,Math.max(29.12,Math.round(height/23)*23+4)):0;
  root.style.setProperty("--composer-extra",extra+"px");
- requestAnimationFrame(()=>{syncScrollEdges(chat)});
+ requestAnimationFrame(()=>{updateChatLayout();syncScrollEdges(chat)});
 }
 function keyboardLayout(){
  const viewport=window.visualViewport;

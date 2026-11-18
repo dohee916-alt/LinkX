@@ -146,3 +146,16 @@
 
 .lx-emergency #ready-motion{contain:none;transition:none!important;will-change:transform;backface-visibility:hidden}
 .lx-emergency #ready-motion .lx-ready{transition:none!important;animation:none!important}
+
+/* Composer grows to three visible lines, then scrolls internally. */
+.lx-emergency .lx-composer #message{max-height:69px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;touch-action:auto}
+.lx-emergency .lx-composer #message::-webkit-scrollbar{display:none}
+/* Compact and expanded conversation bounds share the exact bottom anchor. */
+.lx-emergency .lx-chat{top:170.56px;height:calc(514.8px - var(--composer-extra,0px) - var(--keyboard-offset,0px))}
+.lx-emergency.is-long-chat .lx-chat{top:97.76px;height:calc(587.6px - var(--composer-extra,0px) - var(--keyboard-offset,0px))}
+.lx-emergency.is-long-chat .lx-messages{padding-top:0}
+.lx-emergency.is-long-chat .lx-chat .lx-character{display:none}
+.lx-emergency .lx-long-character{display:none;position:absolute;left:257.27px;top:calc(641.06px - var(--composer-extra,0px) - var(--keyboard-offset,0px));width:137px;height:123px;transform:rotate(2.566deg);pointer-events:none;z-index:0}
+.lx-emergency.is-long-chat:not(.is-departure) .lx-long-character{display:block}
+.lx-emergency .lx-chat,.lx-emergency .lx-ready-area,.lx-emergency .lx-composer{z-index:1}
+.lx-emergency .lx-composer{z-index:2}
