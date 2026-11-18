@@ -47,3 +47,8 @@
 .saved-row .bookmark img{pointer-events:none}
 .saved-row.is-removing{pointer-events:none}
 .saved-row.is-removing .bookmark img{content:url("../../assets/saved/cancelStar.svg")}
+
+.saved-frame[data-tab] .saved-scroll{mask-image:none!important;-webkit-mask-image:none!important}
+.saved-frame[data-tab] .saved-scroll[data-has-above="true"]{mask-image:linear-gradient(180deg,transparent,#000 8%,#000 100%)!important;-webkit-mask-image:linear-gradient(180deg,transparent,#000 8%,#000 100%)!important}
+.saved-frame[data-tab] .saved-scroll[data-has-below="true"]{mask-image:linear-gradient(180deg,#000 0%,#000 92%,transparent)!important;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 92%,transparent)!important}
+.saved-frame[data-tab] .saved-scroll[data-has-above="true"][data-has-below="true"]{mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)!important;-webkit-mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)!important}

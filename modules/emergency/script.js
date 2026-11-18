@@ -1,16 +1,16 @@
 import {keys,labels} from "./keyboard-layout.js";
 import {messageBubble} from "./components.js";
 import {playDiamond} from "./diamond-glow.js?v=1";
-import {navigate,params} from "../../shared/navigation.js";
+import {navigate,params,openSaved,syncScrollEdges} from "../../shared/navigation.js?v=edges1";
 import {getStore,updateStore,saveConversation} from "../../shared/store.js";
 import {greeting,exampleUser,replies,alternatives,errors} from "./scenario.js";
 const $=id=>document.getElementById(id),root=$("emergency"),list=$("messages"),chat=$("chat"),input=$("message");
 const query=params();const resumed=query.get("resume")==="1"?getStore().emergencyDraft:null;
 let state=resumed||{id:"emergency-"+Date.now(),messages:[],turn:0,version:0,error:null,phase:"chat",scroll:null};
 let timer=null,departureTimer=null,pending=false,noticeTimer=null; let greetingTimer=null, frameId=null; const DURATION=90000, TRAVEL=210.08; const isPreview=!!query.get("preview"); state.startedAt=state.startedAt||Date.now(); state.frozenX=null; let newRow=-1;
-const preserve=()=>{if(!isPreview)updateStore({emergencyDraft:{...state,scroll:chat.scrollTop}})};
+const preserve=()=>{if(!isPreview)updateStore({emergencyDraft:{...state,scroll:chat.scrollTop,draft:input.value,pending}})};
 function button(label,text,fn){const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",label);b.textContent=text;b.onclick=fn;return b}
-function goSaved(){preserve();navigate("saved",{tab:"emergency",from:"emergency"})}
+function goSaved(){preserve();openSaved("emergency",{resume:1})}
 function home(){clearTimeout(timer);clearTimeout(departureTimer);preserve();navigate("home")}
 function showNotice(text){$("notice").textContent=text;$("notice").hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$("notice").hidden=true,2500)}
 function render({bottom=true}={}){list.replaceChildren();const first=state.messages.findIndex(m=>m.role==="ai");
@@ -18,7 +18,7 @@ state.messages.forEach((m,index)=>{const row=document.createElement("div");row.c
 if(pending){const dots=document.createElement("div");dots.className="lx-loading";dots.setAttribute("aria-label","응답 생성 중");for(let i=0;i<4;i++)dots.append(document.createElement("i"));const row=document.createElement("div");row.className="lx-row ai";row.append(dots);list.append(row)}
 if(state.error){const row=document.createElement("div");row.className="lx-error-row";const e=document.createElement("span");e.className="lx-error";e.textContent=errors[state.error]||errors.general;row.append(e,button("다시 시도","⟲",()=>generate()));list.append(row)}
 newRow=-1;updateSendState();$("send").setAttribute("aria-label",pending?"생성 중지":"전송");$("send").replaceChildren();if(pending){const stop=document.createElement("img");stop.src="../../assets/emergency/label-stop.svg";stop.alt="";$("send").append(stop)}else{const a=document.createElement("img");a.src="../../assets/emergency/send.svg";a.alt="";$("send").append(a)}
-if(bottom)requestAnimationFrame(()=>chat.scrollTop=chat.scrollHeight);preserve()}
+requestAnimationFrame(()=>{if(bottom)chat.scrollTop=chat.scrollHeight;syncScrollEdges(chat);preserve()});preserve()}
 function version(index,delta){const m=state.messages[index];m.version=(m.version+delta+m.versions.length)%m.versions.length;m.text=m.versions[m.version];render()}
 function regenerate(index){const m=state.messages[index];if(!m.versions)return;const next=alternatives[m.versions.length%alternatives.length];if(m.versions.length<alternatives.length)m.versions.push(next);m.version=(m.version+1)%m.versions.length;m.text=m.versions[m.version];render()}
 function generate(){clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown){state.errorShown=true;state.error=forced;render();return}const text=replies[Math.min(state.turn-1,1)]||replies[0];const m={role:"ai",text};if(state.turn===1){m.versions=[text];m.version=0}newRow=state.messages.length;state.messages.push(m);render()},800)}
@@ -31,14 +31,16 @@ function ready(reason="manual"){if(state.phase!=="chat")return;state.departureRe
 function showGreeting(){if(state.phase!=="chat"||state.messages.length)return;newRow=0;state.messages.push({role:"ai",text:greeting});render()}
 $("composer").addEventListener("submit",e=>{e.preventDefault();send()});$("saved").onclick=goSaved;$("back").onclick=()=>{$("confirm").hidden=false};$("continue").onclick=()=>{$("confirm").hidden=true};$("leave").onclick=home;$("ready").onclick=()=>ready("manual");$("returned").onclick=()=>{saveConversation({id:state.id,type:"emergency",messages:state.messages,title:state.messages.find(m=>m.role==="user")?.text||greeting});updateStore({emergencyDraft:null});navigate("home")};
 $("mic").onclick=()=>{const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){showNotice("이 브라우저에서는 음성 입력을 지원하지 않아요.");return}try{const s=new Speech();s.lang="ko-KR";s.onresult=e=>input.value=e.results[0][0].transcript;s.onerror=()=>showNotice("음성 입력을 사용할 수 없어요.");s.start()}catch{showNotice("음성 입력을 사용할 수 없어요.")}};
-window.addEventListener("pagehide",preserve);chat.addEventListener("scroll",()=>{state.scroll=chat.scrollTop},{passive:true});
+window.addEventListener("pagehide",preserve);chat.addEventListener("scroll",()=>{state.scroll=chat.scrollTop;syncScrollEdges(chat)},{passive:true});
 // Development-only preview states for Figma QA (not a visible production screen).
 const preview=query.get("preview");if(preview){if(["long","scroll","loading","error","regenerate","transition","departure"].includes(preview)){let u1=exampleUser[0],u2=exampleUser[1];if(preview==="scroll"){u1+=" 저 사람 그리고 지금 이어폰 꽂고 음악 듣고 있는 것 같은데 내가 가서 말 걸어도 될까..?";u2="근데 그건 가상 상황 연습이었잖아. 실제 사람이 그러면 나 다시는 앞으로 시도 안 해볼 것 같아.. 아 어떡하지 못 가겠어.. 차라리 안 하고 상처도 안 받는게 나을 것 같아"}state.messages=[{role:"ai",text:greeting},{role:"user",text:u1},{role:"ai",text:replies[0],versions:[replies[0]],version:0}];state.turn=1;if(preview!=="regenerate"){state.messages.push({role:"user",text:u2});state.turn=2;if(!["error","loading"].includes(preview))state.messages.push({role:"ai",text:replies[1]},{role:"ai",text:replies[2]})}if(preview==="error")state.error=query.get("error")||"general";if(preview==="loading")pending=true}if(preview==="input"){state.messages=[{role:"ai",text:greeting}];input.value=exampleUser[0]}if(preview==="confirm"){state.messages=[{role:"ai",text:greeting}];$("confirm").hidden=false;}}
-if(state.phase==="departure"||preview==="departure")departure();else{state.phase="chat";render();if(resumed){requestAnimationFrame(()=>chat.scrollTop=resumed.scroll??chat.scrollHeight)}if(isPreview){const p={long:90,scroll:90,loading:66.83,error:66.83,regenerate:19.79,transition:45,input:5.35,confirm:0};state.startedAt=Date.now()-(p[preview]||0)*1000;setReadyX(positionAt());if(preview==="transition")ready()}else{tick();if(!state.messages.length)greetingTimer=setTimeout(showGreeting,100)}}
+if(state.phase==="departure"||preview==="departure")departure();else{state.phase="chat";render();if(resumed){input.value=resumed.draft||"";requestAnimationFrame(()=>{chat.scrollTop=resumed.scroll??chat.scrollHeight;syncScrollEdges(chat)});if(resumed.pending&&state.phase==="chat")generate()}if(isPreview){const p={long:90,scroll:90,loading:66.83,error:66.83,regenerate:19.79,transition:45,input:5.35,confirm:0};state.startedAt=Date.now()-(p[preview]||0)*1000;setReadyX(positionAt());if(preview==="transition")ready()}else{tick();if(!state.messages.length)greetingTimer=setTimeout(showGreeting,100)}}
 
 // Fit the original Figma frame as one coordinate space; never individually shift its children.
 function fitFrame(){const w=window.visualViewport?.width??window.innerWidth,h=window.visualViewport?.height??window.innerHeight;root.style.setProperty("--lx-frame-scale",Math.min(w/390,window.innerHeight/844,1));}
 fitFrame();
+new ResizeObserver(()=>syncScrollEdges(chat)).observe(chat);
+new ResizeObserver(()=>syncScrollEdges(chat)).observe(list);
 
 let baselineHeight=window.visualViewport?.height||window.innerHeight;
 const nativeTouch=matchMedia("(pointer:coarse)").matches && navigator.maxTouchPoints>0;
@@ -54,7 +56,7 @@ function resizeComposer(){
  input.style.height=Math.max(23,height)+"px";
  const extra=expanded?Math.max(29.12,Math.round(height/23)*23+4):0;
  root.style.setProperty("--composer-extra",extra+"px");
- requestAnimationFrame(()=>chat.scrollTop=chat.scrollHeight);
+ requestAnimationFrame(()=>{syncScrollEdges(chat)});
 }
 function keyboardLayout(){
  const viewport=window.visualViewport;

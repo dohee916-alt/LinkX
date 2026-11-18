@@ -136,3 +136,10 @@
 .lx-emergency.is-desktop-keyboard{--keyboard-offset:256.88px!important}
 .lx-emergency.is-desktop-keyboard #preview-keyboard{display:block}
 .lx-emergency-page{height:var(--layout-height,100dvh)}
+
+.lx-emergency .lx-chat{mask-image:none!important;-webkit-mask-image:none!important}
+.lx-emergency .lx-chat[data-has-above="true"]{mask-image:linear-gradient(180deg,transparent,#000 8%,#000 100%)!important;-webkit-mask-image:linear-gradient(180deg,transparent,#000 8%,#000 100%)!important}
+.lx-emergency .lx-chat[data-has-below="true"]{mask-image:linear-gradient(180deg,#000 0%,#000 92%,transparent)!important;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 92%,transparent)!important}
+.lx-emergency .lx-chat[data-has-above="true"][data-has-below="true"]{mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)!important;-webkit-mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)!important}
+
+.lx-emergency #returned .lx-vector-label{left:50%;transform:translateX(-50%);width:74.11px;height:18.63px;top:16.57px}
