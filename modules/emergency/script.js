@@ -40,7 +40,7 @@ let demoTimer=null,typing=false,demoCancelled=false,autoFocus=false;
 const direct=()=>state.manual||!autoDemo;
 const pace=(i)=>[195,220,205,240,210,225,200][i%7];
 const reading=t=>Math.max(2500,Math.min(8500,t.length*75));
-const demoDuration=()=>100+2500+exampleUser.reduce((sum,t,i)=>sum+typingFrames(t).reduce((n,_,j)=>n+pace(j),0)+650+2000+(i===0?reading(replies[0]):reading(replies[1])),0)+FINAL_LEAD;
+const demoDuration=()=>100+2500+exampleUser.reduce((sum,t,i)=>sum+demoStrokes(t).reduce((n,_,j)=>n+pace(j),0)+650+2000+(i===0?reading(replies[0]):reading(replies[1])),0)+FINAL_LEAD;
 function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing||(!state.manual&&!!input.value);stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
 const branches=[
 [/거절|싫어|무시|반응|상처|이상하게|부담스러/,"상대가 어떻게 반응할지 몰라서 걱정되는구나. 인사 한마디만 건네도 충분해. 상대의 반응까지 네가 책임질 필요는 없어.","반응이 어떻든 먼저 인사해 본 것 자체가 오늘의 성공이야."],
@@ -53,7 +53,7 @@ const branches=[
 ];
 function responseOptions(t){const b=branches.find(x=>x[0].test(t));return b?[b[1],b[2]]:["어떤 마음인지 조금 더 이야기해 줘도 좋아. 오늘은 가볍게 인사 한마디만 건네는 걸 목표로 해보자.","부담 갖지 말고 네가 편한 방식으로 짧게 인사해 보자."] }
 
-function stopDemo(){clearTimeout(demoTimer);typing=false;demoCancelled=true}
+function stopDemo(){clearTimeout(demoTimer);clearKey();typing=false;demoCancelled=true}
 // Emulate Korean IME composition: onset, vowel, then final consonant.
 function typingFrames(text){
  const onset="ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ", frames=[];let prefix="";
@@ -67,9 +67,9 @@ function scheduleDemo(delay=900){
  clearTimeout(demoTimer);
  demoTimer=setTimeout(()=>{
   if(demoCancelled||state.phase!=="chat"||state.timedOut||state.error||pending||input.value||!$("confirm").hidden)return;
-  const chars=typingFrames(exampleUser[state.turn]);let i=0;typing=true;autoFocus=true;input.focus();autoFocus=false;
+  const strokes=demoStrokes(exampleUser[state.turn]);const chars=strokes.map(x=>x.text);let i=0;typing=true;autoFocus=true;input.focus();autoFocus=false;
   function step(){if(!typing||demoCancelled||state.phase!=="chat"||state.timedOut)return;
-   input.value=chars[i++];input.dispatchEvent(new Event("input",{bubbles:true}));
+   flashKey(strokes[i].key);input.value=chars[i++];input.dispatchEvent(new Event("input",{bubbles:true}));
    if(i<chars.length)demoTimer=setTimeout(step,pace(i-1));
    else{typing=false;demoTimer=setTimeout(()=>{if(!demoCancelled&&state.phase==="chat"){input.blur();send()}},650)}
   }step();
@@ -92,8 +92,6 @@ $("mic").onclick=()=>{beginManual();const Speech=window.SpeechRecognition||windo
 window.addEventListener("pagehide",preserve);chat.addEventListener("scroll",()=>{state.scroll=chat.scrollTop;syncScrollEdges(chat)},{passive:true});
 // Development-only preview states for Figma QA (not a visible production screen).
 const preview=query.get("preview");if(preview){if(["long","scroll","loading","error","regenerate","transition","departure"].includes(preview)){let u1=exampleUser[0],u2=exampleUser[1];if(preview==="scroll"){u1+=" 저 사람 그리고 지금 이어폰 꽂고 음악 듣고 있는 것 같은데 내가 가서 말 걸어도 될까..?";u2="근데 그건 가상 상황 연습이었잖아. 실제 사람이 그러면 나 다시는 앞으로 시도 안 해볼 것 같아.. 아 어떡하지 못 가겠어.. 차라리 안 하고 상처도 안 받는게 나을 것 같아"}state.messages=[{role:"ai",text:greeting},{role:"user",text:u1},{role:"ai",text:replies[0],versions:[replies[0]],version:0}];state.turn=1;if(preview!=="regenerate"){state.messages.push({role:"user",text:u2});state.turn=2;if(!["error","loading"].includes(preview))state.messages.push({role:"ai",text:replies[1]},{role:"ai",text:replies[2]})}if(preview==="error")state.error=query.get("error")||"general";if(preview==="loading"){pending=true;setTimeout(()=>{if(pending)generate()},600)}}if(preview==="input"){state.messages=[{role:"ai",text:greeting}];input.value=exampleUser[0]}if(preview==="confirm"){state.messages=[{role:"ai",text:greeting}];$("confirm").hidden=false;}}
-if(autoDemo&&!state.manual)DURATION=demoDuration();if(state.phase==="departure"||preview==="departure")departure();else{state.phase="chat";render();if(resumed){input.value=resumed.draft||"";requestAnimationFrame(()=>{chat.scrollTop=resumed.scroll??chat.scrollHeight;syncScrollEdges(chat)});if(resumed.pending&&state.phase==="chat")generate()}if(isPreview){DURATION=60000;const p={long:60,scroll:60,loading:44.55,error:44.55,regenerate:13.19,transition:30,input:3.57,confirm:0};state.startedAt=Date.now()-(p[preview]||0)*1000;setReadyX(positionAt());if(preview==="transition")ready();if(preview==="greeting")showGreeting();if(preview==="input")input.focus()}else{tick();if(!state.messages.length)greetingTimer=setTimeout(showGreeting,100);else if(autoDemo&&!state.manual&&!pending){input.value="";scheduleDemo(900)}}}
-
 // Fit the original Figma frame as one coordinate space; never individually shift its children.
 function fitFrame(){const w=window.visualViewport?.width??window.innerWidth,h=window.visualViewport?.height??window.innerHeight;root.style.setProperty("--lx-frame-scale",Math.min(w/390,window.innerHeight/844,1));}
 fitFrame();
@@ -161,9 +159,17 @@ function hangulAppend(s,k){const last=s.at(-1)||"",p=s.slice(0,-1),n=last.charCo
  if(t===" "&&T.includes(k)&&k!==" ")return p+syllable(l,v,k);if(finalJoin[t+k])return p+syllable(l,v,finalJoin[t+k]);return s+k}
  if(L.includes(last)&&last&&V.includes(k))return p+syllable(last,k);return s+k}
 function hangulDelete(s){const n=(s.at(-1)||"").charCodeAt(0)-0xAC00;if(!(n>=0&&n<11172))return s.slice(0,-1);const l=L[Math.floor(n/588)],v=V[Math.floor(n%588/28)],t=T[n%28],p=s.slice(0,-1);return t!==" "?p+syllable(l,v,splitFinal[t]?.[0]||" "):splitVowel[v]?p+syllable(l,splitVowel[v][0]):p+l}
+function demoStrokes(text){let out=[],value="";for(const ch of text){const n=ch.charCodeAt(0)-0xAC00;let seq=[ch];if(n>=0&&n<11172){const l=L[Math.floor(n/588)],v=V[Math.floor(n%588/28)],t=T[n%28];seq=[l,...(splitVowel[v]||[v]),...(t===" "?[]:splitFinal[t]||[t])]}for(const k of seq){value=/^[ㄱ-ㅎㅏ-ㅣ]$/.test(k)?hangulAppend(value,k):value+k;out.push({key:k,text:value})}}return out}
+let previewKey=null,previewTimer=null;
+function clearKey(){clearTimeout(previewTimer);if(previewKey){previewKey.classList.remove("lx-key-down");previewKey=null} $("key-preview")?.remove()}
+function showKey(b,k){clearKey();if(!b)return;previewKey=b;b.classList.add("lx-key-down");if(k&&k!==" "){const pop=document.createElement("div");pop.id="key-preview";pop.textContent=k;const x=parseFloat(b.style.left),w=parseFloat(b.style.width),y=parseFloat(b.style.top);pop.style.setProperty("--key-stem",Math.min(50,Math.max(15,x+w/2-Math.min(326,Math.max(0,x+w/2-32))))+"px");pop.style.left=Math.min(326,Math.max(0,x+w/2-32))+"px";pop.style.top=(y-52)+"px";$("keyboard-keys").append(pop)}}
+function flashKey(k){const plain={"ㄲ":"ㄱ","ㄸ":"ㄷ","ㅃ":"ㅂ","ㅆ":"ㅅ","ㅉ":"ㅈ","ㅒ":"ㅐ","ㅖ":"ㅔ"}[k]||k;const b=k===" "?$("keyboard-keys").querySelector('[data-key-name="Space"]'):keyButtons.find(x=>x.label===plain)?.b;showKey(b,k===" "?null:k);previewTimer=setTimeout(clearKey,105)}
 let touchShift=false,touchMode="ko";
 function touchKey(k){const a=input.selectionStart,z=input.selectionEnd;let left=input.value.slice(0,a),right=input.value.slice(z);if(k==="Delete")left=a===z?hangulDelete(left):left;else if(touchMode==="ko"&&/^[ㄱ-ㅎㅏ-ㅣ]$/.test(k))left=hangulAppend(left,k);else left+=k;input.value=left+right;input.setSelectionRange(left.length,left.length)}
 
 const keyButtons=[];function refreshKeys(){for(const {b,name,label} of keyButtons){let k=touchMode==="ko"?(touchShift?({"ㅂ":"ㅃ","ㅈ":"ㅉ","ㄷ":"ㄸ","ㄱ":"ㄲ","ㅅ":"ㅆ","ㅐ":"ㅒ","ㅔ":"ㅖ"}[label]||label):label):touchMode==="en"?(touchShift?name:name.toLowerCase()):"1234567890@#$%&*()-+!?.,:;".at(keyButtons.findIndex(x=>x.name===name));b.textContent=touchMode==="ko"&&!touchShift?"":k||"";b.dataset.output=k||label;b.style.color="#202426";if(b.textContent){b.style.background="#fff";b.style.fontSize="17px"}else b.style.background="transparent"}}
-for(const k of keys){const label=labels.find(l=>Math.abs(l.x-k.x)<.01&&Math.abs(l.y-k.y)<8);const b=document.createElement("button");b.type="button";b.tabIndex=-1;b.setAttribute("aria-label",label?.text||k.name);Object.assign(b.style,{left:k.x+"px",top:k.y+"px",width:k.w+"px",height:k.h+"px"});b.addEventListener("pointerdown",e=>e.preventDefault());const name=k.name.split(" / ")[1];if(name.length===1&&label)keyButtons.push({b,name,label:label.text});b.addEventListener("click",()=>{beginManual();if(name==="Return"){input.blur();keyboardLayout();return}if(name==="Shift"){touchShift=!touchShift;refreshKeys();return}if(name==="한·영"){touchMode=touchMode==="ko"?"en":"ko";touchShift=false;refreshKeys();return}if(name==="숫자"){touchMode=touchMode==="num"?"ko":"num";refreshKeys();return}if(name==="Delete")touchKey("Delete");else if(name==="Space")touchKey(" ");else if(name.length===1&&label){touchKey(b.dataset.output||label.text);if(touchShift){touchShift=false;refreshKeys()}}else return;input.dispatchEvent(new Event("input",{bubbles:true}));input.focus()});$("keyboard-keys").append(b)}refreshKeys();
+for(const k of keys){const label=labels.find(l=>Math.abs(l.x-k.x)<.01&&Math.abs(l.y-k.y)<8);const b=document.createElement("button");b.type="button";b.tabIndex=-1;b.setAttribute("aria-label",label?.text||k.name);Object.assign(b.style,{left:k.x+"px",top:k.y+"px",width:k.w+"px",height:k.h+"px"});const name=k.name.split(" / ")[1];b.dataset.keyName=name;b.addEventListener("pointerdown",e=>{e.preventDefault();beginManual();showKey(b,name.length===1?b.dataset.output:null);try{b.setPointerCapture(e.pointerId)}catch{}});b.addEventListener("pointerup",()=>{previewTimer=setTimeout(clearKey,70)});b.addEventListener("pointercancel",clearKey);if(name.length===1&&label)keyButtons.push({b,name,label:label.text});b.addEventListener("click",()=>{beginManual();if(name==="Return"){input.blur();keyboardLayout();return}if(name==="Shift"){touchShift=!touchShift;refreshKeys();return}if(name==="한·영"){touchMode=touchMode==="ko"?"en":"ko";touchShift=false;refreshKeys();return}if(name==="숫자"){touchMode=touchMode==="num"?"ko":"num";refreshKeys();return}if(name==="Delete")touchKey("Delete");else if(name==="Space")touchKey(" ");else if(name.length===1&&label){touchKey(b.dataset.output||label.text);if(touchShift){touchShift=false;refreshKeys()}}else return;input.dispatchEvent(new Event("input",{bubbles:true}));input.focus()});$("keyboard-keys").append(b)}refreshKeys();
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.activeElement===input){input.blur();keyboardLayout()}});
+
+if(autoDemo&&!state.manual)DURATION=demoDuration();if(state.phase==="departure"||preview==="departure")departure();else{state.phase="chat";render();if(resumed){input.value=resumed.draft||"";requestAnimationFrame(()=>{chat.scrollTop=resumed.scroll??chat.scrollHeight;syncScrollEdges(chat)});if(resumed.pending&&state.phase==="chat")generate()}if(isPreview){DURATION=60000;const p={long:60,scroll:60,loading:44.55,error:44.55,regenerate:13.19,transition:30,input:3.57,confirm:0};state.startedAt=Date.now()-(p[preview]||0)*1000;setReadyX(positionAt());if(preview==="transition")ready();if(preview==="greeting")showGreeting();if(preview==="input")input.focus()}else{tick();if(!state.messages.length)greetingTimer=setTimeout(showGreeting,100);else if(autoDemo&&!state.manual&&!pending){input.value="";scheduleDemo(900)}}}
+
