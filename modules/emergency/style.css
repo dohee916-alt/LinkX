@@ -213,3 +213,5 @@
 .lx-emergency #chat-character[data-mode="ending"]{left:257.27px;top:calc(641.06px - var(--composer-extra,0px) - var(--keyboard-offset,0px));transform:rotate(2.566deg)}
 .lx-emergency #chat-character img{animation:none!important;transform:none!important}
 @media(prefers-reduced-motion:reduce){.lx-emergency .lx-arriving[data-character-anchor]{animation:none}}
+
+.lx-emergency #keyboard-keys button.lx-key-down{background:rgba(99,99,110,.27)!important}.lx-emergency #key-preview{position:absolute;width:64px;height:57px;border-radius:10px;background:#fff;color:#202426;display:grid;place-items:center;font:400 32px/1 -apple-system,"IBM Plex Sans KR",sans-serif;box-shadow:0 2px 5px #0004;z-index:30;pointer-events:none}.lx-emergency #key-preview:after{content:"";position:absolute;top:100%;left:var(--key-stem);transform:translateX(-50%);width:31px;height:32px;background:#fff;border-radius:0 0 5px 5px;box-shadow:0 2px 2px #0002;z-index:-1}
