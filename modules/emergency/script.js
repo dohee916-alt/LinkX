@@ -146,7 +146,7 @@ window.addEventListener("resize",keyboardLayout);
 document.fonts?.ready.then(resizeComposer);
 resizeComposer();
 
-function updateSendState(){const b=$("send");b.dataset.sendState=pending?"stop":input.value.trim()?(document.activeElement===input?"active":"draft"):"idle"}
+function updateSendState(){const b=$("send");b.dataset.sendState=pending?"stop":input.value.trim()?"active":"idle";b.disabled=state.phase!=="chat"||!!state.timedOut||(!pending&&!input.value.trim())}
 input.addEventListener("input",updateSendState);
 input.addEventListener("focus",updateSendState);
 input.addEventListener("blur",updateSendState);
