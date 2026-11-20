@@ -7,7 +7,7 @@ import {greeting,exampleUser,replies,alternatives,errors} from "./scenario.js";
 const $=id=>document.getElementById(id),root=$("emergency"),list=$("messages"),chat=$("chat"),input=$("message");
 const query=params();const resumed=query.get("resume")==="1"?getStore().emergencyDraft:null;
 let state=resumed||{id:"emergency-"+Date.now(),messages:[],turn:0,version:0,error:null,phase:"chat",scroll:null};
-let timer=null,departureTimer=null,pending=false,noticeTimer=null; let greetingTimer=null, frameId=null, finalTimer=null; const DURATION=60000, TRAVEL=210.08, FINAL_LEAD=6000; const isPreview=!!query.get("preview"); state.startedAt=state.startedAt||Date.now(); state.frozenX=null; let newRow=-1;
+let timer=null,departureTimer=null,pending=false,noticeTimer=null; let greetingTimer=null, frameId=null, finalTimer=null; let DURATION=90000; const TRAVEL=210.08, FINAL_LEAD=4000; const isPreview=!!query.get("preview"); state.startedAt=state.startedAt||Date.now(); state.frozenX=null; let newRow=-1;
 const preserve=()=>{if(!isPreview)updateStore({emergencyDraft:{...state,scroll:chat.scrollTop,draft:input.value,pending}})};
 function button(label,text,fn){const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",label);const icon={"이전 답변":"prev","다음 답변":"next","다시 시도":"retry","답변 재생성":text==="first"?"retryFirst":"retry"}[label];if(icon){b.className="lx-micro lx-"+icon;const im=document.createElement("img");im.src="../../assets/emergency/"+icon+".svg";im.alt="";b.append(im)}else b.textContent=text;b.onclick=fn;return b}
 function goSaved(){preserve();openSaved("emergency",{resume:1})}
@@ -33,10 +33,26 @@ if(state.error){const row=document.createElement("div");row.className="lx-error-
 newRow=-1;updateSendState();$("send").setAttribute("aria-label",pending?"생성 중지":"전송");$("send").replaceChildren();if(pending){const stop=document.createElement("img");stop.src="../../assets/emergency/label-stop.svg";stop.alt="";$("send").append(stop)}else{const a=document.createElement("img");a.src="../../assets/emergency/send.svg";a.alt="";$("send").append(a)}
 updateChatLayout();requestAnimationFrame(()=>{if(bottom)chat.scrollTop=chat.scrollHeight;syncScrollEdges(chat);preserve()});preserve()}
 function version(index,delta){if(state.timedOut)return;const m=state.messages[index];m.version=Math.max(0,Math.min(m.versions.length-1,m.version+delta));m.text=m.versions[m.version];render()}
-function regenerate(index){if(state.timedOut)return;const m=state.messages[index];if(!m.versions)return;const next=alternatives[m.versions.length%alternatives.length];if(m.versions.length<alternatives.length)m.versions.push(next);m.version=(m.version+1)%m.versions.length;m.text=m.versions[m.version];render()}
+function regenerate(index){if(state.timedOut)return;const m=state.messages[index];if(!m.versions)return;const opts=m.options||alternatives;const next=opts[m.versions.length%opts.length];if(m.versions.length<opts.length)m.versions.push(next);m.version=(m.version+1)%m.versions.length;m.text=m.versions[m.version];render()}
 
 const autoDemo=query.get("auto")!=="0"&&!isPreview;
-let demoTimer=null,typing=false,demoCancelled=false;
+let demoTimer=null,typing=false,demoCancelled=false,autoFocus=false;
+const direct=()=>state.manual||!autoDemo;
+const pace=(i)=>[135,150,125,155,145,160,130][i%7];
+const reading=t=>Math.max(2500,Math.min(8500,t.length*75));
+const demoDuration=()=>100+2500+exampleUser.reduce((sum,t,i)=>sum+typingFrames(t).reduce((n,_,j)=>n+pace(j),0)+650+2000+(i===0?reading(replies[0]):reading(replies[1])),0)+FINAL_LEAD;
+function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing;stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;state.startedAt=Date.now();DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
+const branches=[
+[/거절|싫어|무시|반응|상처|이상하게|부담스러/,"상대가 어떻게 반응할지 몰라서 걱정되는구나. 인사 한마디만 건네도 충분해. 상대의 반응까지 네가 책임질 필요는 없어.","반응이 어떻든 먼저 인사해 본 것 자체가 오늘의 성공이야."],
+[/영어|외국어|발음|문법|못 알아|못알아|언어/,"완벽한 영어가 필요하지 않아. 가볍게 Hi! 한마디부터 해볼까?","짧게 인사하고 미소 지어도 충분히 마음이 전달될 수 있어."],
+[/뭐라고|무슨 말|어떻게|첫마디|첫 마디|인사|말 걸/,"처음엔 Hi! 또는 Hello! 정도면 충분해. 길게 대화해야 한다는 부담은 내려놓자.","눈이 마주쳤을 때 가볍게 웃으면서 인사해 보는 건 어때?"],
+[/바빠|이어폰|혼자|시간|방해|통화/,"상대가 바빠 보이면 잠깐 기다려도 좋아. 눈이 마주치거나 여유 있어 보일 때 인사해 보자.","지금 당장 말하지 않아도 괜찮아. 편한 타이밍을 찾아보자."],
+[/떨|긴장|불안|무서|겁|심장|두려|걱정/,"긴장되는 건 자연스러워. 숨을 천천히 한 번 쉬고, 오늘은 인사 한마디만 해보자.","우리가 연습한 것처럼 짧게 시작해도 괜찮아."],
+[/안 할|안할|못 하|못하|포기|싫어|나중/,"부담이 크구나. 지금은 한마디만 건네는 작은 목표로 생각해 볼까?","네가 편한 속도로 시도해도 좋아. 준비되면 출발하자."],
+[/할 수|할수|해볼|해 볼|가볼|가 볼|준비|자신/,"좋아! 지금 그 마음이면 충분해. 가볍게 인사부터 해보자.","잘하고 와. 한마디 건넨 것만으로도 좋은 경험이 될 거야."]
+];
+function responseOptions(t){const b=branches.find(x=>x[0].test(t));return b?[b[1],b[2]]:["어떤 마음인지 조금 더 이야기해 줘도 좋아. 오늘은 가볍게 인사 한마디만 건네는 걸 목표로 해보자.","부담 갖지 말고 네가 편한 방식으로 짧게 인사해 보자."] }
+
 function stopDemo(){clearTimeout(demoTimer);typing=false;demoCancelled=true}
 // Emulate Korean IME composition: onset, vowel, then final consonant.
 function typingFrames(text){
@@ -51,17 +67,17 @@ function scheduleDemo(delay=900){
  clearTimeout(demoTimer);
  demoTimer=setTimeout(()=>{
   if(demoCancelled||state.phase!=="chat"||state.timedOut||state.error||pending||input.value||!$("confirm").hidden)return;
-  const chars=typingFrames(exampleUser[state.turn]);let i=0;typing=true;input.focus();
+  const chars=typingFrames(exampleUser[state.turn]);let i=0;typing=true;autoFocus=true;input.focus();autoFocus=false;
   function step(){if(!typing||demoCancelled||state.phase!=="chat"||state.timedOut)return;
    input.value=chars[i++];input.dispatchEvent(new Event("input",{bubbles:true}));
-   if(i<chars.length)demoTimer=setTimeout(step,95);
+   if(i<chars.length)demoTimer=setTimeout(step,pace(i-1));
    else{typing=false;demoTimer=setTimeout(()=>{if(!demoCancelled&&state.phase==="chat"){input.blur();send()}},650)}
   }step();
  },delay);
 }
-input.addEventListener("beforeinput",()=>stopDemo());
+input.addEventListener("pointerdown",beginManual);input.addEventListener("focus",()=>{if(!autoFocus)beginManual()});input.addEventListener("beforeinput",beginManual);
 
-function generate(){if(state.timedOut||state.phase!=="chat")return;clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown&&state.turn>=Number(query.get("errorTurn")||2)){state.errorShown=true;state.error=forced;render();return}const text=replies[Math.min(state.turn-1,1)]||replies[0];const m={role:"ai",text};if(state.turn===1){m.versions=[text];m.version=0}newRow=state.messages.length;state.messages.push(m);render();scheduleDemo(4500)},1800)}
+function generate(){if(state.timedOut||state.phase!=="chat")return;clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown&&state.turn>=Number(query.get("errorTurn")||2)){state.errorShown=true;state.error=forced;render();return}const opts=direct()?responseOptions(state.messages.filter(m=>m.role==="user").at(-1)?.text||""):null;const text=opts?opts[0]:(replies[Math.min(state.turn-1,1)]||replies[0]);const m={role:"ai",text};if(opts||state.turn===1){m.versions=[text];m.version=0;if(opts)m.options=opts}newRow=state.messages.length;state.messages.push(m);render();if(!direct())scheduleDemo(reading(text))},2000)}
 function send(){if(state.phase!=="chat"||state.timedOut)return;clearTimeout(demoTimer);typing=false;if(pending){stopDemo();clearTimeout(timer);pending=false;render();return}const text=input.value.trim();if(!text)return;input.value="";resizeComposer();if(!state.messages.length){clearTimeout(greetingTimer);state.messages.push({role:"ai",text:greeting})}state.messages.push({role:"user",text});state.turn++;generate()}
 function departure(){$("diamond-glow").hidden=true;clearTimeout(timer);pending=false;state.phase="departure";$("chat-character").hidden=true;root.classList.remove("is-transition");root.classList.add("is-departure");for(const id of ["chat","ready-area","composer"])$(id).hidden=true;$("departure").hidden=false;$("departure-title").textContent=state.departureReason==="timeout"?"이제 진짜 가보자":"잘 다녀와!";clearTimeout(departureTimer);preserve()}
 function positionAt(now=Date.now()){return TRAVEL*Math.min(1,Math.max(0,(now-state.startedAt)/DURATION))}
@@ -72,11 +88,11 @@ function finishTimer(){if(state.phase!=="chat")return;showFinal();ready("timeout
 function ready(reason="manual"){if(state.phase!=="chat")return;stopDemo();clearTimeout(finalTimer);clearTimeout(finishDeadline);state.departureReason=reason==="timeout"?"timeout":"manual";state.frozenX=readyAnimation?new DOMMatrixReadOnly(getComputedStyle($("ready-motion")).transform).m41:positionAt();if(readyAnimation){readyAnimation.cancel();readyAnimation=null}setReadyX(state.frozenX);cancelAnimationFrame(frameId);clearTimeout(greetingTimer);state.phase="transition";clearTimeout(timer);pending=false;const bx=20.8+state.frozenX+69.16;const by=$("ready-area").offsetTop+$("ready-motion").offsetTop+24.96;input.blur();root.classList.add("is-transition");preserve();playDiamond($("diamond-glow"),bx,by,departure)}
 function showGreeting(){if(state.phase!=="chat"||state.messages.length)return;newRow=0;state.messages.push({role:"ai",text:greeting});render();scheduleDemo(2500)}
 $("composer").addEventListener("submit",e=>{e.preventDefault();send()});$("saved").onclick=goSaved;$("back").onclick=()=>{$("confirm").hidden=false};$("continue").onclick=()=>{$("confirm").hidden=true;scheduleDemo()};$("leave").onclick=home;$("ready").onclick=()=>ready("manual");$("returned").onclick=()=>{saveConversation({id:state.id,type:"emergency",messages:state.messages,title:state.messages.find(m=>m.role==="user")?.text||greeting});updateStore({emergencyDraft:null});location.href="../feedback/index.html?entry=returned"};
-$("mic").onclick=()=>{const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){showNotice("이 브라우저에서는 음성 입력을 지원하지 않아요.");return}try{const s=new Speech();s.lang="ko-KR";s.onresult=e=>input.value=e.results[0][0].transcript;s.onerror=()=>showNotice("음성 입력을 사용할 수 없어요.");s.start()}catch{showNotice("음성 입력을 사용할 수 없어요.")}};
+$("mic").onclick=()=>{beginManual();const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){showNotice("이 브라우저에서는 음성 입력을 지원하지 않아요.");return}try{const s=new Speech();s.lang="ko-KR";s.onresult=e=>input.value=e.results[0][0].transcript;s.onerror=()=>showNotice("음성 입력을 사용할 수 없어요.");s.start()}catch{showNotice("음성 입력을 사용할 수 없어요.")}};
 window.addEventListener("pagehide",preserve);chat.addEventListener("scroll",()=>{state.scroll=chat.scrollTop;syncScrollEdges(chat)},{passive:true});
 // Development-only preview states for Figma QA (not a visible production screen).
 const preview=query.get("preview");if(preview){if(["long","scroll","loading","error","regenerate","transition","departure"].includes(preview)){let u1=exampleUser[0],u2=exampleUser[1];if(preview==="scroll"){u1+=" 저 사람 그리고 지금 이어폰 꽂고 음악 듣고 있는 것 같은데 내가 가서 말 걸어도 될까..?";u2="근데 그건 가상 상황 연습이었잖아. 실제 사람이 그러면 나 다시는 앞으로 시도 안 해볼 것 같아.. 아 어떡하지 못 가겠어.. 차라리 안 하고 상처도 안 받는게 나을 것 같아"}state.messages=[{role:"ai",text:greeting},{role:"user",text:u1},{role:"ai",text:replies[0],versions:[replies[0]],version:0}];state.turn=1;if(preview!=="regenerate"){state.messages.push({role:"user",text:u2});state.turn=2;if(!["error","loading"].includes(preview))state.messages.push({role:"ai",text:replies[1]},{role:"ai",text:replies[2]})}if(preview==="error")state.error=query.get("error")||"general";if(preview==="loading"){pending=true;setTimeout(()=>{if(pending)generate()},600)}}if(preview==="input"){state.messages=[{role:"ai",text:greeting}];input.value=exampleUser[0]}if(preview==="confirm"){state.messages=[{role:"ai",text:greeting}];$("confirm").hidden=false;}}
-if(state.phase==="departure"||preview==="departure")departure();else{state.phase="chat";render();if(resumed){input.value=resumed.draft||"";requestAnimationFrame(()=>{chat.scrollTop=resumed.scroll??chat.scrollHeight;syncScrollEdges(chat)});if(resumed.pending&&state.phase==="chat")generate()}if(isPreview){const p={long:60,scroll:60,loading:44.55,error:44.55,regenerate:13.19,transition:30,input:3.57,confirm:0};state.startedAt=Date.now()-(p[preview]||0)*1000;setReadyX(positionAt());if(preview==="transition")ready();if(preview==="greeting")showGreeting();if(preview==="input")input.focus()}else{tick();if(!state.messages.length)greetingTimer=setTimeout(showGreeting,100)}}
+if(autoDemo&&!state.manual)DURATION=demoDuration();if(state.phase==="departure"||preview==="departure")departure();else{state.phase="chat";render();if(resumed){input.value=resumed.draft||"";requestAnimationFrame(()=>{chat.scrollTop=resumed.scroll??chat.scrollHeight;syncScrollEdges(chat)});if(resumed.pending&&state.phase==="chat")generate()}if(isPreview){DURATION=60000;const p={long:60,scroll:60,loading:44.55,error:44.55,regenerate:13.19,transition:30,input:3.57,confirm:0};state.startedAt=Date.now()-(p[preview]||0)*1000;setReadyX(positionAt());if(preview==="transition")ready();if(preview==="greeting")showGreeting();if(preview==="input")input.focus()}else{tick();if(!state.messages.length)greetingTimer=setTimeout(showGreeting,100)}}
 
 // Fit the original Figma frame as one coordinate space; never individually shift its children.
 function fitFrame(){const w=window.visualViewport?.width??window.innerWidth,h=window.visualViewport?.height??window.innerHeight;root.style.setProperty("--lx-frame-scale",Math.min(w/390,window.innerHeight/844,1));}
@@ -132,5 +148,5 @@ input.addEventListener("focus",updateSendState);
 input.addEventListener("blur",updateSendState);
 updateSendState();
 
-for(const k of keys){const label=labels.find(l=>Math.abs(l.x-k.x)<.01&&Math.abs(l.y-k.y)<8);const b=document.createElement("button");b.type="button";b.tabIndex=-1;b.setAttribute("aria-label",label?.text||k.name);Object.assign(b.style,{left:k.x+"px",top:k.y+"px",width:k.w+"px",height:k.h+"px"});b.addEventListener("pointerdown",e=>e.preventDefault());b.addEventListener("click",()=>{const name=k.name.split(" / ")[1];if(name==="Return"){input.blur();keyboardLayout();return}if(name==="Delete"){const a=input.selectionStart,z=input.selectionEnd;input.setRangeText("",a===z?Math.max(0,a-1):a,z,"end")}else if(name==="Space"){input.setRangeText(" ",input.selectionStart,input.selectionEnd,"end")}else if(name.length===1&&label){input.setRangeText(label.text,input.selectionStart,input.selectionEnd,"end")}else{return}input.dispatchEvent(new Event("input",{bubbles:true}));input.focus()});$("keyboard-keys").append(b)}
+for(const k of keys){const label=labels.find(l=>Math.abs(l.x-k.x)<.01&&Math.abs(l.y-k.y)<8);const b=document.createElement("button");b.type="button";b.tabIndex=-1;b.setAttribute("aria-label",label?.text||k.name);Object.assign(b.style,{left:k.x+"px",top:k.y+"px",width:k.w+"px",height:k.h+"px"});b.addEventListener("pointerdown",e=>e.preventDefault());b.addEventListener("click",()=>{beginManual();const name=k.name.split(" / ")[1];if(name==="Return"){input.blur();keyboardLayout();return}if(name==="Delete"){const a=input.selectionStart,z=input.selectionEnd;input.setRangeText("",a===z?Math.max(0,a-1):a,z,"end")}else if(name==="Space"){input.setRangeText(" ",input.selectionStart,input.selectionEnd,"end")}else if(name.length===1&&label){input.setRangeText(label.text,input.selectionStart,input.selectionEnd,"end")}else{return}input.dispatchEvent(new Event("input",{bubbles:true}));input.focus()});$("keyboard-keys").append(b)}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.activeElement===input){input.blur();keyboardLayout()}});
