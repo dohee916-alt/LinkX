@@ -41,7 +41,7 @@ const direct=()=>state.manual||!autoDemo;
 const pace=(i)=>[195,220,205,240,210,225,200][i%7];
 const reading=t=>Math.max(2500,Math.min(8500,t.length*75));
 const demoDuration=()=>100+2500+exampleUser.reduce((sum,t,i)=>sum+typingFrames(t).reduce((n,_,j)=>n+pace(j),0)+650+2000+(i===0?reading(replies[0]):reading(replies[1])),0)+FINAL_LEAD;
-function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing||(!state.manual&&!!input.value);stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;state.startedAt=Date.now();DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
+function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing||(!state.manual&&!!input.value);stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
 const branches=[
 [/거절|싫어|무시|반응|상처|이상하게|부담스러/,"상대가 어떻게 반응할지 몰라서 걱정되는구나. 인사 한마디만 건네도 충분해. 상대의 반응까지 네가 책임질 필요는 없어.","반응이 어떻든 먼저 인사해 본 것 자체가 오늘의 성공이야."],
 [/영어|외국어|발음|문법|못 알아|못알아|언어/,"완벽한 영어가 필요하지 않아. 가볍게 Hi! 한마디부터 해볼까?","짧게 인사하고 미소 지어도 충분히 마음이 전달될 수 있어."],
