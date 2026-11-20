@@ -224,3 +224,11 @@
 .lx-emergency .lx-nav{overflow:visible}
 .lx-emergency .lx-nav #back img{position:absolute;left:4.16px;top:0;width:21px;height:25px;max-width:none;max-height:none;object-fit:fill}
 .lx-emergency .lx-nav #saved img{position:absolute;left:0;top:0;width:28px;height:28px;max-width:none;max-height:none;object-fit:fill}
+
+/* Final Figma 908:91129 / 908:91422 — original SVG effects, positions and dimensions. */
+.lx-emergency .lx-tools{height:29px;min-height:29px;width:348.4px;flex:none}
+.lx-emergency .lx-tools .lx-micro{top:0;left:0;width:29px;min-width:29px;height:29px;background:none!important;box-shadow:none;border:0;padding:0!important;border-radius:0}
+.lx-emergency .lx-tools .lx-micro img{width:29px;height:29px;object-fit:contain;display:block}
+.lx-emergency .lx-tools[data-multiple=true] .lx-retry,.lx-emergency .lx-tools[data-multiple=true] .lx-retryFirst{left:35px}
+.lx-emergency .lx-tools .lx-prev{left:0}
+.lx-emergency .lx-tools .lx-next{left:70px}
