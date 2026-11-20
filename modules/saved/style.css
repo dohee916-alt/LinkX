@@ -79,3 +79,8 @@
 .saved-frame[data-sort=old] .saved-tools #sort-label{width:67px}
 .saved-frame[data-sort=old] .saved-tools #sort img{left:46px;top:3.5px}
 .saved-frame[data-sort=old] .saved-tools .up-arrow{left:45px}
+
+/* Figma 752:63122 / 752:63203: exact frame-local icon placement. */
+.saved-frame > header #back{left:16px;top:58px;width:24px;height:24px}
+.saved-frame[data-tab=emergency] > header #home{left:346px;top:57px}
+.saved-frame[data-tab=saved] > header #home{left:344px;top:57px}
