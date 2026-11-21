@@ -36,21 +36,15 @@ function version(index,delta){if(state.timedOut)return;const m=state.messages[in
 function regenerate(index){if(state.timedOut)return;const m=state.messages[index];if(!m.versions)return;const opts=m.options||alternatives;const next=opts[m.versions.length%opts.length];if(m.versions.length<opts.length)m.versions.push(next);m.version=(m.version+1)%m.versions.length;m.text=m.versions[m.version];render()}
 
 const autoDemo=query.get("auto")!=="0"&&!isPreview;
-let demoTimer=null,typing=false,demoCancelled=false,autoFocus=false;
+let demoTimer=null,demoFrame=null,typing=false,demoCancelled=false,autoFocus=false;
 const direct=()=>state.manual||!autoDemo;
 // Fast, fluent two-set keyboard input; hesitations belong between thoughts, not letters.
 // Exhibition demo: very fast Korean typing, with short thinking pauses between turns.
-const FIRST_THOUGHT=650, SEND_PAUSE=120, AUTO_REPLY_PAUSE=650;
-const pace=(i,strokes)=>{const k=strokes[i]?.key,next=strokes[i+1]?.key;
- if(k===",")return 200;
- if(k==="?"||k==="!")return 130;
- if(k==="."&&next!==".")return 180;
- if(k===" ")return 35;
- return [22,26,24,29,23,27,21][i%7];
-};
-const reading=t=>Math.max(1400,Math.min(2200,t.length*28));
-const typingDuration=strokes=>strokes.slice(0,-1).reduce((n,_,i)=>n+pace(i,strokes),0);
-const demoDuration=()=>100+FIRST_THOUGHT+exampleUser.reduce((sum,t,i)=>sum+typingDuration(demoStrokes(t))+SEND_PAUSE+AUTO_REPLY_PAUSE+reading(replies[i]),0)+FINAL_LEAD+150;
+const FIRST_THOUGHT=520,SEND_PAUSE=110,AUTO_REPLY_PAUSE=520;
+const reading=t=>Math.max(1100,Math.min(1800,t.length*24));
+// Real elapsed-time animation, not one setTimeout per Hangul jamo. 55 strokes/sec.
+const typingDuration=strokes=>Math.max(650,Math.round(strokes.length/55*1000));
+const demoDuration=()=>100+FIRST_THOUGHT+exampleUser.reduce((sum,t,i)=>sum+typingDuration(demoStrokes(t))+SEND_PAUSE+AUTO_REPLY_PAUSE+reading(replies[i]),0)+FINAL_LEAD+250;
 function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing||(!state.manual&&!!input.value);stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
 // Intent routing for the first real-life greeting mission. Priority matters for negation and mixed feelings.
 const branches=[
@@ -76,7 +70,7 @@ const recoveryMessages={
 };
 function recoveryOptions(kind,history){const pool=recoveryMessages[kind]||recoveryMessages.unknown;const seen=new Set(history.filter(m=>m.role==="ai").map(m=>m.text));const unused=pool.filter(t=>!seen.has(t));const last=history.filter(m=>m.role==="ai").at(-1)?.text;const choices=unused.length?unused:pool.filter(t=>t!==last);const shuffled=[...choices];for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}return shuffled}
 function recoverInput(){if(state.timedOut||state.phase!=="chat"||!state.invalidInput)return;const kind=state.invalidInput;state.error=null;pending=true;render();clearTimeout(timer);timer=setTimeout(()=>{if(state.timedOut||state.phase!=="chat")return;pending=false;state.invalidInput=false;const opts=recoveryOptions(kind,state.messages);const first=opts[0];const all=[first,...(recoveryMessages[kind]||recoveryMessages.unknown).filter(t=>t!==first)];newRow=state.messages.length;state.messages.push({role:"ai",text:first,versions:[first],version:0,options:all});render();input.focus()},2000)}
-function stopDemo(){clearTimeout(demoTimer);clearKey();typing=false;demoCancelled=true}
+function stopDemo(){clearTimeout(demoTimer);cancelAnimationFrame(demoFrame);demoFrame=null;clearKey();typing=false;demoCancelled=true}
 // Emulate Korean IME composition: onset, vowel, then final consonant.
 function typingFrames(text){
  const onset="ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ", frames=[];let prefix="";
@@ -85,17 +79,31 @@ function typingFrames(text){
   prefix+=ch;frames.push(prefix);
  }return frames;
 }
-function scheduleDemo(delay=900){
+function scheduleDemo(delay=520){
  if(!autoDemo||demoCancelled||state.phase!=="chat"||state.timedOut||state.error||pending||state.turn>=exampleUser.length)return;
- clearTimeout(demoTimer);
+ clearTimeout(demoTimer);cancelAnimationFrame(demoFrame);
  demoTimer=setTimeout(()=>{
   if(demoCancelled||state.phase!=="chat"||state.timedOut||state.error||pending||input.value||!$("confirm").hidden)return;
-  const strokes=demoStrokes(exampleUser[state.turn]);const chars=strokes.map(x=>x.text);let i=0;typing=true;autoFocus=true;input.focus();autoFocus=false;
-  function step(){if(!typing||demoCancelled||state.phase!=="chat"||state.timedOut)return;
-   flashKey(strokes[i].key);input.value=chars[i++];input.dispatchEvent(new Event("input",{bubbles:true}));
-   if(i<chars.length)demoTimer=setTimeout(step,pace(i-1,strokes));
-   else{typing=false;demoTimer=setTimeout(()=>{if(!demoCancelled&&state.phase==="chat"){input.blur();send()}},SEND_PAUSE)}
-  }step();
+  const strokes=demoStrokes(exampleUser[state.turn]),duration=typingDuration(strokes);
+  let previous=-1,lastFlash=-Infinity;
+  typing=true;autoFocus=true;input.focus();autoFocus=false;
+  const started=performance.now();
+  function frame(now){
+   if(!typing||demoCancelled||state.phase!=="chat"||state.timedOut)return;
+   const progress=Math.min(1,(now-started)/duration);
+   const idx=Math.min(strokes.length-1,Math.floor(progress*strokes.length));
+   if(idx!==previous){
+    input.value=strokes[idx].text;
+    input.dispatchEvent(new Event("input",{bubbles:true}));
+    if(now-lastFlash>=95||progress===1){flashKey(strokes[idx].key);lastFlash=now}
+    previous=idx;
+   }
+   if(progress<1){demoFrame=requestAnimationFrame(frame);return}
+   demoFrame=null;typing=false;demoTimer=setTimeout(()=>{
+    if(!demoCancelled&&state.phase==="chat"){input.blur();send()}
+   },SEND_PAUSE);
+  }
+  demoFrame=requestAnimationFrame(frame);
  },delay);
 }
 input.addEventListener("pointerdown",beginManual);input.addEventListener("focus",()=>{if(!autoFocus)beginManual()});input.addEventListener("beforeinput",beginManual);input.addEventListener("keydown",e=>{if(!autoFocus&&!state.manual&&!isPreview)beginManual()});
