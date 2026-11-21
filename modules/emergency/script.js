@@ -9,7 +9,7 @@ const query=params();const resumed=query.get("resume")==="1"?getStore().emergenc
 let state=resumed||{id:"emergency-"+Date.now(),messages:[],turn:0,version:0,error:null,phase:"chat",scroll:null};
 let timer=null,departureTimer=null,pending=false; let greetingTimer=null, frameId=null, finalTimer=null; let DURATION=90000; const TRAVEL=210.08, FINAL_LEAD=4000; const isPreview=!!query.get("preview"); state.startedAt=state.startedAt||Date.now(); state.frozenX=null; let newRow=-1;
 const preserve=()=>{if(!isPreview)updateStore({emergencyDraft:{...state,scroll:chat.scrollTop,draft:input.value,pending}})};
-function button(label,text,fn){const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",label);const icon={"이전 답변":"prev","다음 답변":"next","다시 시도":"retry","답변 재생성":text==="first"?"retryFirst":"retry"}[label];if(icon){b.className="lx-micro lx-"+icon;const asset=label==="답변 재생성"?"retryRound":label==="이전 답변"?"prevRound":label==="다음 답변"?"nextRound":icon;if(label==="답변 재생성"||label==="이전 답변"||label==="다음 답변"){b.classList.add("lx-round-control");const im=document.createElement("img");im.src="../../assets/emergency/"+asset+".svg?v=figma-round3";im.alt="";im.draggable=false;b.append(im)}else{const im=document.createElement("img");im.src="../../assets/emergency/"+asset+".svg";im.alt="";b.append(im)}}else b.textContent=text;b.onclick=fn;return b}
+function button(label,text,fn){const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",label);const icon={"이전 답변":"prev","다음 답변":"next","다시 시도":"retry","답변 재생성":text==="first"?"retryFirst":"retry"}[label];if(icon){b.className="lx-micro lx-"+icon;const asset=label==="답변 재생성"?"retryRound":label==="이전 답변"?"prevRound":label==="다음 답변"?"nextRound":icon;if(label==="답변 재생성"||label==="이전 답변"||label==="다음 답변"){b.classList.add("lx-round-control");const im=document.createElement("img");im.src="../../assets/emergency/"+asset+".svg?v=figma-crisp4";im.alt="";im.draggable=false;b.append(im)}else{const im=document.createElement("img");im.src="../../assets/emergency/"+asset+".svg";im.alt="";b.append(im)}}else b.textContent=text;b.onclick=fn;return b}
 function goSaved(){preserve();openSaved("emergency",{resume:1})}
 function home(){stopDemo();clearTimeout(finalTimer);clearTimeout(finishDeadline);clearTimeout(timer);clearTimeout(departureTimer);preserve();navigate("home")}
 
@@ -40,10 +40,10 @@ let demoTimer=null,demoFrame=null,typing=false,demoCancelled=false,autoFocus=fal
 const direct=()=>state.manual||!autoDemo;
 // Fast, fluent two-set keyboard input; hesitations belong between thoughts, not letters.
 // Exhibition demo: very fast Korean typing, with short thinking pauses between turns.
-const FIRST_THOUGHT=700,SEND_PAUSE=180,AUTO_REPLY_PAUSE=850;
+const FIRST_THOUGHT=850,SEND_PAUSE=240,AUTO_REPLY_PAUSE=900;
 const reading=t=>Math.max(1550,Math.min(2600,t.length*33));
-// Frame-based Korean typing at a quick but readable 18 two-set keystrokes/sec.
-const typingDuration=strokes=>Math.max(650,Math.round(strokes.length/18*1000));
+// Frame-based natural Korean typing at 10 two-set keystrokes/sec.
+const typingDuration=strokes=>Math.max(650,Math.round(strokes.length/10*1000));
 const demoDuration=()=>100+FIRST_THOUGHT+exampleUser.reduce((sum,t,i)=>sum+typingDuration(demoStrokes(t))+SEND_PAUSE+AUTO_REPLY_PAUSE+reading(replies[i]),0)+FINAL_LEAD+250;
 function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing||(!state.manual&&!!input.value);stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
 // Intent routing for the first real-life greeting mission. Priority matters for negation and mixed feelings.
