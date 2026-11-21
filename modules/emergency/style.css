@@ -225,10 +225,10 @@
 .lx-emergency .lx-nav #back img{position:absolute;left:4.16px;top:0;width:21px;height:25px;max-width:none;max-height:none;object-fit:fill}
 .lx-emergency .lx-nav #saved img{position:absolute;left:0;top:0;width:28px;height:28px;max-width:none;max-height:none;object-fit:fill}
 
-/* Final Figma 908:91129 / 908:91422 — original SVG effects, positions and dimensions. */
-.lx-emergency .lx-tools{height:29px;min-height:29px;width:348.4px;flex:none}
-.lx-emergency .lx-tools .lx-micro{top:0;left:0;width:29px;min-width:29px;height:29px;background:none!important;box-shadow:none;border:0;padding:0!important;border-radius:0}
-.lx-emergency .lx-tools .lx-micro img{width:29px;height:29px;object-fit:contain;display:block}
-.lx-emergency .lx-tools[data-multiple=true] .lx-retry,.lx-emergency .lx-tools[data-multiple=true] .lx-retryFirst{left:35px}
-.lx-emergency .lx-tools .lx-prev{left:0}
-.lx-emergency .lx-tools .lx-next{left:70px}
+/* Figma export 908:91129, 908:91226, 908:91324, 908:91422. Native SVG contains all gradients and effects. */
+.lx-emergency .lx-tools{position:relative;display:block;align-items:initial;gap:0;width:348.4px;height:29px;min-height:29px;flex:none}
+.lx-emergency .lx-tools .lx-micro.lx-round-control{position:absolute;display:block;top:0;left:0;width:29px;min-width:29px;max-width:29px;height:29px;min-height:29px;max-height:29px;box-sizing:border-box;padding:0!important;margin:0;border:0;border-radius:14.5px;background-color:transparent!important;background-size:29px 29px!important;background-position:0 0!important;background-repeat:no-repeat!important;box-shadow:none!important;filter:none!important;transform:none!important;line-height:normal}
+.lx-emergency .lx-tools[data-multiple="true"] .lx-round-control.lx-retry,
+.lx-emergency .lx-tools[data-multiple="true"] .lx-round-control.lx-retryFirst{left:35px}
+.lx-emergency .lx-tools .lx-round-control.lx-prev{left:0}
+.lx-emergency .lx-tools .lx-round-control.lx-next{left:70px}
