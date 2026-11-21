@@ -160,16 +160,9 @@
 .lx-emergency .lx-chat,.lx-emergency .lx-ready-area,.lx-emergency .lx-composer{z-index:1}
 .lx-emergency .lx-composer{z-index:2}
 
-/* Exact Figma regeneration controls: 22.88 high, 4.16 below bubble. */
+/* Figma chat row: bubble-to-toolbar auto-layout spacing 4.16px. */
 .lx-emergency .lx-row{gap:4.16px}
-.lx-emergency .lx-tools{position:relative;width:348.4px;height:22.88px;min-height:22.88px;display:block;flex:none}
-.lx-emergency .lx-micro{position:relative;display:block;width:19.76px;height:19.76px;min-width:19.76px;padding:0!important;border:0;background:none;flex:none}
-.lx-emergency .lx-micro img{display:block;width:100%;height:100%;object-fit:contain}
-.lx-emergency .lx-tools .lx-micro{position:absolute;top:1.56px;left:0}
-.lx-emergency .lx-tools[data-multiple=true] .lx-retry{left:22.88px}
-.lx-emergency .lx-tools .lx-prev,.lx-emergency .lx-tools .lx-next{width:8.32px;min-width:8.32px;height:14.56px;top:4.16px}
-.lx-emergency .lx-tools .lx-prev{left:3.12px}
-.lx-emergency .lx-tools .lx-next{left:53.04px}
+.lx-emergency .lx-error-row{gap:4.88px}
 .lx-emergency .lx-error-row{display:flex;align-items:center;gap:4.88px;min-height:35.36px}
 .lx-emergency .lx-loading i:nth-child(1){background:#34318b}
 .lx-emergency .lx-loading i:nth-child(2){background:#5f61d4}
@@ -225,14 +218,7 @@
 .lx-emergency .lx-nav #back img{position:absolute;left:4.16px;top:0;width:21px;height:25px;max-width:none;max-height:none;object-fit:fill}
 .lx-emergency .lx-nav #saved img{position:absolute;left:0;top:0;width:28px;height:28px;max-width:none;max-height:none;object-fit:fill}
 
-/* Figma export 908:91129, 908:91226, 908:91324, 908:91422. Native SVG contains all gradients and effects. */
-.lx-emergency .lx-tools{position:relative;display:block;align-items:initial;gap:0;width:348.4px;height:29px;min-height:29px;flex:none}
-.lx-emergency .lx-tools .lx-micro.lx-round-control{position:absolute;display:block;top:0;left:0;width:29px;min-width:29px;max-width:29px;height:29px;min-height:29px;max-height:29px;box-sizing:border-box;padding:0!important;margin:0;border:0;border-radius:14.5px;background-color:transparent!important;background-size:29px 29px!important;background-position:0 0!important;background-repeat:no-repeat!important;box-shadow:none!important;filter:none!important;transform:none!important;line-height:normal}
-.lx-emergency .lx-tools[data-multiple="true"] .lx-round-control.lx-retry,
-.lx-emergency .lx-tools[data-multiple="true"] .lx-round-control.lx-retryFirst{left:35px}
-.lx-emergency .lx-tools .lx-round-control.lx-prev{left:0}
-.lx-emergency .lx-tools .lx-round-control.lx-next{left:70px}
-
-/* Actual Figma button artwork must be drawn as a complete SVG image, not CSS background. */
-.lx-emergency .lx-tools .lx-micro.lx-round-control{background:none!important;overflow:visible!important}
-.lx-emergency .lx-tools .lx-micro.lx-round-control>img{position:absolute!important;inset:0!important;width:29px!important;height:29px!important;max-width:none!important;max-height:none!important;object-fit:fill!important;opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important;pointer-events:none}
+/* Figma 908:91129 / 908:91422: HORIZONTAL auto-layout, 12.48px item spacing, center aligned. */
+.lx-emergency .lx-tools{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:12.48px;width:348.4px;height:29px;min-height:29px;flex:none;padding:0;margin:0;overflow:visible}
+.lx-emergency .lx-tools .lx-micro.lx-round-control{position:relative!important;inset:auto!important;left:auto!important;top:auto!important;display:block;flex:0 0 29px;width:29px;min-width:29px;max-width:29px;height:29px;min-height:29px;max-height:29px;padding:0!important;margin:0!important;border:0!important;border-radius:14.5px;background:none!important;box-shadow:none!important;filter:none!important;transform:none!important;line-height:normal;overflow:visible!important}
+.lx-emergency .lx-tools .lx-micro.lx-round-control>img{display:block!important;position:static!important;inset:auto!important;width:29px!important;height:29px!important;max-width:none!important;max-height:none!important;object-fit:fill!important;opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important;pointer-events:none}
