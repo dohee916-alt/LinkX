@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<!-- Figma typography: IBM Plex Sans KR 400/500/600/700; IBM Plex Sans SemiBold 600 for kicker. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@600&display=swap" rel="stylesheet">
+<title>LinkX | Mission 03→04 · Shared Reward</title>
+<style>
+/*
+ * LINKX / Mission · Reward · source SVG and native Figma prototype sequence
+ * Figma: IRJ7lGiMvKZwZ5aTitqQQa / 구동용 페이지_세인 + 컴포넌트
+ * Reference 390x844. UXSD W12 device: iPhone 15 393x852.
+ * Standalone: no Figma network/iframe dependency, SVG vector layers are inline. Google Fonts loads the original IBM Plex families when connected.
+ * External entry: window.LinkXMissionReward.goMission(3) or modules/mission/index.html?step=3#mission
+ * Host may provide window.LinkXMissionReward.onNavigate = (route, payload)=>true.
+ */
+:root{
+  --dev-name:"모바일 — iPhone 15";
+  --dev-w:393px;
+  --dev-h:852px;
+  --design-w:390px;
+  --design-h:844px;
+  --cream:#f8f3e6;
+  --opal:#e0d7fc;
+  --violet:#a5a1ea;
+  --ink:#202426;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --screen-trans:240ms;
+  --press-time:100ms;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+body{color:#222;overflow:hidden;background:#f2eff8}
+button{font:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid #f9e58b!important;outline-offset:3px;z-index:20}
+#shell{display:grid;grid-template-columns:275px minmax(0,1fr);height:100dvh;min-height:0}
+#panel{min-width:0;overflow-y:auto;background:#f9f7fd;border-right:1px solid #e7e0f2;padding:22px 17px 20px;box-shadow:5px 0 20px #24164f0a;z-index:3}
+.brand{font-weight:900;font-size:26px;letter-spacing:-1.5px;color:#352585}.brand small{font-size:10px;letter-spacing:1.5px;vertical-align:middle;background:#e6dff7;border-radius:8px;padding:5px;margin-left:5px}
+.panel-sub{font-size:12px;color:#706887;line-height:1.7;margin:12px 0 22px}
+.panel-group{border-top:1px solid #e5e0ed;padding:15px 0}
+.panel-group h2{font-size:11px;letter-spacing:1.8px;color:#767082;margin:0 0 10px;text-transform:uppercase}
+.control-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.control-grid button,.control-stack button,.toggle-button{border:1px solid #d6cde6;background:#fff;color:#3d3066;border-radius:10px;padding:10px 7px;font-size:12px;font-weight:600;min-height:43px;text-align:center;transition:background-color 100ms,transform 100ms}
+.control-grid button:hover,.control-stack button:hover{background:#eee9fb}
+.control-grid button:active,.control-stack button:active{transform:scale(.97)}
+.control-stack{display:grid;gap:7px}
+.control-grid button.selected{background:#e4dcfa;border-color:#9183cf;color:#2f207d}
+.small-note{font-size:11px;line-height:1.6;color:#72698a;margin:8px 0 0}
+#panel .flag{font:10px monospace;color:#85809c}
+#viewport{display:grid;place-items:center;position:relative;min-width:0;min-height:0;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#e5dcf7 0%,#f3f0f9 65%)}
+#phoneWrap{width:393px;height:852px;position:relative;flex:none;transform-origin:center center}
+#phone{position:relative;width:393px;height:852px;overflow:hidden;border-radius:46px;background:#211f47;box-shadow:0 18px 50px #21135136,0 0 0 1px #ffffff80}
+#stage{position:absolute;left:1.5px;top:4px;width:390px;height:844px;overflow:hidden;isolation:isolate;background:linear-gradient(180deg,#1e2426 0%,#252239 17%,#31267d 35%,#4433a0 47%,#755db8 61%,#ad93d0 77%,#d5b7e9 100%);color:var(--cream)}
+#stage::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse 280px 180px at 43% 52%,#3b2b9e66 0%,transparent 100%)}
+#stars{position:absolute;inset:0;pointer-events:none;z-index:0}
+.particle{position:absolute;border-radius:50%;background:#efeafd;box-shadow:0 0 6px #d3c3ff77;opacity:var(--o,.35);width:var(--s,2px);height:var(--s,2px)}
+#ios{position:absolute;top:0;left:0;right:0;height:44px;z-index:9;pointer-events:none;color:#fff;font-family:Arial,system-ui,sans-serif;font-weight:700;font-size:14px}
+#ios .clock{position:absolute;left:36px;top:13px;font-size:14px;letter-spacing:-.1px}
+#ios .notch{position:absolute;top:-1px;left:112px;width:166px;height:32px;background:#1f2427;border-radius:0 0 22px 22px}
+#ios .signals{position:absolute;right:35px;top:12px;display:flex;gap:5px;align-items:center}
+#ios .signals svg{display:block}
+#homeIndicator{position:absolute;bottom:13px;left:139px;width:112px;height:4px;border-radius:99px;background:#f6e8f2;z-index:11;pointer-events:none}
+#scene{position:absolute;inset:0;z-index:1}
+.screen{position:absolute;inset:0;display:none}
+.screen.active{display:block;animation:screenIn 240ms var(--ease) both} .screen.active.figma-transition{animation:none;opacity:1}
+@keyframes screenIn{from{opacity:.25}to{opacity:1}}
+.kicker{font-family:"IBM Plex Sans",sans-serif;font-size:11px;font-weight:600;letter-spacing:8.8px;text-align:center;color:#f7efff;text-shadow:0 1px 8px #fff3;white-space:nowrap}
+/* Mission composition, based on Figma 01A/02A/03A/04A */
+#missionFrame .kicker{position:absolute;top:127px;left:18px;right:18px}
+#constellation{position:absolute;top:186px;left:0;width:390px;height:300px;overflow:visible;pointer-events:none}
+#constellation .trail{stroke:#e9dcff;stroke-width:2.1;stroke-linecap:round;fill:none;filter:url(#lineGlow);opacity:.93}
+#constellation .trail-shadow{stroke:#c7b7ff;stroke-width:7;stroke-linecap:round;fill:none;filter:url(#blurGlow);opacity:.22}
+#constellation .ghost{stroke:#b9b5ec;stroke-width:1;stroke-dasharray:2.5 7;fill:none;opacity:.44}
+#constellation .diamond{fill:#f8efff;filter:url(#starGlow)}
+#constellation .starlet{opacity:0;transition:opacity .25s var(--ease)}
+#constellation .starlet.earned{opacity:1}
+#constellation .halo-ring{fill:none;stroke:#ddd1ff;stroke-width:.9;opacity:.26;transform-box:fill-box;transform-origin:center}
+#constellation .halo-core{fill:url(#starHalo);opacity:.7}
+#orbitHalo{position:absolute;left:68px;top:410px;z-index:2;pointer-events:none;width:122px;height:122px;transform:translate(-50%,-50%);transition:left .32s linear,top .32s linear,opacity .23s var(--ease)}
+#orbitHalo .orb-wash{position:absolute;inset:1px;border-radius:50%;background:radial-gradient(circle,#ddc6ff8e 0%,#c9b0ff36 30%,#b9a7ff08 66%,transparent 76%);filter:blur(5px);opacity:.9}
+#orbitHalo .orb-ring{position:absolute;border:1px solid #d2c7ff55;border-radius:50%;inset:3px;box-shadow:0 0 25px #aaa2f53d}
+#orbitHalo .orb-ring.inner{inset:19px;border-color:#eee5ff4d}
+#orbitHalo.pulse .orb-wash{animation:missionHalo .72s ease-in-out both}
+#orbitHalo.pulse .orb-ring{animation:ringBreath .72s ease-in-out both}
+@keyframes missionHalo{0%{transform:scale(.93);opacity:.55}50%{transform:scale(1.08);opacity:.94}100%{transform:scale(1);opacity:.82}}
+@keyframes ringBreath{0%{opacity:.24;transform:scale(.95)}58%{opacity:.56;transform:scale(1.04)}100%{opacity:.37;transform:scale(1)}}
+.mission-copy{position:absolute;left:28px;width:334px;top:498px;text-align:center;opacity:0;transform:translateY(12px);transition:opacity .38s var(--ease),transform .38s var(--ease)}
+.mission-copy.visible{opacity:1;transform:translateY(0)}
+.mission-copy .eyebrow{font-size:14px;line-height:22px;margin:0 0 1px;color:#fff5f9}
+.mission-copy h1{font-size:22px;line-height:30px;margin:0;font-weight:600;letter-spacing:0}
+.glass{background:linear-gradient(135deg,#c0b1f433,#ffedff19);border:1px solid #e9ddff69;box-shadow:inset 0 1px 1px #ffffff20,0 1px 9px #24125508;border-radius:24px;backdrop-filter:blur(8px)}
+.mission-description{position:absolute;left:28px;top:575px;width:334px;height:104px;display:flex;align-items:center;justify-content:center;padding:16px 27px;text-align:center;white-space:pre-line;font-size:14px;line-height:22px;color:#f1eafd;font-weight:400;opacity:0;transform:translateY(10px);transition:opacity .38s var(--ease),transform .38s var(--ease)}
+.mission-description.visible{opacity:1;transform:translateY(0)}
+.btn{border:1px solid #dfd2fdc9;border-radius:27px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:inherit;font-weight:650;color:var(--cream);background:linear-gradient(120deg,#9d81c65e,#30238add);box-shadow:inset 0 1.5px 2px #fff6,0 4px 15px #1e16451b;min-height:44px;text-decoration:none;transition:transform var(--press-time) ease,filter var(--press-time) ease,background-color var(--press-time) ease}
+.btn:hover{filter:brightness(1.07)}.btn:active{transform:scale(.97);filter:brightness(.89)}
+.primary{background:linear-gradient(110deg,#6e57b8b8 0%,#3c2a9aee 60%,#2c238b 100%)}
+.secondary{background:linear-gradient(125deg,#d6c8ed67,#9b8bc58c)}
+.btn[disabled]{cursor:default;opacity:.55}
+#missionConfirm{position:absolute;top:725px;left:28px;width:334px;height:56px;font-size:15px;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .36s var(--ease),transform .36s var(--ease)}
+#missionConfirm.visible{opacity:1;transform:none;pointer-events:auto}
+/* Reward: vector artwork taken from the visible Figma reference ribbon, not a redesigned icon. */
+#rewardHead{position:absolute;top:126px;width:100%;left:0;text-align:center}
+#rewardHead h1{position:absolute;left:0;top:23px;width:100%;font-size:30px;line-height:38px;font-weight:700;letter-spacing:0;margin:0;color:#faf3e7}
+#rewardSymbol{position:absolute;left:50%;top:316px;width:266px;height:266px;transform:translate(-50%,-50%);pointer-events:none}
+#rewardSymbol button{pointer-events:auto}
+.reward-wash{position:absolute;inset:4px;border-radius:50%;background:radial-gradient(circle,#ecddff78 1%,#d1bbff42 27%,#ad9dfd22 45%,transparent 72%);opacity:.21;transform:scale(.66);filter:blur(10px);transition:opacity .46s ease-out,transform .46s ease-out}
+.reward-ring{position:absolute;border-radius:50%;border:1px solid #e7ddff31;opacity:.35;inset:64px;transition:inset .46s ease-out,opacity .46s ease-out}
+.reward-ring.inside{inset:86px;opacity:.28}
+#rewardOrb{position:absolute;left:50%;top:50%;width:74px;height:74px;transform:translate(-50%,-50%);border:0;background:transparent;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#rewardOrb svg{width:33px;height:33px;filter:drop-shadow(0 0 11px #ece2ff88);transition:opacity .25s ease-out}
+#rewardOrb:active{transform:translate(-50%,-50%) scale(.97)}
+#rewardSymbol.bright .reward-wash{opacity:.95;transform:scale(1.35)}
+#rewardSymbol.bright .reward-ring{inset:16px;opacity:.7}
+#rewardSymbol.bright .reward-ring.inside{inset:41px;opacity:.52}
+#rewardSymbol.bloom .reward-wash{opacity:1;transform:scale(1.48);filter:blur(12px)}
+#rewardSymbol.bloom .reward-ring{inset:7px;opacity:.48}
+#rewardSymbol.bloom .reward-ring.inside{inset:35px;opacity:.45}
+#rewardSymbol.badged .reward-wash{opacity:.82;transform:scale(.93);filter:blur(9px)}
+#rewardSymbol.badged .reward-ring{inset:46px;opacity:.26}
+#rewardSymbol.badged .reward-ring.inside{inset:67px;opacity:.22}
+#rewardSymbol.badged #rewardOrb{opacity:0;pointer-events:none}
+#ribbonBadge{position:absolute;left:28.73px;top:41.02px;width:210px;height:214px;transform:none;opacity:0;filter:drop-shadow(0 0 16px #c9bcff80);transition:opacity .48s ease-out,filter .7s ease-out}
+#rewardSymbol.badged #ribbonBadge{opacity:1}
+#rewardSymbol.settled #ribbonBadge{filter:drop-shadow(0 0 10px #b0a5ff72)}
+#rewardHint{margin:0;position:absolute;top:467px;left:26px;right:26px;font-size:12px;line-height:17px;text-align:center;color:#f2e9ff;min-height:17px;transition:opacity .22s}
+#rewardDesc{position:absolute;left:28px;top:500px;width:334px;min-height:116px;padding:20px;text-align:left;opacity:0;transform:translateY(9px);transition:opacity .36s var(--ease),transform .36s var(--ease);pointer-events:none}
+#rewardDesc.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+#rewardDesc h2{font-size:17px;line-height:24px;margin:0 0 5px;font-weight:600;letter-spacing:-.5px;color:#fff5fc}
+#rewardDesc p{margin:0;font-size:14px;line-height:22px;color:#eee6fd;white-space:pre-line}
+#rewardActions{position:absolute;left:28px;top:632px;width:334px;display:grid;grid-template-columns:141px 185px;gap:8px;opacity:0;transform:translateY(9px);transition:opacity .36s var(--ease),transform .36s var(--ease);pointer-events:none}
+#rewardActions.visible{opacity:1;transform:none;pointer-events:auto}
+#rewardActions .btn{height:52px;font-size:12px;white-space:nowrap}
+#nextMission{position:absolute;left:28px;top:726px;width:334px;height:56px;font-size:15px;opacity:0;transform:translateY(9px);transition:opacity .4s var(--ease),transform .4s var(--ease);pointer-events:none}
+#nextMission.visible{opacity:1;transform:none;pointer-events:auto}
+/* Reward decorate popup — no blur of the existing screen */
+#decorateOverlay{position:absolute;inset:0;z-index:7;display:none;pointer-events:none}
+#decorateOverlay.visible{display:block;pointer-events:auto}
+#decorateModal{position:absolute;left:25px;top:500px;width:340px;height:309px;border-radius:29px;background:linear-gradient(175deg,#2d2550e8,#60558dd9);border:1.5px solid #ddd5ffde;box-shadow:0 0 0 3px #ffffff16,0 0 24px #d2bbfa75,inset 0 1px 13px #b5a9ee4d;text-align:center;transform:translateY(76px);opacity:0;transition:transform .41s cubic-bezier(.18,.72,.29,1),opacity .33s ease-out}
+#decorateOverlay.visible #decorateModal{transform:translateY(0);opacity:1}
+.dec-icon{width:68px;height:68px;margin:22px auto 5px;display:grid;place-items:center;color:#f6ebff}
+#decorateModal h2{font-size:22px;font-weight:750;margin:6px 0 4px;letter-spacing:-.5px}
+#decorateModal p{font-size:14px;margin:0 0 13px}
+#decorateModal .btn{width:284px;margin:5px auto 0;height:47px;font-size:14px;min-height:0}
+#decorateModal .later{height:42px;background:linear-gradient(110deg,#d7d1e02b,#b7a6c952);color:#f4eafd}
+/* Loading and failure preserve the reward-loading template */
+#systemFrame .system-card{position:absolute;left:29px;top:268px;width:328px;height:292px;border-radius:29px;background:linear-gradient(130deg,#2c255caa,#2a264cbb);border:1px solid #d7ceffb5;box-shadow:0 0 0 3px #f4e2ff18,0 0 27px #cab4ff84,inset 0 0 19px #dfd5ff1a}
+.system-kicker{position:absolute;left:16px;right:16px;top:21px}
+#loadingContent .spinner-slot{position:absolute;left:127px;top:56px;width:74px;height:72px;overflow:visible;display:grid;place-items:center}
+.spinner{width:75px;height:75px;border-radius:50%;background:conic-gradient(from -11deg,#efe5ff 0deg,#d2c4fb 38deg,#b5abed87 110deg,#9387d034 210deg,#8f84c918 290deg,#8f84c900 360deg);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));animation:spinCW 1.12s linear infinite}
+@keyframes spinCW{to{transform:rotate(360deg)}}
+.system-title{position:absolute;left:15px;right:15px;top:147px;font-size:19px;font-weight:700;line-height:27px;text-align:center}
+.system-message{position:absolute;left:16px;right:16px;top:192px;height:78px;display:grid;place-items:center;padding:12px 15px;font-size:14px;line-height:22px;color:#f2eafa;text-align:center}
+#errorContent{display:none}
+.error-close{position:absolute;top:8px;right:9px;width:44px;height:44px;border:0;background:none;color:#e6dfff;font-size:25px;line-height:1;cursor:pointer}
+.error-icon{position:absolute;top:59px;left:127px;width:74px;height:72px;border:0;background:none;color:#e0d7fc;display:grid;place-items:center;padding:0;cursor:default}
+.error-icon svg{width:59px;height:59px;position:absolute;transition:opacity .3s ease-out,transform .3s ease-out}
+#errorWarning{opacity:1;transform:rotate(0)}#errorRetry{opacity:0;transform:rotate(-32deg)}
+.error-icon.ready{cursor:pointer}
+.error-icon.ready #errorWarning{opacity:0;transform:rotate(32deg)}
+.error-icon.ready #errorRetry{opacity:1;transform:rotate(0)}
+/* Separate reward info: non-fictional text-only detail, returns to Figma reward state */
+#detailOverlay{display:none;position:absolute;inset:0;z-index:8;background:linear-gradient(180deg,#191e2ce9,#302483f5 60%,#a18ed2f5 100%);padding:91px 25px 54px;text-align:center}
+#detailOverlay.visible{display:block;animation:screenIn var(--screen-trans) var(--ease)}
+#detailOverlay .back{position:absolute;top:59px;left:22px;background:none;border:0;color:#fff;font-size:25px}
+#detailOverlay h2{font-size:22px;margin:25px 0 13px}
+#detailOverlay .detail-summary{padding:21px 20px;text-align:center;line-height:1.9;margin-top:30px;white-space:pre-line;font-size:14px}
+#detailOverlay .btn{position:absolute;bottom:72px;left:27px;width:334px;height:56px}
+/* Placeholder for team integration, deliberately labeled as such */
+#routeNotice{position:absolute;inset:0;background:#262248f5;z-index:12;display:none;align-items:center;justify-content:center;padding:25px}
+#routeNotice.visible{display:flex;animation:screenIn .24s var(--ease)}
+#routeNotice .system-card{max-width:335px;text-align:center;position:static;padding:34px 23px;width:100%;height:auto;border-radius:28px;background:linear-gradient(150deg,#342c66ed,#4c3a91ec);border:1px solid #c5b7f2ad;box-shadow:0 0 24px #9e88d751}
+#routeNotice h2{font-size:19px;margin:0 0 13px}#routeNotice p{font-size:13px;line-height:1.8;white-space:pre-line}
+#routeNotice .btn{width:100%;margin-top:23px}
+#toast{position:absolute;top:51px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:15;opacity:0;pointer-events:none;color:#fff;white-space:nowrap;font-size:12px;background:#302b64e6;padding:8px 15px;border:1px solid #cfc2f18c;border-radius:18px;transition:transform .2s,opacity .2s}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* PDF QA rules: no horizontal overflow, focus states, minimum 44x44 click area, reduce motion. */
+.visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media (max-width:640px){
+  #shell{display:block}#panel{display:none}
+  #viewport{width:100vw;height:100dvh;background:#16141d}
+  #phone{border-radius:0;box-shadow:none}
+  #phoneWrap{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+ .spinner{border:3px solid #b1a4e8;border-top-color:#efe3ff;background:none;mask:none;-webkit-mask:none}
+}
+
+/* FINAL: Figma 390×844 frame fills the viewport, no black device mockup or sidebars. */
+html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#202426 0%,#352897 50%,#9180c3 75%,#c9abe5 100%)}
+#shell{display:block;position:fixed;inset:0;width:100%;height:100%;overflow:hidden}
+#panel{display:none!important}
+#viewport{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;background:linear-gradient(180deg,#202426 0%,#352897 50%,#9180c3 75%,#c9abe5 100%);overflow:hidden}
+#phoneWrap{position:absolute;left:50%;top:50%;width:390px;height:844px;transform-origin:center center}
+#phone{position:absolute;inset:0;width:390px;height:844px;border-radius:0;box-shadow:none;background:transparent}
+#stage{position:absolute;top:0;left:0;width:390px;height:844px;border-radius:0;overflow:hidden;background:linear-gradient(180deg,#202426 0%,#352897 50%,#9180c3 75%,#c9abe5 100%)}
+#stage::before{display:none}
+#ios .notch{left:105.56px;width:176.8px;height:33.28px;top:0;border-radius:0 0 20px 20px}
+#homeIndicator{left:139px;width:116.48px;bottom:13.8px;height:4.16px}
+#constellation{top:90px;left:0;width:390px;height:520px;overflow:visible}
+#constellation .trail{stroke-width:2.8;opacity:.88;filter:none}
+#constellation .trail-shadow{stroke-width:9;opacity:.16;filter:none}
+#constellation .diamond{filter:none;stroke:#e0d7fc;stroke-width:.75px;stroke-opacity:.7}
+#orbitHalo .orb-wash{background:radial-gradient(circle,#f3f0e7a8 0%,#d6c9f338 38%,#c9abe500 100%);filter:none;opacity:.47}
+#orbitHalo .orb-ring{box-shadow:none;border:1px solid #b8e1fa3c;opacity:.5}
+#orbitHalo .orb-ring.inner{border-color:#e0d7fc6b;opacity:.65}
+.particle{background:#f8f3e6;box-shadow:none}
+#rewardSymbol{position:absolute;left:28px;top:203px;width:334px;height:248px;transform:none;pointer-events:none;overflow:visible}
+#rewardSymbol .reward-wash,#rewardSymbol .figma-glow-main,#rewardSymbol .figma-glow-inner,#rewardSymbol .reward-ring{position:absolute;inset:auto;box-sizing:border-box;border-radius:50%;transform:none;transition-property:left,top,width,height,opacity;transition-duration:0ms;transition-timing-function:ease-out;will-change:left,top,width,height,opacity}
+#rewardSymbol .reward-wash{background:radial-gradient(circle,#f3f0e794 0%,#e0d7fc3d 37%,#c9abe500 100%);filter:blur(17px)}
+#rewardSymbol .figma-glow-main{background:rgba(201,171,229,.19);filter:blur(32px)}
+#rewardSymbol .figma-glow-inner{background:rgba(248,243,230,.29);filter:blur(24px)}
+#rewardSymbol .reward-ring{background:none;border:.95px solid rgba(184,225,250,.22);box-shadow:none}
+#rewardSymbol .reward-ring.inside{border:1.05px solid rgba(224,215,252,.36);box-shadow:none}
+#rewardSymbol #rewardOrb{position:absolute;left:131px;top:88px;width:72px;height:72px;transform:none;opacity:1;transition:none}
+#rewardSymbol #rewardOrb:active{transform:scale(.97)}
+#rewardSymbol #rewardOrb svg{width:32px;height:32px;opacity:.42;filter:none;transition-property:opacity;transition-duration:0ms}
+#rewardSymbol #ribbonBadge{position:absolute;left:144.9px;top:108.7px;width:89.15px;height:91px;opacity:0;filter:none;transform:none;transition-property:left,top,width,height,opacity;transition-duration:0ms;transition-timing-function:ease-out}
+#rewardSymbol.bloom .reward-wash,#rewardSymbol.bright .reward-wash,#rewardSymbol.badged .reward-wash{transform:none;filter:blur(17px)}
+#rewardSymbol.badged #rewardOrb{opacity:1;pointer-events:none}
+#rewardSymbol.settled #ribbonBadge{filter:none}
+#rewardDesc{transform:none;transition:opacity .48s ease-out}
+#rewardActions,#nextMission{transform:none;transition:opacity .72s ease-out}
+#rewardDesc.visible,#rewardActions.visible,#nextMission.visible{transform:none}
+#rewardDesc{border:1px solid rgba(248,243,230,.14);background:rgba(248,243,230,.08);box-shadow:inset 0 0 6px rgba(248,243,230,.25);backdrop-filter:none;border-radius:24px}
+#rewardDesc h2{margin-bottom:6px;letter-spacing:0;line-height:23.8px}
+#rewardDesc p{line-height:21.7px;color:rgba(248,243,230,.88)}
+#rewardActions .btn{background:linear-gradient(90deg,rgba(201,171,229,.07),rgba(248,243,230,.15));border:1.15px solid rgba(255,255,255,.58);box-shadow:inset 0 0 8px rgba(248,243,230,.35);border-radius:24px}
+#nextMission{background:linear-gradient(116.7deg,#9180c3,#352897 97.087%);border:1px solid rgba(255,255,255,.86);box-shadow:inset 0 0 9px rgba(238,233,255,.38);border-radius:28px}
+#missionConfirm{background:linear-gradient(116.7deg,#9180c3,#352897 97.087%);border:1px solid rgba(255,255,255,.86);box-shadow:inset 0 0 9px rgba(238,233,255,.38);border-radius:28px}
+.mission-description{background:rgba(248,243,230,.08);border:1px solid rgba(248,243,230,.14);box-shadow:inset 0 0 6px rgba(248,243,230,.25);backdrop-filter:none;border-radius:24px}
+#rewardOrb{touch-action:manipulation}
+#phoneWrap,#stage,#viewport{backface-visibility:hidden}
+/* Optional QA controls: ?debug=1, overlay without narrowing the UI. */
+body.debug #panel{display:block!important;position:fixed;left:10px;top:10px;z-index:100;width:245px;max-height:calc(100dvh - 20px);overflow-y:auto;border-radius:16px;box-shadow:0 6px 36px #130d3a6b;background:#f9f7fdf8}
+body.debug #phoneWrap{z-index:1}
+@media(max-width:640px){#viewport{width:100%;height:100dvh;background:linear-gradient(180deg,#202426,#352897 50%,#9180c3 75%,#c9abe5)}#phone{border-radius:0;box-shadow:none}}
+
+
+/* Native Figma layers — accurate geometry, strokes, gradients and filter half-radii. */
+html,body{font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif!important}
+.kicker{font-family:"IBM Plex Sans",sans-serif!important;color:#E0D7FC;text-shadow:none;letter-spacing:8.8px;font-weight:600}
+#missionFrame .kicker{top:126px;left:28px;right:28px}
+#orbitHalo{width:170px;height:170px;left:68px;top:410px;transform:translate(-50%,-50%);transition:left .315s linear,top .315s linear,opacity .25s ease-out;pointer-events:none}
+#missionHaloSvg{width:170px;height:170px;overflow:visible}
+#orbitHalo.pulse #figmaMissionHaloMorph{animation:figmaHaloPulse .71s cubic-bezier(.42,0,.58,1) both;transform-origin:center}
+@keyframes figmaHaloPulse{0%{opacity:.77;transform:scale(.96)}50%{opacity:1;transform:scale(1.035)}100%{opacity:1;transform:scale(1)}}
+#constellation{top:90px;left:0;width:390px;height:520px}
+#figmaRewardHalos{position:absolute;inset:0;overflow:visible;pointer-events:none}
+#rewardSymbol #rewardOrb{left:131px;top:88px;width:72px;height:72px;pointer-events:auto;z-index:4}
+#rewardSymbol #ribbonBadge{z-index:2}
+#rewardSymbol .reward-wash,#rewardSymbol .reward-ring,#rewardSymbol .figma-glow-main,#rewardSymbol .figma-glow-inner{display:none!important}
+.mission-copy .eyebrow{font-family:"IBM Plex Sans KR",sans-serif;font-weight:400}
+.mission-copy h1{font-family:"IBM Plex Sans KR",sans-serif;font-weight:600}
+#rewardHead h1{font-family:"IBM Plex Sans KR",sans-serif;font-weight:700;color:#F8F3E6}
+#rewardDesc h2{font-weight:600}
+#rewardDesc p{font-weight:400}
+#missionConfirm,#nextMission,#rewardActions .btn{font-weight:600}
+#stage,#viewport,html,body{background-image:linear-gradient(180deg,#202426 0%,#352897 50%,#9180C3 75%,#C9ABE5 100%)!important}
+#rewardSymbol{transform:none}
+@media(max-width:650px){#stage{border-radius:0}}
+
+
+/* Independent preview controls: visible desktop sidebar + mobile toggle. */
+#shell{display:grid!important;grid-template-columns:275px minmax(0,1fr)!important;position:fixed;inset:0;width:100%;height:100dvh;overflow:hidden}
+#panel{display:block!important;position:relative!important;left:auto!important;top:auto!important;z-index:100;overflow-y:auto;width:auto!important;max-height:100dvh!important;background:#f9f7fd!important;border-right:1px solid #e7e0f2;padding:22px 17px 20px;color:#222;box-shadow:5px 0 20px #24164f0a!important;border-radius:0!important}
+#viewport{position:relative!important;inset:auto!important;width:auto!important;height:100dvh!important;min-width:0;min-height:0;overflow:hidden;background:linear-gradient(180deg,#202426 0%,#352897 50%,#9180C3 75%,#C9ABE5 100%)}
+#qaMenuToggle{display:none;position:fixed;z-index:120;top:12px;left:12px;padding:10px 13px;border:1px solid rgba(233,225,255,.65);border-radius:12px;background:rgba(34,24,94,.84);color:#fff;font-size:12px;box-shadow:0 2px 16px #25194d45;backdrop-filter:blur(10px)}
+#qaMenuToggle span{margin-left:7px}
+#panel .control-grid button.selected{background:#e4dcfa;border-color:#9183cf;color:#2f207d}
+/* Latest Figma live button fills. The mission button has lighter 52%-opaque stroke. */
+#missionConfirm{background:linear-gradient(90deg,#9180C3 0%,#352897 100%)!important;border:1px solid rgba(237,240,255,.52)!important;box-shadow:inset 0 0 6.24px rgba(248,243,230,.34)!important}
+#nextMission{background:linear-gradient(90deg,#9180C3 0%,#352897 100%)!important;border:1px solid rgba(255,255,255,.86)!important;box-shadow:inset 0 0 9px rgba(238,233,255,.38)!important}
+#rewardActions .btn{background:linear-gradient(90deg,rgba(201,171,229,.07),rgba(248,243,230,.15));border:1.15px solid rgba(255,255,255,.58)}
+#decorateOverlay .btn.primary{background:linear-gradient(90deg,#9180C3,#352897)}
+@media(max-width:699px){
+ #shell{display:block!important}
+ #viewport{position:absolute!important;inset:0!important;width:100%!important;height:100dvh!important}
+ #qaMenuToggle{display:block}
+ #panel{display:none!important;position:fixed!important;top:0!important;bottom:0!important;left:0!important;width:min(290px,85vw)!important;max-height:100dvh!important;padding-top:64px;box-shadow:8px 0 28px #1b124e55!important}
+ body.qa-open #panel{display:block!important}
+ body.qa-open #qaMenuToggle{left:12px;top:12px}
+}
+
+
+/* 2026-11-21. Origin-derived Figma fixes; preserving native UI, adding desktop-only device framing. */
+#decorateOverlay{display:none;position:absolute;inset:0;z-index:7;overflow:hidden;pointer-events:none}
+#decorateOverlay.visible{display:block;pointer-events:auto}
+#decorateGlow{position:absolute;left:25px;top:501px;width:336px;height:310px;border-radius:28px;border:1px solid rgba(237,240,255,.68);box-shadow:0 0 22px rgba(180,182,252,.68),0 0 48px rgba(224,215,252,.24);opacity:1;pointer-events:none}
+#decorateTopHighlight{position:absolute;left:90.5px;top:498px;width:205px;height:24px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(248,243,230,.68) 0%,rgba(224,215,252,.48) 20%,rgba(224,215,252,0) 100%);opacity:.6;pointer-events:none}
+#decorateModal{position:absolute;left:29px;top:505px;width:328px;height:302px;border-radius:26px;background:rgba(32,36,38,.4);border:1px solid rgba(248,243,230,.18);box-shadow:0 6px 20px rgba(10,9,33,.16);transform:none!important;transition:none!important;opacity:1;overflow:hidden;text-align:center;backdrop-filter:none}
+#decorateOverlay.visible #decorateModal{transform:none;opacity:1}
+#decorateModal .dec-icon{position:absolute;left:130px;top:28px;width:68px;height:68px;margin:0;border-radius:50%;display:grid;place-items:center}
+#decorateModal .dec-icon svg{display:block;width:68px;height:68px}
+#decorateModal h2{position:absolute;top:119px;left:22px;width:284px;height:31px;margin:0;font-size:22px;font-weight:600;line-height:29.7px;letter-spacing:0;color:#fff9ff}
+#decorateModal p{position:absolute;top:155px;left:22px;width:284px;height:23px;margin:0;font-size:14px;font-weight:400;line-height:21.7px;color:rgba(224,217,246,.94)}
+#decorateModal .btn{position:absolute;left:22px;margin:0;width:284px;min-height:0;display:grid;place-items:center;font-weight:600;font-size:14px}
+#decorateModal #toMain{top:191px;height:48px;border-radius:24px;background:linear-gradient(116.7deg,#9180C3 0%,#352897 97.087%);border:1px solid rgba(224,215,252,.72);box-shadow:inset 0 0 8px rgba(241,234,255,.28)}
+#decorateModal #decorateLater{top:244px;height:42px;border-radius:21px;background:rgba(224,215,252,.1);border:1px solid rgba(224,215,252,.36);box-shadow:inset 0 0 8px rgba(249,245,255,.1)}
+#systemFrame .system-card{position:absolute;left:29px;top:268px;width:328px;height:292px;border-radius:24px;border:1px solid rgba(248,243,230,.18);background:rgba(32,36,38,.4);box-shadow:none;isolation:isolate}
+#systemFrame .system-card::before{content:"";position:absolute;left:-5px;top:-5px;width:336px;height:300px;border:1px solid rgba(237,240,255,.68);border-radius:28px;box-shadow:0 0 22px rgba(180,182,252,.68),0 0 48px rgba(224,215,252,.24);pointer-events:none;z-index:-1}
+#systemFrame .system-card::after{content:"";position:absolute;left:62.5px;top:-8px;width:205px;height:24px;border-radius:50%;background:radial-gradient(ellipse,rgba(248,243,230,.68) 0%,rgba(224,215,252,.48) 20%,transparent 100%);opacity:.6;pointer-events:none;z-index:1}
+#loadingContent .spinner-slot{left:127px;top:56px;width:74px;height:72px;display:grid;place-items:center;overflow:visible}
+#loadingContent .spinner{width:74px;height:72px;border:0;display:block;border-radius:0;background:none!important;mask:none!important;-webkit-mask:none!important;animation:figmaSpinnerClockwise 1040ms linear infinite;transform-origin:50% 50%;filter:none;box-shadow:none}
+@keyframes figmaSpinnerClockwise{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.error-icon{left:127px;top:56px;width:74px;height:72px}
+.error-icon svg{position:absolute;transition:opacity .3s cubic-bezier(0,0,.58,1);transform:none!important}
+#errorWarning{width:74px;height:72px;opacity:1}
+#errorRetry{width:56px;height:56px;opacity:0}
+.error-icon.ready #errorWarning{opacity:0}
+.error-icon.ready #errorRetry{opacity:1}
+#orbitHalo{position:absolute;width:170px;height:170px;left:68px;top:410px;transform:translate(-50%,-50%);pointer-events:none}
+#missionHaloSvg{width:170px;height:170px;overflow:visible}
+#orbitHalo.pulse #figmaMissionHaloMorph{animation:none!important}
+#figmaMissionHaloMorph circle{transition-property:r,opacity;transition-duration:0ms;transition-timing-function:linear}
+#missionKicker{transition:opacity .235s ease-in-out}
+#missionNucleus{position:absolute;left:64px;top:406px;width:8px;height:8px;border-radius:50%;background:#F3F0E7;box-shadow:0 0 13px 3px rgba(201,171,229,.56);opacity:0;pointer-events:none;z-index:3}
+@media(prefers-reduced-motion:reduce){#loadingContent .spinner{animation:none!important;background:none!important;border:0!important;mask:none!important;-webkit-mask:none!important}}
+
+
+/* Figma 05-05: the reward applied-screen title remains, but description + three actions fade away behind the modal. */
+#decorateAppliedTitle{position:absolute;top:460px;left:28px;width:334px;height:30px;margin:0;text-align:center;color:#F8F3E6;font-size:22px;line-height:30px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .14s cubic-bezier(.42,0,.58,1)}
+#rewardFrame.decorating #decorateAppliedTitle{opacity:1}
+#rewardFrame.decorating #rewardDesc,#rewardFrame.decorating #rewardActions,#rewardFrame.decorating #nextMission{opacity:0;pointer-events:none;transition:opacity .14s cubic-bezier(.42,0,.58,1)}
+
+/* 2026-11-21 / targeted revision: preview shell + native Figma top-rim highlights. */
+/* Desktop QA: restore iPhone-like outer glass frame without changing 390×844 content coordinates. */
+@media(min-width:700px){
+  #viewport{background-image:radial-gradient(ellipse at center,#ddd1f1 0%,#ede6f8 54%,#f6f2fb 100%)!important;}
+  #phoneWrap{width:406px;height:860px;}
+  #phone{width:406px;height:860px;inset:0;border:1px solid rgba(255,255,255,.58);border-radius:48px;overflow:hidden;background:#171927;
+    box-shadow:0 30px 80px rgba(31,22,67,.30),0 9px 25px rgba(30,17,60,.20),0 0 0 1px rgba(35,29,61,.25),inset 0 0 0 1px rgba(255,255,255,.15);}
+  #stage{left:8px;top:8px;width:390px;height:844px;border-radius:40px;overflow:hidden;}
+}
+/* Actual mobile: full-bleed responsive view, not a smaller black device inside the screen. */
+@media(max-width:699px){
+  #viewport{background-image:linear-gradient(180deg,#202426 0%,#352897 50%,#9180C3 75%,#C9ABE5 100%)!important;}
+  #phoneWrap{width:390px;height:844px;}
+  #phone{inset:0;width:390px;height:844px;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible;}
+  #stage{left:0;top:0;width:390px;height:844px;border-radius:0;overflow:hidden;}
+}
+/* Pixel-exact SVG exported from Figma 1280:84197 (also matches 1646:5196). 
+   Its SVG already includes ellipse opacity=0.6; do not multiply it again. */
+#decorateTopHighlight{background-image:url("data:image/svg+xml,%3Csvg%20width%3D%22205%22%20height%3D%2224%22%20viewBox%3D%220%200%20205%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cellipse%20opacity%3D%220.6%22%20cx%3D%22102.5%22%20cy%3D%2212%22%20rx%3D%22102.5%22%20ry%3D%2212%22%20fill%3D%22url%28%23paint0_radial_1280_84197%29%22%2F%3E%0A%3Cdefs%3E%0A%3CradialGradient%20id%3D%22paint0_radial_1280_84197%22%20cx%3D%220%22%20cy%3D%220%22%20r%3D%221%22%20gradientUnits%3D%22userSpaceOnUse%22%20gradientTransform%3D%22translate%28102.5%2012%29%20scale%28102.5%2012%29%22%3E%0A%3Cstop%20stop-color%3D%22%23F8F3E6%22%20stop-opacity%3D%220.68%22%2F%3E%0A%3Cstop%20offset%3D%220.2%22%20stop-color%3D%22%23E0D7FC%22%20stop-opacity%3D%220.48%22%2F%3E%0A%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23E0D7FC%22%20stop-opacity%3D%220%22%2F%3E%0A%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3C%2Fsvg%3E")!important;background-color:transparent!important;background-size:205px 24px!important;background-position:center!important;background-repeat:no-repeat!important;opacity:1!important;}
+#systemFrame .system-card::after{background-image:url("data:image/svg+xml,%3Csvg%20width%3D%22205%22%20height%3D%2224%22%20viewBox%3D%220%200%20205%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cellipse%20opacity%3D%220.6%22%20cx%3D%22102.5%22%20cy%3D%2212%22%20rx%3D%22102.5%22%20ry%3D%2212%22%20fill%3D%22url%28%23paint0_radial_1280_84197%29%22%2F%3E%0A%3Cdefs%3E%0A%3CradialGradient%20id%3D%22paint0_radial_1280_84197%22%20cx%3D%220%22%20cy%3D%220%22%20r%3D%221%22%20gradientUnits%3D%22userSpaceOnUse%22%20gradientTransform%3D%22translate%28102.5%2012%29%20scale%28102.5%2012%29%22%3E%0A%3Cstop%20stop-color%3D%22%23F8F3E6%22%20stop-opacity%3D%220.68%22%2F%3E%0A%3Cstop%20offset%3D%220.2%22%20stop-color%3D%22%23E0D7FC%22%20stop-opacity%3D%220.48%22%2F%3E%0A%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23E0D7FC%22%20stop-opacity%3D%220%22%2F%3E%0A%3C%2FradialGradient%3E%0A%3C%2Fdefs%3E%0A%3C%2Fsvg%3E")!important;background-color:transparent!important;background-size:205px 24px!important;background-position:center!important;background-repeat:no-repeat!important;opacity:1!important;}
+/* Figma's outer 336×300 / 336×310 rings with two true drop shadows. */
+#decorateGlow,#systemFrame .system-card::before{border-color:rgba(237,240,255,.68)!important;
+ box-shadow:0 0 22px rgba(180,182,252,.68),0 0 48px rgba(224,215,252,.24)!important;}
+
+
+/* Figma SECTION 1258:71882 / FRAME 1258:71883 — one REWARD/00 common reward.
+   The 03→04 mission animation and all previously approved SVG icon, loader and popup layers remain unchanged. */
+#panel .control-grid .shared-reward-link{grid-column:1/-1;background:linear-gradient(90deg,#E7E0F9,#F6F1FD)}
+#rewardHead{top:126px}
+#rewardName{position:absolute;left:28px;top:490px;width:334px;height:30px;line-height:29.7px;margin:0;
+ color:#F8F3E6;font-size:22px;font-weight:600;letter-spacing:0;text-align:center;
+ opacity:0;pointer-events:none;transition:opacity .38s ease-out}
+#rewardName.visible{opacity:1}
+#rewardHint{top:467px;left:28px;width:334px;right:auto;font-family:"IBM Plex Sans KR",sans-serif;
+ font-size:12px;line-height:16.8px;font-weight:500;color:rgba(224,215,252,.9)}
+#rewardDesc{position:absolute;left:28px;top:536px;width:334px;height:104.36px;min-height:104.36px;
+ padding:16px 26px;display:flex;align-items:center;justify-content:center;opacity:0;
+ border-radius:24.96px;border:1.04px solid rgba(248,243,230,.14);background:rgba(248,243,230,.08);
+ box-shadow:inset 0 0 6px rgba(248,243,230,.25);text-align:center;pointer-events:none}
+#rewardDesc p{margin:0;width:100%;font-size:14px;font-weight:400;line-height:21.7px;
+ text-align:center;white-space:pre-line;color:rgba(248,243,230,.88)}
+#rewardDesc.visible{opacity:1;pointer-events:auto}
+#rewardActions{top:656.36px}
+#nextMission{top:750.36px}
+/* The reward name is now an actual Figma text layer; it moves with the header by -30px
+   when the 328x302 decorate popup rises, so the older duplicate title is unnecessary. */
+#decorateAppliedTitle{display:none!important}
+#rewardFrame.decorating #rewardName{opacity:1}
+
+
+/* Stable one-clock Figma popup motion. No compositor fight with legacy transitions. */
+#decorateModal,#decorateGlow,#decorateTopHighlight{transition:none!important;will-change:top,opacity}
+#rewardFrame.decorating #rewardDesc,#rewardFrame.decorating #rewardActions,
+#rewardFrame.decorating #nextMission{transition:none!important}
+
+:root{--figma-font:"IBM Plex Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+body,#stage,.screen,.btn,button{font-family:var(--figma-font)}
+#fontStatus{font-size:11px;color:#7c678d;margin-top:8px;line-height:1.6}
+
+
+/* Exact Figma 04A opening constellation. The existing fourth-path geometry remains animated. */
+#openingNativeConstellation{position:absolute;top:90px;left:0;width:390px;height:520px;display:none;opacity:1;pointer-events:none}
+#missionFrame.opening-native #openingNativeConstellation{display:block;opacity:1}
+#missionFrame.opening-native #constStars,
+#missionFrame.opening-native #futureTrail,
+#missionFrame.opening-native #lineLayers path:nth-child(-n+4){opacity:0!important}
+#missionFrame.opening-crossfade #openingNativeConstellation{display:block;opacity:0;transition:opacity .235s ease-in-out}
+#missionFrame.opening-crossfade #constStars,
+#missionFrame.opening-crossfade #lineLayers path:nth-child(-n+4){opacity:1;transition:opacity .235s ease-in-out}
+#missionFrame.opening-crossfade #futureTrail{opacity:0}
+/* Integrated player: navigation and device bezel belong to the host. */
+#qaMenuToggle,#panel,body.qa-open #panel{display:none!important}
+#shell{display:block!important;grid-template-columns:none!important}
+#viewport{inset:0!important}
+#ios{display:none!important}
+</style>
+</head>
+<body>
+<div id="shell">
+  <aside id="panel" aria-label="프로토타입 테스트 메뉴">
+    <div class="brand">LinkX <small>W12 · HTML</small></div>
+    <p class="panel-sub">미션 03 → 04 · 공통 리워드<br>피그마 「미션 완료 후 리워드 제공」 화면 구성을 반영했습니다.</p>
+    <section class="panel-group"><h2>시작 · 화면 확인</h2>
+      <div class="control-grid">
+        <button data-go="mission" data-step="3">미션 03</button><button data-go="mission" data-step="4">미션 04</button>
+        <button data-go="reward" class="shared-reward-link">공통 리워드</button>
+      </div>
+      <div class="control-stack" style="margin-top:10px"><button id="previewNext">다음 장면 보기 →</button><button id="previewPrev">← 이전 장면 보기</button></div>
+      <p class="small-note">검토용: 미션 03 · 공통 리워드 · 미션 04를 각각 선택할 수 있어요. 실제 ‘미션 확인 완료’는 메인 화면으로 돌아가며 보상을 지급하지 않습니다.</p>
+    </section>
+    <section class="panel-group"><h2>프로토타입 설명</h2>
+      <p class="small-note">390×844 피그마 콘텐츠를 iPhone 15 기준 393×852 디바이스 안에 비율 유지하여 표시합니다. 단계는 미션 03·04 및 공통 리워드 하나만 제공합니다. 원본 폰트: IBM Plex Sans KR. 온라인 글꼴을 읽지 못하면 대체 글꼴이 사용됩니다. 원본 SVG 레이어와 프로토타입 전환 설정을 적용했습니다.</p>
+      <p class="small-note flag" id="stateFlag" aria-live="polite">state: ready</p><p id="fontStatus" aria-live="polite">폰트 로딩 확인 중…</p>
+    </section>
+  </aside>
+  <button id="qaMenuToggle" type="button" aria-controls="panel" aria-expanded="false">화면 선택 <span aria-hidden="true">☰</span></button>
+  <main id="viewport" aria-label="LinkX 모바일 인터랙션">
+    <div id="phoneWrap"><div id="phone"><div id="stage" class="lx-device">
+      <div id="stars" aria-hidden="true"></div>
+      <div id="ios" aria-hidden="true"><div class="clock">9:41</div><div class="notch"></div><div class="signals"><svg width="17" height="13" viewBox="0 0 17 13" fill="#fff" aria-hidden="true"><rect x="0" y="9" width="3" height="4" rx=".7"/><rect x="4.7" y="6.5" width="3" height="6.5" rx=".7"/><rect x="9.4" y="3.7" width="3" height="9.3" rx=".7"/></svg><svg width="17" height="13" viewBox="0 0 17 13" fill="none"><path d="M1 5a11 11 0 0 1 15 0M4 8a7 7 0 0 1 9 0M7 11a2.5 2.5 0 0 1 3 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg><svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.8" y="1" width="20" height="10" rx="2" stroke="white" stroke-width="1.2"/><rect x="3" y="3.2" width="14.8" height="5.6" rx=".6" fill="white"/><rect x="22" y="4" width="2" height="4" rx="1" fill="white"/></svg></div></div>
+      <div id="scene">
+        <section id="missionFrame" class="screen active" aria-labelledby="missionTitle">
+          <div class="kicker" id="missionKicker">QUEST/03</div>
+          <svg id="constellation" viewBox="0 0 390 520" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <filter id="lineGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="1" result="glow"/><feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              <filter id="blurGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4"/></filter>
+              <filter id="starGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              <radialGradient id="starHalo"><stop stop-color="#f6eeff" stop-opacity=".65"/><stop offset=".5" stop-color="#b3a5ed" stop-opacity=".14"/><stop offset="1" stop-color="#b3a5ed" stop-opacity="0"/></radialGradient>
+            </defs>
+            <!-- Star centers verified from final Figma halos: (68,410), (124,309), (219,350), (293,244). -->
+            <g id="paths"></g><g id="constStars"></g><g id="futureTrail"></g>
+          </svg>
+          <svg id="openingNativeConstellation" viewBox="0 0 390 520" width="390" height="520" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+ <defs>
+  <radialGradient id="native04AStarHalo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 0) scale(1)"><stop stop-color="#F3F0E7" stop-opacity=".66"/><stop offset=".38" stop-color="#D6C9F3" stop-opacity=".22"/><stop offset="1" stop-color="#C9ABE5" stop-opacity="0"/></radialGradient>
+  <linearGradient id="native04ALineOne" x1="68" y1="219" x2="124" y2="219" gradientUnits="userSpaceOnUse"><stop stop-color="#B8E1FA"/><stop offset=".52" stop-color="#F3F0E7"/><stop offset="1" stop-color="#D8CDF5"/></linearGradient>
+  <linearGradient id="native04ALineTwo" x1="124" y1="219" x2="219" y2="219" gradientUnits="userSpaceOnUse"><stop stop-color="#B8E1FA"/><stop offset=".52" stop-color="#F3F0E7"/><stop offset="1" stop-color="#D8CDF5"/></linearGradient>
+  <radialGradient id="native04AThirdHalo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(219 260) scale(28)"><stop stop-color="#F3F0E7" stop-opacity=".66"/><stop offset=".38" stop-color="#D6C9F3" stop-opacity=".22"/><stop offset="1" stop-color="#C9ABE5" stop-opacity="0"/></radialGradient>
+  <radialGradient id="native04AThirdInner" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(219 260) scale(16)"><stop stop-color="#F3F0E7" stop-opacity=".66"/><stop offset=".38" stop-color="#D6C9F3" stop-opacity=".22"/><stop offset="1" stop-color="#C9ABE5" stop-opacity="0"/></radialGradient>
+  <radialGradient id="native04AFirstHalo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(68 320) scale(14)"><stop stop-color="#F3F0E7" stop-opacity=".66"/><stop offset=".38" stop-color="#D6C9F3" stop-opacity=".22"/><stop offset="1" stop-color="#C9ABE5" stop-opacity="0"/></radialGradient>
+  <radialGradient id="native04ASecondHalo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(124 219) scale(14)"><stop stop-color="#F3F0E7" stop-opacity=".66"/><stop offset=".38" stop-color="#D6C9F3" stop-opacity=".22"/><stop offset="1" stop-color="#C9ABE5" stop-opacity="0"/></radialGradient>
+ </defs>
+ <!-- The two completed edges and three fixed stars are the source Figma SVG artwork. -->
+ <path d="M68 320L124 219" stroke="#C9ABE5" stroke-opacity=".16" stroke-width="9" stroke-linecap="round"/>
+ <path d="M68 320L124 219" stroke="url(#native04ALineOne)" stroke-opacity=".88" stroke-width="2.8" stroke-linecap="round"/>
+ <path d="M124 219L219 260" stroke="#C9ABE5" stroke-opacity=".16" stroke-width="9" stroke-linecap="round"/>
+ <path d="M124 219L219 260" stroke="url(#native04ALineTwo)" stroke-opacity=".88" stroke-width="2.8" stroke-linecap="round"/>
+ <path d="M219 276C227.837 276 235 268.837 235 260C235 251.163 227.837 244 219 244C210.163 244 203 251.163 203 260C203 268.837 210.163 276 219 276Z" fill="url(#native04AThirdInner)"/>
+ <circle cx="219" cy="260" r="4.5" fill="#F3F0E7"/>
+ <circle cx="68" cy="320" r="14" fill="url(#native04AFirstHalo)"/>
+ <path d="M68 312.5C69.5 316 72 318.5 75.5 320C72 321.5 69.5 324 68 327.5C66.5 324 64 321.5 60.5 320C64 318.5 66.5 316 68 312.5Z" fill="#F3F0E7" stroke="#E0D7FC" stroke-opacity=".7" stroke-width=".75"/>
+ <circle cx="124" cy="219" r="14" fill="url(#native04ASecondHalo)"/>
+ <path d="M124 211.5C125.5 215 128 217.5 131.5 219C128 220.5 125.5 223 124 226.5C122.5 223 120 220.5 116.5 219C120 217.5 122.5 215 124 211.5Z" fill="#F3F0E7" stroke="#E0D7FC" stroke-opacity=".7" stroke-width=".75"/>
+ <circle cx="219" cy="260" r="28" fill="url(#native04AThirdHalo)"/>
+ <path d="M219 249C221.2 254.133 224.867 257.8 230 260C224.867 262.2 221.2 265.867 219 271C216.8 265.867 213.133 262.2 208 260C213.133 257.8 216.8 254.133 219 249Z" fill="#F3F0E7" fill-opacity=".91" stroke="#E0D7FC" stroke-opacity=".7" stroke-width=".75"/>
+ <circle cx="293" cy="154" r="3.3" fill="#DED8EF" fill-opacity=".55"/>
+</svg>
+          <div id="orbitHalo" aria-hidden="true"><svg id="missionHaloSvg" width="170" height="170" viewBox="-85 -85 170 170" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <radialGradient id="figmaOrbitBloom"><stop stop-color="#F3F0E7" stop-opacity=".58"/><stop offset=".37" stop-color="#E0D7FC" stop-opacity=".24"/><stop offset="1" stop-color="#C9ABE5" stop-opacity="0"/></radialGradient>
+    <radialGradient id="figmaOrbitSpread"><stop stop-color="#F3F0E7" stop-opacity=".44"/><stop offset=".21" stop-color="#E0D7FC" stop-opacity=".27"/><stop offset=".48" stop-color="#B8E1FA" stop-opacity=".09"/><stop offset=".78" stop-color="#C9ABE5" stop-opacity=".035"/><stop offset="1" stop-color="#C9ABE5" stop-opacity="0"/></radialGradient>
+    <filter id="figmaMissionBloom" x="-90" y="-90" width="180" height="180" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="figmaMissionSpread" x="-90" y="-90" width="180" height="180" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+  <g id="figmaMissionHaloMorph">
+    <circle r="77" opacity=".3" fill="url(#figmaOrbitBloom)" filter="url(#figmaMissionBloom)"/>
+    <circle r="62.62" opacity=".36" fill="url(#figmaOrbitSpread)" filter="url(#figmaMissionSpread)"/>
+    <circle r="61.525" stroke-width=".95" stroke="#B8E1FA" stroke-opacity=".205" opacity=".62"/>
+    <circle r="46.925" stroke-width="1.15" stroke="#E0D7FC" stroke-opacity=".375" opacity=".61"/>
+  </g>
+</svg></div><div id="missionNucleus" aria-hidden="true"></div>
+          <div id="missionText" class="mission-copy"><p class="eyebrow" id="missionEyebrow">새로운 미션!</p><h1 id="missionTitle">대화해볼 사람 발견하기</h1></div>
+          <div id="missionDesc" class="mission-description glass">오늘 캠퍼스에서 대화해볼 수 있을 것 같은<br>외국 학생 한 명을 발견해 봐요.</div>
+          <button class="btn primary" id="missionConfirm">미션 확인 완료</button>
+        </section>
+        <section id="rewardFrame" class="screen" aria-labelledby="rewardTitle">
+          <div id="rewardHead"><div class="kicker" id="rewardKicker">REWARD/00</div><h1 id="rewardTitle">미션 완료!</h1></div>
+          <div id="rewardSymbol" aria-label="별빛을 눌러 보상 확인">
+            <svg id="figmaRewardHalos" width="334" height="248" viewBox="0 0 334 248" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="figmaRewardWash" cx="50%" cy="50%" r="50%" gradientUnits="objectBoundingBox"><stop stop-color="#F3F0E7" stop-opacity=".58"/><stop offset=".37" stop-color="#E0D7FC" stop-opacity=".24"/><stop offset="1" stop-color="#C9ABE5" stop-opacity="0"/></radialGradient>
+    <filter id="figmaRewardBlur8" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="8.5"/></filter>
+    <filter id="figmaRewardBlur16" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="16"/></filter>
+    <filter id="figmaRewardBlur12" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="12"/></filter>
+  </defs>
+  <circle id="rewardWashCircle" cx="167" cy="124" r="65" opacity=".2" fill="url(#figmaRewardWash)" filter="url(#figmaRewardBlur8)"/>
+  <circle id="rewardMainGlowCircle" cx="167" cy="124" r="60" opacity=".58" fill="#C9ABE5" fill-opacity=".19" filter="url(#figmaRewardBlur16)"/>
+  <circle id="rewardInnerGlowCircle" cx="167" cy="124" r="32" opacity=".4" fill="#F8F3E6" fill-opacity=".29" filter="url(#figmaRewardBlur12)"/>
+  <circle id="rewardOuterRingCircle" cx="167" cy="124" r="54" opacity=".19" stroke="#B8E1FA" stroke-opacity=".22" stroke-width=".95"/>
+  <circle id="rewardInnerRingCircle" cx="167" cy="124" r="41" opacity=".15" stroke="#E0D7FC" stroke-opacity=".36" stroke-width="1.05"/>
+</svg>
+            <button id="rewardOrb" aria-label="별을 눌러 보상 확인" title="별을 눌러 보상을 확인하세요">
+              <svg viewBox="0 0 32 32"><path d="M16 0.5C19.1 7.73333 24.2667 12.9 31.5 16C24.2667 19.1 19.1 24.2667 16 31.5C12.9 24.2667 7.73333 19.1 0.5 16C7.73333 12.9 12.9 7.73333 16 0.5Z" fill="#F3F0E7" opacity=".42"/></svg>
+            </button>
+            <svg id="ribbonBadge" xmlns="http://www.w3.org/2000/svg" width="210" height="214" viewBox="0 0 210 214" fill="none" role="img" aria-label="피그마 원본 LUMINOUS RIBBON">
+<defs>
+<radialGradient id="refGlowOne" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(104.946 101.918) scale(178.531 172.71)"><stop stop-color="#BFA7FF" stop-opacity=".96"/><stop offset=".56" stop-color="#A8BEFF" stop-opacity=".6"/><stop offset="1" stop-color="#252344" stop-opacity="0"/></radialGradient>
+<radialGradient id="refGlowTwo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(104.273 100.775) scale(141.014)"><stop stop-color="#F0E8FF" stop-opacity=".96"/><stop offset=".56" stop-color="#BFA7FF" stop-opacity=".6"/><stop offset="1" stop-color="#282055" stop-opacity="0"/></radialGradient>
+<linearGradient id="refLeftRibbon" x1="56.5957" y1="140.419" x2="109.372" y2="182.325" gradientUnits="userSpaceOnUse"><stop stop-color="#C5E8FF"/><stop offset=".55" stop-color="#899CE3"/><stop offset="1" stop-color="#6865B6"/></linearGradient>
+<linearGradient id="refRightRibbon" x1="109.506" y1="139.255" x2="163.109" y2="183.145" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE0FF"/><stop offset=".55" stop-color="#B79CD8"/><stop offset="1" stop-color="#6662B4"/></linearGradient>
+<radialGradient id="refMedalOuter" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(100.645 88.219) scale(93.1216 93.2659)"><stop stop-color="#E7E4FF"/><stop offset=".53" stop-color="#7774CA"/><stop offset="1" stop-color="#29244F"/></radialGradient>
+<radialGradient id="refMedalInner" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(104.273 97.9091) scale(95.0412 95.1885)"><stop stop-color="#F0E8FF" stop-opacity=".96"/><stop offset=".56" stop-color="#A8BEFF" stop-opacity=".6"/><stop offset="1" stop-color="#29244F" stop-opacity="0"/></radialGradient>
+<radialGradient id="refSheen" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(106.627 81.6023) scale(70.507 48.514)"><stop stop-color="white" stop-opacity=".96"/><stop offset=".56" stop-color="#F0E8FF" stop-opacity=".6"/><stop offset="1" stop-color="#BFA7FF" stop-opacity="0"/></radialGradient>
+<filter id="refBroadBlur" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="6.05"/></filter>
+<filter id="refMedalShadow" x="-45%" y="-45%" width="190%" height="190%"><feGaussianBlur stdDeviation="8.41"/></filter>
+<filter id="refRealRibbonContour" x="-55%" y="-55%" width="210%" height="210%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="8.409" result="soft"/><feFlood flood-color="#BFA7FF" flood-opacity=".72"/><feComposite in2="soft" operator="in" result="halo"/><feMerge><feMergeNode in="halo"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="refRealInnerLight" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="4.7" result="shadow"/><feOffset dx="2.69" dy="3.36"/><feComposite in2="SourceAlpha" operator="in" result="inner"/><feFlood flood-color="#2A2156" flood-opacity=".43"/><feComposite in2="inner" operator="in" result="shade"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="shade"/></feMerge></filter>
+<filter id="refFineGlow" x="-35%" y="-35%" width="170%" height="170%"><feGaussianBlur stdDeviation="2.35"/></filter>
+</defs>
+<ellipse opacity=".3" filter="url(#refBroadBlur)" cx="104.945" cy="101.918" rx="92.8364" ry="89.8091" fill="url(#refGlowOne)"/>
+<circle opacity=".62" filter="url(#refBroadBlur)" cx="104.273" cy="100.775" r="73.3273" fill="url(#refGlowTwo)"/>
+<circle cx="104.273" cy="98.7564" r="60.1418" stroke="#A8BEFF" stroke-opacity=".4" stroke-width=".807273"/>
+<path d="M74.0386 140.419L99.6214 153.23L87.9928 194.605L72.8757 182.738L56.5957 191.292L74.0386 140.419Z" fill="url(#refLeftRibbon)"/>
+<path d="M109.506 152.648L136.251 139.255L154.276 190.62L138.577 181.975L122.297 193.933L109.506 152.648Z" fill="url(#refRightRibbon)"/>
+<path filter="url(#refRealRibbonContour)" d="M164.741 97.909L163.352 103.086L160.386 107.82L158.189 112.38L157.817 117.429L158.02 123.013L156.642 128.19L152.851 131.975L147.921 134.59L143.74 137.437L140.897 141.624L138.286 146.563L134.507 150.359L129.338 151.74L123.762 151.536L118.721 151.908L114.169 154.11L109.442 157.079L104.273 158.471L99.1039 157.079L94.3769 154.11L89.8243 151.908L84.7833 151.536L79.2074 151.74L74.0385 150.359L70.2592 146.563L67.6486 141.624L64.8054 137.437L60.6249 134.59L55.6944 131.975L51.9035 128.19L50.5255 123.013L50.729 117.429L50.3569 112.38L48.1591 107.82L45.1938 103.086L43.8042 97.909L45.1938 92.732L48.1591 87.9977L50.3569 83.4381L50.729 78.3893L50.5255 72.8047L51.9035 67.6278L55.6944 63.8427L60.6249 61.228L64.8054 58.3804L67.6486 54.1935L70.2592 49.2553L74.0385 45.4585L79.2074 44.0784L84.7833 44.2822L89.8243 43.9095L94.3769 41.7083L99.1039 38.7384L104.273 37.3467L109.442 38.7384L114.169 41.7083L118.721 43.9095L123.762 44.2822L129.338 44.0784L134.507 45.4585L138.286 49.2553L140.897 54.1935L143.74 58.3804L147.921 61.228L152.851 63.8427L156.642 67.6278L158.02 72.8047L157.817 78.3893L158.189 83.4381L160.386 87.9977L163.352 92.732L164.741 97.909Z" fill="url(#refMedalOuter)" stroke="#D9D5FF" stroke-opacity=".98" stroke-width="2.89273" stroke-linejoin="round"/>
+<path d="M104.273 147.407C131.567 147.407 153.694 125.246 153.694 97.9091C153.694 70.5721 131.567 48.4111 104.273 48.4111C76.978 48.4111 54.8513 70.5721 54.8513 97.9091C54.8513 125.246 76.978 147.407 104.273 147.407Z" fill="url(#refMedalInner)" stroke="#D9D5FF" stroke-opacity=".55" stroke-width="1.14364"/>
+<path d="M148.461 97.9094C148.461 122.352 128.677 142.166 104.273 142.166C79.8681 142.166 60.0842 122.352 60.0842 97.9094C60.0842 73.4669 79.8681 53.6523 104.273 53.6523C128.677 53.6523 148.461 73.4669 148.461 97.9094Z" stroke="#BCEEFF" stroke-opacity=".67" stroke-width="1.00909"/>
+<ellipse opacity=".26" filter="url(#refBroadBlur)" cx="106.627" cy="81.6023" rx="36.6636" ry="25.2273" fill="url(#refSheen)"/>
+<circle cx="56.8455" cy="69.4925" r="1.00909" fill="#BCEEFF" fill-opacity=".82"/>
+<circle cx="149.345" cy="77.2292" r="1.34545" fill="#BCEEFF" fill-opacity=".82"/>
+</svg>
+          </div>
+          <p id="rewardHint" aria-live="polite">별을 눌러 보상을 확인하세요</p>
+          <h2 id="rewardName" aria-live="polite">시작의 증표</h2>
+          <p id="decorateAppliedTitle" aria-hidden="true">시작의 증표</p>
+          <article id="rewardDesc" class="glass" aria-live="polite"><p id="rewardExplanation">대화를 시작할 준비가 된 사람만<br>가질 수 있는 특별한 증표예요.</p></article>
+          <div id="rewardActions"><button id="seeReward" class="btn secondary">리워드 확인하기</button><button id="decorateReward" class="btn secondary">메인 화면에 장식하기</button></div>
+          <button id="nextMission" class="btn primary">다음 미션 확인하기</button>
+        </section>
+        <section id="systemFrame" class="screen" aria-live="polite">
+          <div class="system-card">
+            <div class="kicker system-kicker" id="sysKicker">QUEST/LOAD</div>
+            <div id="loadingContent"><div class="spinner-slot"><div class="spinner" role="progressbar" aria-label="불러오는 중"></div></div><div class="system-title" id="sysLoadingTitle">미션 불러오는 중…</div><div class="system-message glass">잠시만 기다려 주세요.</div></div>
+            <div id="errorContent"><button class="error-close" id="errorClose" aria-label="오류 화면 닫기">×</button><button class="error-icon" id="errorIcon" aria-label="오류 확인 중" disabled>
+              <svg id="errorWarning" viewBox="0 0 74 72" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M37 10C38.3333 10 40 11.6667 42 15L65 55C67 59 65.3333 61.3333 60 62H13C8.33333 61.3333 7.33333 59 10 55L32 15C34 11.6667 35.6667 10 37 10Z" fill="#C9ABE5" fill-opacity="0.19" stroke-width="1.7" stroke-linejoin="round" stroke="#E0D7FC" stroke-opacity="0.7"/><path d="M37 30V44" stroke-width="3" stroke-linecap="round" stroke="#F8F3E6"/><circle cx="37" cy="52" r="2" fill="#F8F3E6"/></svg>
+              <svg id="errorRetry" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.825 40.1498C20.975 43.1498 25.15 44.6748 29.8 44.6748C39.1 44.6748 46.475 37.1248 46.475 27.6998C46.475 18.4748 39.325 11.0498 30.05 11.0498C25.15 11.0498 20.8 12.7998 17.475 15.7748L9.42499 23.1748" stroke-width="2.125" stroke-linecap="round" stroke-linejoin="round" stroke="#E0D7FC"/><path d="M9.42499 13.8994V23.1744H18.675" stroke-width="2.125" stroke-linecap="round" stroke-linejoin="round" stroke="#E0D7FC"/></svg>
+            </button><div class="system-title" id="sysErrorTitle">미션을 불러오지 못했어요</div><div class="system-message glass">창을 닫고 이전 화면으로 돌아가거나<br>다시 시도해 주세요.</div></div>
+          </div>
+        </section>
+      </div>
+      <div id="decorateOverlay" aria-hidden="true"><div id="decorateGlow" aria-hidden="true"></div><div id="decorateTopHighlight" aria-hidden="true"></div><div id="decorateModal" role="dialog" aria-label="리워드 장식 완료"><div class="dec-icon"><svg width="68" height="68" viewBox="0 0 68 68" fill="none" aria-hidden="true"><circle cx="34" cy="34" r="33.25" stroke="#E0D7FC" stroke-opacity=".7" stroke-width="1" fill="#C9ABE5" fill-opacity=".19"/><g transform="translate(10 10)"><path d="M44.8783 13.1395C44.7255 12.6627 44.4339 12.2423 44.0407 11.9323C43.6475 11.6223 43.1708 11.4368 42.6715 11.3994L35.7452 10.8519L33.0808 4.5407C32.8862 4.08366 32.5615 3.69393 32.1471 3.41999C31.7328 3.14605 31.247 3 30.7502 3C30.2535 3 29.7677 3.14605 29.3533 3.41999C28.9389 3.69393 28.6142 4.08366 28.4196 4.5407L25.7552 10.8519L18.829 11.3994C18.3316 11.4361 17.8564 11.62 17.464 11.9278C17.0716 12.2356 16.7797 12.6533 16.6257 13.1276C16.4716 13.6019 16.4622 14.1114 16.5989 14.591C16.7355 15.0707 17.0118 15.4988 17.3927 15.8207L22.654 20.2607L21.049 26.8963C20.9322 27.3769 20.9608 27.8813 21.131 28.3456C21.3013 28.8099 21.6055 29.2132 22.0052 29.5044C22.4086 29.8018 22.8912 29.9728 23.3918 29.9959C23.8925 30.0189 24.3887 29.8929 24.8177 29.6338L30.7502 26.062L36.6846 29.6357C37.1139 29.8941 37.61 30.0196 38.1104 29.9966C38.6109 29.9736 39.0934 29.803 39.4971 29.5063C39.8961 29.2145 40.1997 28.8111 40.3695 28.3469C40.5394 27.8827 40.5679 27.3786 40.4515 26.8982L38.8465 20.2626L44.1077 15.8226C44.4887 15.5029 44.7656 15.0768 44.9029 14.5987C45.0402 14.1207 45.0317 13.6126 44.8783 13.1395ZM36.2027 18.562C35.9899 18.7418 35.8313 18.9775 35.7449 19.2424C35.6584 19.5074 35.6475 19.7911 35.7133 20.062L37.2659 26.4763L31.5246 23.0245C31.2911 22.8839 31.0237 22.8097 30.7512 22.8097C30.4786 22.8097 30.2112 22.8839 29.9777 23.0245L24.2365 26.4801L25.789 20.062C25.8546 19.791 25.8434 19.5071 25.7566 19.2421C25.6698 18.9772 25.5109 18.7416 25.2977 18.562L20.2502 14.2982L26.9102 13.7713C27.1843 13.7496 27.4472 13.6529 27.6701 13.4919C27.8929 13.3308 28.0673 13.1116 28.174 12.8582L30.7502 6.73257L33.3358 12.8582C33.4426 13.1116 33.6169 13.3308 33.8398 13.4919C34.0626 13.6529 34.3255 13.7496 34.5996 13.7713L41.2615 14.2982L36.2027 18.562ZM16.5152 23.0957L5.56147 34.0607C5.28001 34.3422 4.89827 34.5003 4.50022 34.5003C4.10218 34.5003 3.72043 34.3422 3.43897 34.0607C3.15751 33.7792 2.99939 33.3975 2.99939 32.9995C2.99939 32.6014 3.15751 32.2197 3.43897 31.9382L14.3983 20.9788C14.6798 20.6974 15.0616 20.5392 15.4596 20.5392C15.8576 20.5392 16.2394 20.6974 16.5208 20.9788C16.8023 21.2603 16.9604 21.642 16.9604 22.0401C16.9604 22.4381 16.8023 22.8199 16.5208 23.1013L16.5152 23.0957ZM18.5421 32.4463C18.8232 32.7276 18.9811 33.109 18.9811 33.5066C18.9811 33.9043 18.8232 34.2857 18.5421 34.5669L8.56147 44.5607C8.42211 44.7001 8.25666 44.8106 8.07457 44.886C7.89248 44.9615 7.69732 45.0003 7.50022 45.0003C7.30313 45.0003 7.10797 44.9615 6.92588 44.886C6.74379 44.8106 6.57834 44.7001 6.43897 44.5607C6.29961 44.4213 6.18906 44.2559 6.11363 44.0738C6.03821 43.8917 5.99939 43.6965 5.99939 43.4995C5.99939 43.3024 6.03821 43.1072 6.11363 42.9251C6.18906 42.743 6.29961 42.5776 6.43897 42.4382L16.4271 32.452C16.7084 32.1709 17.0898 32.013 17.4874 32.013C17.8851 32.013 18.2664 32.1709 18.5477 32.452L18.5421 32.4463ZM32.2296 32.2588C32.3691 32.3981 32.4797 32.5636 32.5552 32.7457C32.6307 32.9278 32.6695 33.123 32.6695 33.3201C32.6695 33.5172 32.6307 33.7124 32.5552 33.8945C32.4797 34.0766 32.3691 34.242 32.2296 34.3813L22.0521 44.5588C21.7706 44.8403 21.3889 44.9984 20.9908 44.9984C20.5928 44.9984 20.2111 44.8403 19.9296 44.5588C19.6481 44.2774 19.49 43.8956 19.49 43.4976C19.49 43.0995 19.6481 42.7178 19.9296 42.4363L30.109 32.2588C30.2485 32.1184 30.4145 32.0069 30.5974 31.9309C30.7803 31.8549 30.9763 31.8159 31.1744 31.8161C31.3724 31.8162 31.5684 31.8556 31.7511 31.9319C31.9338 32.0082 32.0997 32.12 32.239 32.2607L32.2296 32.2588Z" fill="#F8F3E6"/></g></svg></div><h2>메인 화면에 장식했어요</h2><p>바로 확인하러 갈까요?</p><button class="btn primary" id="toMain">메인 화면으로 가기</button><button class="btn later" id="decorateLater">나중에</button></div></div>
+      <div id="detailOverlay" aria-hidden="true"><button class="back" id="detailBack" aria-label="리워드 화면으로 돌아가기">‹</button><div class="kicker" id="detailKicker">REWARD/00</div><div style="margin:75px auto 5px;width:130px;height:130px;display:grid;place-items:center" id="detailBadgeHolder"></div><h2 id="detailTitle"></h2><div class="detail-summary glass" id="detailExplanation"></div><button class="btn primary" id="detailClose">리워드 화면으로 돌아가기</button></div>
+      <div id="routeNotice"><div class="system-card"><div class="kicker" style="margin-bottom:19px">LINKX / CONNECTION</div><h2 id="routeTitle">팀 화면 연결 지점</h2><p id="routeText">이 파일은 미션·리워드 화면만 구현했습니다.</p><button class="btn primary" id="routeBack">미션·리워드로 돌아가기</button></div></div>
+      <div id="toast" role="status"></div>
+      <div id="homeIndicator" aria-hidden="true"></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+(function(){"use strict";
+const $ = id=>document.getElementById(id);
+const screens={mission:$('missionFrame'),reward:$('rewardFrame'),system:$('systemFrame')};
+// Only STEP 03 and STEP 04 are offered; the common reward is one reusable preview screen.
+const STAGES=[
+ null,null,
+ {title:'눈 마주치고 미소 짓기',description:'눈이 마주쳤을 때 가볍게 미소 지어 봐요.\n대화에 열려 있다는 신호를 전해요.'},
+ {title:'짧게 먼저 말 걸어보기',description:'길게 대화하지 않아도 괜찮아요.\n외국 학생에게 짧게 인사하거나\n한 마디만 건네보세요.'}
+];
+const COMMON_REWARD={name:'시작의 증표',description:'대화를 시작할 준비가 된 사람만\n가질 수 있는 특별한 증표예요.'};
+// Figma coordinates converted to 390x844 design canvas.
+const STARS=[{x:68,y:410},{x:124,y:309},{x:219,y:350},{x:293,y:244}];
+let state={mode:'mission',step:3,phase:'stable',prevMode:'mission',errorReady:false,completed:[],decorated:[]};
+let jobs=[],lock=false,reduce=matchMedia('(prefers-reduced-motion: reduce)');
+let syncCurrent=null;
+function delay(ms,fn){const id=setTimeout(fn,reduce.matches?0:ms);jobs.push(id);return id}
+function clearJobs(){
+ jobs.forEach(clearTimeout);jobs=[];stopLineMotion();lock=false;
+ screens.mission.classList.remove('opening-native','opening-crossfade');
+ screens.mission.style.removeProperty('transition');
+ screens.mission.style.removeProperty('opacity');
+  document.querySelectorAll('.mission-four-dissolve-line').forEach(e=>e.remove());
+ const fourth=$('missionFourthLight');if(fourth)fourth.remove();
+ if(comp&&comp.lines)comp.lines.forEach(p=>{p.line.style.opacity='';p.shadow.style.opacity=''});
+ const glow=$('orbitHalo');if(glow)glow.style.opacity='';
+ if(screens.reward){
+   screens.reward.style.display=''; screens.reward.style.zIndex='';
+   screens.reward.style.pointerEvents=''; screens.reward.style.transition='';
+   screens.reward.style.opacity='';
+ }
+}
+function pad(n){return String(n).padStart(2,'0')}
+function stateUI(){ $('stateFlag').textContent='state: '+state.mode+' / step '+state.step+' / '+state.phase;
+ document.querySelectorAll('#panel [data-go]').forEach(b=>b.classList.toggle('selected',b.dataset.go===state.mode&&(!b.dataset.step||+b.dataset.step===state.step))); }
+function activate(name){Object.entries(screens).forEach(([k,el])=>{el.classList.toggle('active',k===name);el.setAttribute('aria-hidden',k===name?'false':'true')});state.mode=name;stateUI()}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');delay(1500,()=>t.classList.remove('show'))}
+// Exact 64 visible star coordinates read from Figma's SCENIC HERO starfield instance 1291:7919.
+const FIGMA_STAR_POINTS=[[41.1,17.2,3],[148,165.6,1.4],[238.5,336.1,1.4],[356,439,1.4],[27,564.3,2.2],[156.4,713.4,1.4],[227.1,47.1,1.4],[324.8,151.1,1.4],[18.7,277.5,2.2],[127.5,426.7,3],[221.9,600.1,1.4],[299.9,705.1,1.4],[16.6,832.5,2.2],[106.4,145.9,1.4],[180.3,319.5,1.4],[281.2,425.5,1.4],[366,554,2.2],[90.8,706.1,1.4],[186.7,42.1,3],[268.7,150,1.4],[376.4,279.5,2.2],[81.5,432.8,1.4],[158.4,518,1.4],[262.4,716.5,1.4],[350.4,9.3,2.2],[35.7,73.1,1.4],[135.6,249.8,1.4],[219,358.1,3],[330.7,490.5,2.2],[38.8,645.8,1.4],[118.9,823.6,1.4],[226,96,1.4],[317.1,228.6,2.2],[5.6,384.9,1.4],[108.5,473.3,1.4],[195.9,674.9,1.4],[195.1,650.3,1.6],[43.6,603.3,2.5],[78.9,288.3,2.2],[236.7,755.9,1.7],[273.5,644.9,2.1],[304.2,457.8,1.2],[99.2,669.6,1.9],[117.6,330.3,1.5],[185.1,600,2.2],[278.6,638.2,1.2],[72,646,1.1],[217.5,221.4,1.1],[260.5,358.7,1.6],[153.5,308.7,1.5],[224,246.4,2.1],[63.3,455.2,1.8],[117,368.6,2.3],[238,379.4,1.7],[232.1,647.8,1.1],[321,73.9,2.5],[123.6,565.9,2.1],[250.7,652.9,1.3],[224.8,316.5,1.8],[257,333.5,1.6],[296.9,630.6,1.9],[73.5,614,1.8],[128.7,731.4,1.5],[122.7,87.5,2]];
+function stars(){const f=document.createDocumentFragment();FIGMA_STAR_POINTS.forEach(([x,y,sz],i)=>{const d=document.createElement('span');d.className='particle';d.style.cssText=`left:${x}px;top:${y}px;--s:${sz}px;--o:${(i<36?.11:.35).toFixed(2)}`;f.appendChild(d)});$('stars').appendChild(f)}
+function pathShape(d,cls){const n=document.createElementNS('http://www.w3.org/2000/svg','path');n.setAttribute('d',d);n.setAttribute('class',cls);return n}
+function svgMake(tag,attrs,group){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);group.appendChild(n);return n}
+function diamond(group,x,y,scale=1){const g=svgMake('g',{transform:`translate(${x} ${y}) scale(${scale})`},group);svgMake('path',{d:'M0 -11 3 -3 11 0 3 3 0 11 -3 3 -11 0 -3 -3Z',class:'diamond'},g);return g}
+const comp={lines:[],stars:[]};
+let lineMotionFrame=0,lineMotionGeneration=0;
+function stopLineMotion(){
+  ++lineMotionGeneration;
+  if(lineMotionFrame)cancelAnimationFrame(lineMotionFrame);
+  lineMotionFrame=0;
+}
+// Each Figma 03→04 intermediate frame ends its luminous path exactly at
+// the center of the 8px moving light nucleus: (237.5,323.5),
+// (266.36,282.16), (289.3,249.3). Both now share one clock.
+function alignLineAndNucleus(segment,fromCenter,toCenter,duration,fromDiameter=8,toDiameter=8){
+  stopLineMotion();
+  if(!segment)return;
+  const initial=FIGMA_CENTER[2]; // Figma constellation local coordinates (global y is +90)
+  const token=lineMotionGeneration, start=performance.now();
+  for(const path of [segment.line,segment.shadow]){
+    path.style.transition='none';
+    path.style.strokeDasharray='none';
+    path.style.strokeDashoffset='0';
+  }
+  const nucleus=$('missionNucleus'), halo=$('orbitHalo');
+  nucleus.style.transition='none';
+  halo.style.transition='none';
+  nucleus.style.left=(fromCenter[0]-fromDiameter/2)+'px';
+  nucleus.style.top=(fromCenter[1]-fromDiameter/2)+'px';
+  halo.style.left=fromCenter[0]+'px';halo.style.top=fromCenter[1]+'px';
+  const animate=now=>{
+    if(token!==lineMotionGeneration)return;
+    const t=Math.max(0,Math.min(1,(now-start)/Math.max(1,duration)));
+    // One interpolated point drives BOTH the Figma line tip and nucleus center.
+    const x=fromCenter[0]+(toCenter[0]-fromCenter[0])*t;
+    const y=fromCenter[1]+(toCenter[1]-fromCenter[1])*t;
+    const diameter=fromDiameter+(toDiameter-fromDiameter)*t;
+    const d=`M${initial.x} ${initial.y}L${x} ${y-90}`;
+    segment.line.setAttribute('d',d); segment.shadow.setAttribute('d',d);
+    nucleus.style.left=(x-diameter/2)+'px'; nucleus.style.top=(y-diameter/2)+'px';
+    nucleus.style.width=diameter+'px'; nucleus.style.height=diameter+'px';
+    nucleus.style.background=diameter>8.2?'radial-gradient(circle,rgba(243,240,231,.22),rgba(201,171,229,0))':'#F3F0E7';
+    nucleus.style.boxShadow=diameter>8.2?'none':'0 0 13px 3px rgba(201,171,229,.56)';
+    nucleus.style.opacity='1';
+    halo.style.left=x+'px';halo.style.top=y+'px';
+    if(t<1)lineMotionFrame=requestAnimationFrame(animate); else lineMotionFrame=0;
+  };
+  lineMotionFrame=requestAnimationFrame(animate);
+}
+
+// Figma's actual luminous constellation: original center points and geometry.
+const FIGMA_CENTER=[{x:68,y:320},{x:124,y:219},{x:219,y:260},{x:293,y:154}];
+// SOURCE: Figma SECTION 04A / 네 번째 미션 부여 · 별빛 연결 (1285:7434).
+// Seven original frames: 1280:82099 → 82244 → 82391 → 82538 → 82685 → 82831 → 82977.
+// Initial 3 stars fixed; 8px light nucleus + last connecting LINE move; T4/04→I4/01 DISSOLVE(235ms).
+const pathCoords=[[68,320,124,219],[124,219,219,260],[219,260,293,154]];
+function buildConstellation(){
+ const svg=$('constellation');
+ svg.innerHTML=`<defs>
+   <radialGradient id="figStarHalo" cx="50%" cy="50%" r="50%"><stop stop-color="#F3F0E7" stop-opacity=".66"/><stop offset=".38" stop-color="#D6C9F3" stop-opacity=".22"/><stop offset="1" stop-color="#C9ABE5" stop-opacity="0"/></radialGradient>
+   <linearGradient id="figLineGradient" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#B8E1FA"/><stop offset=".52" stop-color="#F3F0E7"/><stop offset="1" stop-color="#D8CDF5"/></linearGradient>
+   </defs><g id="lineLayers"></g><g id="constStars"></g><g id="futureTrail"></g>`;
+ const paths=$('lineLayers'),stars=$('constStars');comp.stars=[];comp.lines=[];
+ pathCoords.forEach(([x1,y1,x2,y2],i)=>{
+  const d=`M${x1} ${y1}L${x2} ${y2}`;
+  const shadow=svgMake('path',{d,stroke:'#C9ABE5','stroke-opacity':'.16','stroke-width':'9','stroke-linecap':'round',fill:'none'},paths);
+  const line=svgMake('path',{d,stroke:'url(#figLineGradient)','stroke-opacity':'.88','stroke-width':'2.8','stroke-linecap':'round',fill:'none'},paths);
+  const len=Math.hypot(x2-x1,y2-y1);[shadow,line].forEach(n=>{n.style.strokeDasharray=len;n.style.strokeDashoffset=len});comp.lines.push({shadow,line,len});
+ });
+ FIGMA_CENTER.forEach(({x,y},i)=>{
+  const g=svgMake('g',{id:'starlet'+i},stars);
+  const rad=svgMake('circle',{cx:x,cy:y,r:28,fill:'url(#figStarHalo)'},g);
+  const star=svgMake('path',{d:`M${x} ${y-11}C${x+2.2} ${y-5.8667} ${x+5.8667} ${y-2.2} ${x+11} ${y}C${x+5.8667} ${y+2.2} ${x+2.2} ${y+5.8667} ${x} ${y+11}C${x-2.2} ${y+5.8667} ${x-5.8667} ${y+2.2} ${x-11} ${y}C${x-5.8667} ${y-2.2} ${x-2.2} ${y-5.8667} ${x} ${y-11}Z`,fill:'#F3F0E7',stroke:'#E0D7FC','stroke-opacity':'.7','stroke-width':'.75',opacity:'.91'},g);
+  comp.stars.push({g,rad,star,x,y});
+ });
+ const large=svgMake('circle',{id:'activeBloom',cx:'68',cy:'320',r:'69',fill:'url(#figStarHalo)',opacity:'.64'},stars);stars.insertBefore(large,stars.firstChild);
+ svgMake('line',{id:'futureDots',x1:'68',y1:'320',x2:'124',y2:'219',stroke:'#D8D1ED','stroke-opacity':'.48','stroke-width':'1.4','stroke-dasharray':'1.4 7',fill:'none'},$('futureTrail'));
+ const small=svgMake('g',{},$('futureTrail'));FIGMA_CENTER.forEach(({x,y},i)=>{svgMake('circle',{id:'futureSmall'+i,cx:x,cy:y,r:'3.3',fill:'#DED8EF','fill-opacity':'.55'},small)});
+}
+function setConstellation(step,draw=false){
+ const idx=step-1;comp.stars.forEach((o,i)=>{
+  o.g.style.opacity=i<=idx?1:0;
+  if(i<idx){o.rad.setAttribute('r',14);o.star.setAttribute('d',`M${o.x} ${o.y-7.5}C${o.x+1.5} ${o.y-4} ${o.x+4} ${o.y-1.5} ${o.x+7.5} ${o.y}C${o.x+4} ${o.y+1.5} ${o.x+1.5} ${o.y+4} ${o.x} ${o.y+7.5}C${o.x-1.5} ${o.y+4} ${o.x-4} ${o.y+1.5} ${o.x-7.5} ${o.y}C${o.x-4} ${o.y-1.5} ${o.x-1.5} ${o.y-4} ${o.x} ${o.y-7.5}Z`)}
+  else if(i===idx){o.rad.setAttribute('r',28);o.star.setAttribute('d',`M${o.x} ${o.y-11}C${o.x+2.2} ${o.y-5.8667} ${o.x+5.8667} ${o.y-2.2} ${o.x+11} ${o.y}C${o.x+5.8667} ${o.y+2.2} ${o.x+2.2} ${o.y+5.8667} ${o.x} ${o.y+11}C${o.x-2.2} ${o.y+5.8667} ${o.x-5.8667} ${o.y+2.2} ${o.x-11} ${o.y}C${o.x-5.8667} ${o.y-2.2} ${o.x-2.2} ${o.y-5.8667} ${o.x} ${o.y-11}Z`)}
+ });
+ comp.lines.forEach((o,i)=>{const [x1,y1,x2,y2]=pathCoords[i],base=`M${x1} ${y1}L${x2} ${y2}`;[o.line,o.shadow].forEach(l=>{l.setAttribute('d',base);l.style.transition=draw?'stroke-dashoffset 315ms linear':'none';l.style.strokeDasharray=String(o.len);l.style.strokeDashoffset=i<idx?'0':String(o.len)})});
+ FIGMA_CENTER.forEach((p,i)=>{const dot=$('futureSmall'+i);if(dot)dot.style.opacity=i>idx?1:0});
+ const p=FIGMA_CENTER[idx],bloom=$('activeBloom');bloom.setAttribute('cx',p.x);bloom.setAttribute('cy',p.y);bloom.setAttribute('opacity','.64');
+ const fut=$('futureDots'),dest=FIGMA_CENTER[idx+1];fut.style.opacity=dest?1:0;if(dest){fut.setAttribute('x1',p.x);fut.setAttribute('y1',p.y);fut.setAttribute('x2',dest.x);fut.setAttribute('y2',dest.y)}
+ $('orbitHalo').style.left=p.x+'px';$('orbitHalo').style.top=(p.y+90)+'px';
+}
+function lockButtons(v){['missionConfirm','rewardOrb','seeReward','decorateReward','nextMission'].forEach(id=>$(id).disabled=v)}
+function resetOverlays(){clearDecorateAnimations();$('rewardFrame').classList.remove('decorating');if($('decorateAppliedTitle'))$('decorateAppliedTitle').setAttribute('aria-hidden','true'); $('decorateOverlay').classList.remove('visible');$('decorateOverlay').setAttribute('aria-hidden','true');$('detailOverlay').classList.remove('visible');$('detailOverlay').setAttribute('aria-hidden','true');$('routeNotice').classList.remove('visible');}
+
+
+
+function buildFigmaSpinner(){
+  const slot=document.querySelector('#loadingContent .spinner-slot');
+  if(!slot)return;
+  slot.replaceChildren();
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 74 72');
+  svg.setAttribute('width','74');svg.setAttribute('height','72');
+  svg.setAttribute('aria-hidden','true');svg.classList.add('spinner','figma-spinner');
+  const opacities=[.01,.01,.01,.01,.0113,.0142,.0182,.0235,.0304,.039,.0494,.0618,.0764,.0932,.1125,.1343,.1589,.1862,.2166,.25,.2867,.3267,.3702,.4173,.4681,.5227,.5813,.644,.7109,.7822,.8578,.938];
+  const cx=37,cy=36,r=29.6;
+  opacities.forEach((alpha,i)=>{
+    const a=(-90+i*11.25+.07)*Math.PI/180;
+    const b=(-90+(i+1)*11.25-.07)*Math.PI/180;
+    const sx=cx+r*Math.cos(a),sy=cy+r*Math.sin(a);
+    const ex=cx+r*Math.cos(b),ey=cy+r*Math.sin(b);
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M${sx.toFixed(3)} ${sy.toFixed(3)} A${r} ${r} 0 0 1 ${ex.toFixed(3)} ${ey.toFixed(3)}`);
+    path.setAttribute('fill','none');path.setAttribute('stroke','#E0D7FC');path.setAttribute('stroke-width','4');
+    path.setAttribute('stroke-opacity',String(alpha));svg.appendChild(path);
+  });
+  slot.appendChild(svg);
+}
+
+
+// Figma 05/01 → 05/05: one shared timeline for the entire popup.
+// WAAPI reversing ten individual elements caused occasional composite jumps.
+const figmaDecorateStops=[
+  {modal:1010,glow:1006,light:1003,opacity:1,shift:0},
+  {modal:748,glow:744,light:741,opacity:.75,shift:-21},
+  {modal:608,glow:604,light:601,opacity:.93,shift:-26},
+  {modal:532,glow:528,light:525,opacity:.985,shift:-29},
+  {modal:505,glow:501,light:498,opacity:1,shift:-30}
+];
+const figmaDecorateTimes=[0,140,300,450,580];
+const decorateChildren=['rewardHead','rewardSymbol','rewardHint','rewardName','rewardDesc','rewardActions','nextMission'];
+let decorateClock=0,decoratePosition=0,decorateGeneration=0,decorateClosing=false;
+function clearDecorateAnimations(){
+  ++decorateGeneration;
+  if(decorateClock)cancelAnimationFrame(decorateClock);
+  decorateClock=0;decoratePosition=0;decorateClosing=false;
+  for(const id of ['decorateModal','decorateGlow','decorateTopHighlight']){
+    const el=$(id);el.style.removeProperty('top');el.style.removeProperty('opacity');
+  }
+  for(const id of decorateChildren)$(id).style.removeProperty('translate');
+}
+function decorateEase(t,segment){
+  // Original: ease-in-out → linear → ease-out → ease-out.
+  if(segment===1)return t;
+  return segment===0 ? t*t*(3-2*t) : 1-(1-t)*(1-t);
+}
+function paintDecorate(ms){
+  ms=Math.max(0,Math.min(580,ms));
+  let seg=0;
+  while(seg<3&&ms>figmaDecorateTimes[seg+1])seg++;
+  const t0=figmaDecorateTimes[seg],t1=figmaDecorateTimes[seg+1];
+  const t=decorateEase(Math.max(0,Math.min(1,(ms-t0)/(t1-t0))),seg);
+  const a=figmaDecorateStops[seg],b=figmaDecorateStops[seg+1];
+  const mix=(k)=>a[k]+(b[k]-a[k])*t;
+  $('decorateModal').style.top=mix('modal')+'px';
+  $('decorateGlow').style.top=mix('glow')+'px';
+  $('decorateTopHighlight').style.top=mix('light')+'px';
+  $('decorateModal').style.opacity=mix('opacity');
+  $('decorateGlow').style.opacity=mix('opacity');
+  $('decorateTopHighlight').style.opacity=mix('opacity')*.6;
+  for(const id of decorateChildren)$(id).style.translate='0 '+mix('shift')+'px';
+  decoratePosition=ms;
+}
+function slideDecorate(target,done){
+  if(decorateClock)cancelAnimationFrame(decorateClock);
+  const generation=++decorateGeneration;
+  const from=decoratePosition,start=performance.now();
+  const duration=Math.abs(target-from);
+  if(duration<1){paintDecorate(target);if(done)done();return;}
+  function tick(now){
+    if(generation!==decorateGeneration)return;
+    const t=Math.min(1,(now-start)/duration);
+    paintDecorate(from+(target-from)*t);
+    if(t<1)decorateClock=requestAnimationFrame(tick);
+    else {decorateClock=0;if(done)done();}
+  }
+  decorateClock=requestAnimationFrame(tick);
+}
+function animateFigmaDecorate(){
+  clearDecorateAnimations();
+  paintDecorate(0); // position before the first visible browser paint
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){paintDecorate(580);return;}
+  slideDecorate(580);
+}
+
+const FIGMA_MISSION_GLOW={
+  2:[
+    [68,410,77,60,58,44.5,.30,.36,.62,.61],
+    [82,384.75,77,66.66,66,51,.30,.36,.62,.61],
+    [103.84,345.36,87.5,78.75,75,58,.30,.36,.62,.61],
+    [121.2,314.05,87.5,86.5,83,64,.30,.36,.62,.61],
+    [124,309,77,60,58,44.5,.30,.36,.62,.61],
+    [124,309,95,88,92,71,.41,.48,.63,.64],
+    [124,309,77,62.62,62,47.5,.30,.36,.62,.61]
+  ],
+  3:[
+    [124,309,77,60,58,44.5,.30,.36,.62,.61],
+    [147.75,319.25,77,60,58,44.5,.30,.36,.62,.61],
+    [184.8,335.24,77,60,58,44.5,.30,.36,.62,.61],
+    [214.25,347.95,77,60,58,44.5,.30,.36,.62,.61],
+    [219,350,77,60,58,44.5,.30,.36,.62,.61],
+    [219,350,95,88,92,71,.41,.48,.63,.64],
+    [219,350,77,62.62,62,47.5,.30,.36,.62,.61]
+  ],
+  4:[
+    [219,350,77,60,58,44.5,.30,.36,.62,.61],
+    [237.5,323.5,77,60,58,44.5,.30,.36,.62,.61],
+    [266.36,282.16,77,60,58,44.5,.30,.36,.62,.61],
+    [289.3,249.3,77,60,58,44.5,.30,.36,.62,.61],
+    [293,244,77,60,58,44.5,.30,.36,.62,.61],
+    [293,244,95,88,92,71,.41,.48,.63,.64],
+    [293,244,77,62.62,62,47.5,.30,.36,.62,.61]
+  ]
+};
+function applyFigmaMissionGlow(frame,duration=0,easing='linear',positionManaged=false){
+  const halo=$('orbitHalo'), circles=$('figmaMissionHaloMorph').querySelectorAll('circle');
+  const [x,y,...r]=frame;
+  if(!positionManaged){
+    halo.style.transition=`left ${duration}ms ${easing},top ${duration}ms ${easing}`;
+    halo.style.left=x+'px';halo.style.top=y+'px';
+  }
+  for(let i=0;i<4;i++){
+    const c=circles[i];
+    c.style.transition=`r ${duration}ms ${easing},opacity ${duration}ms ${easing}`;
+    c.style.r=r[i]+'px';c.style.opacity=String(r[i+4]);
+  }
+}
+
+function moveMissionNucleus(frame,diameter=8,duration=0,visible=true){
+ const n=$('missionNucleus'),[x,y]=frame;
+ n.style.transition=`left ${duration}ms linear,top ${duration}ms linear,width ${duration}ms ease-in-out,height ${duration}ms ease-in-out,opacity ${duration}ms ease-in-out`;
+ n.style.left=(x-diameter/2)+'px';n.style.top=(y-diameter/2)+'px';n.style.width=diameter+'px';n.style.height=diameter+'px';
+ n.style.background=diameter>8?'radial-gradient(circle,rgba(243,240,231,.22),rgba(201,171,229,0))':'#F3F0E7';
+ n.style.boxShadow=diameter>8?'none':'0 0 13px 3px rgba(201,171,229,.56)';
+ n.style.opacity=visible?'1':'0';
+}
+function stopMissionGlow(){
+  $('orbitHalo').classList.remove('pulse');
+  $('missionNucleus').style.opacity='0';
+  const p=FIGMA_CENTER[state.step-1];
+  applyFigmaMissionGlow([p.x,p.y+90,77,62.62,62,47.5,.30,.36,.62,.61],0);
+}
+
+function showMission(step,animate=true,fromStep=null,entryDelay=0){
+ ++loadGeneration;loadRequest=null;
+ clearJobs();clearDecorateAnimations();resetOverlays();state.step=step;state.phase='mission';activate('mission');lockButtons(true);
+ const isStep4Transition=step===4&&fromStep===3;
+ screens.mission.classList.toggle('figma-transition',isStep4Transition);
+ const data=STAGES[step-1];
+ ['missionText','missionDesc','missionConfirm'].forEach(id=>{
+   const el=$(id);el.classList.remove('visible');el.style.removeProperty('transition');
+ });
+ $('missionKicker').style.opacity='1';
+ $('missionKicker').textContent='QUEST/'+pad(step);
+ $('missionEyebrow').textContent='새로운 미션!';$('missionTitle').textContent=data.title;$('missionDesc').textContent=data.description;
+ $('orbitHalo').classList.remove('pulse');
+ if(fromStep&&fromStep!==step){
+  const old=STAGES[fromStep-1],track=FIGMA_MISSION_GLOW[step],segment=comp.lines[step-2];
+  setConstellation(fromStep,false);
+  // Only the fourth connector and 8px luminous tip move. The other 3 stars and
+  // first 2 connectors are native Figma T4/01 SVG assets, not redrawn shapes.
+  screens.mission.classList.add('opening-native');
+  $('futureDots').style.opacity='0';  // Figma 04A has one distant gray star, no dotted future line.
+  // 04A T4/01–04: the original 3 stars never translate or rescale.
+  // The moving object is the 8px nucleus, followed by the growing third→fourth LINE ONLY.
+  comp.stars.slice(0,3).forEach(star=>{
+    star.g.style.transition='none';star.g.removeAttribute('transform');
+    star.g.style.transform='none';
+    star.g.style.opacity='1';
+  });
+  // Only one halo follows the light nucleus; prevent the source-star halo double-image.
+  $('activeBloom').setAttribute('opacity','0');
+  $('missionKicker').textContent='QUEST/'+pad(fromStep);
+  $('missionEyebrow').textContent='완료된 미션';$('missionTitle').textContent=old.title;
+  $('missionText').style.transition='none';
+  $('missionText').classList.add('visible');
+  // Completed-mission copy is already stable in Figma T4/01, not sliding in.
+  applyFigmaMissionGlow(track[0],0);moveMissionNucleus(track[0],8,0,true);
+  // Reference 1280:82097: reward → T4/01 DISSOLVE 200ms EASE_IN_AND_OUT.
+  // Deliberate readability adjustment requested by the user: make ONLY the
+  // 03→04 connecting-line movement slower. Keep the existing 04A geometry,
+  // fixed stars, synchronized luminous tip and subsequent copy/button reveal.
+  // Balanced midpoint between original 315ms and previous 730ms motion.
+  // Reduce idle holds while preserving the connector motion and approved STEP04 text reveal.
+  // Reward-click to stable STEP04: approximately 3 seconds.
+  const initialReadHold=310;
+  const connectorDuration=480;
+  const betweenSegments=25;
+  const finalReadHold=150;
+  const t1=initialReadHold;
+  const t2=t1+connectorDuration+betweenSegments;
+  const t3=t2+connectorDuration+betweenSegments;
+  const dissolveAt=t3+connectorDuration+finalReadHold;
+  const at=(t,fn)=>delay(entryDelay+t,fn);
+  at(t1,()=>{applyFigmaMissionGlow(track[1],connectorDuration,'linear',true);alignLineAndNucleus(segment,track[0],track[1],connectorDuration)});
+  at(t2,()=>{applyFigmaMissionGlow(track[2],connectorDuration,'linear',true);alignLineAndNucleus(segment,track[1],track[2],connectorDuration)});
+  at(t3,()=>{applyFigmaMissionGlow(track[3],connectorDuration,'linear',true);alignLineAndNucleus(segment,track[2],track[3],connectorDuration)});
+  at(dissolveAt,()=>{
+    // Figma 04A: T4/04 → I4/01 is a 235ms DISSOLVE, not Smart Animate.
+    // Fade the exact Figma static stars into the existing later-scene artwork.
+    stopLineMotion();
+    screens.mission.classList.remove('opening-native');
+    screens.mission.classList.add('opening-crossfade');
+    $('missionText').style.transition='opacity 235ms ease-in-out, transform 235ms ease-in-out';
+    $('missionText').classList.remove('visible');
+    const dest=comp.stars[3];
+    dest.g.style.transition='none';dest.g.style.opacity='0';
+    void dest.g.getBoundingClientRect();
+    dest.g.style.transition='opacity 235ms ease-in-out';
+    dest.g.style.opacity='1';
+    const prevNucleus=$('missionNucleus');
+    prevNucleus.style.transition='opacity 235ms ease-in-out';
+    prevNucleus.style.opacity='0';
+    // No translate during the dissolve. The next light is a second stationary element.
+    const gl=$('orbitHalo');
+    gl.style.transition='opacity 235ms ease-in-out';
+    gl.style.opacity='0';
+    let nextLight=$('missionFourthLight');
+    if(!nextLight){
+      nextLight=document.createElement('div');nextLight.id='missionFourthLight';
+      nextLight.setAttribute('aria-hidden','true');
+      nextLight.style.cssText='position:absolute;z-index:3;pointer-events:none;border-radius:50%;'+
+       'background:radial-gradient(circle,rgba(243,240,231,.60),rgba(224,215,252,.25) 40%,transparent 75%);';
+      $('missionFrame').appendChild(nextLight);
+    }
+    nextLight.style.transition='none';
+    nextLight.style.left=(293-39/2)+'px';nextLight.style.top=(244-39/2)+'px';
+    nextLight.style.width='39px';nextLight.style.height='39px';nextLight.style.opacity='0';
+    void nextLight.offsetWidth;
+    nextLight.style.transition='opacity 235ms ease-in-out';nextLight.style.opacity='1';
+    // Final 6.5px line endpoint is also dissolved, rather than sliding the completed stars.
+    const parent=segment.line.parentNode;
+    for(const key of ['shadow','line']){
+      const old=segment[key];
+      const clone=old.cloneNode(false);clone.classList.add('mission-four-dissolve-line');
+      clone.setAttribute('d',`M${FIGMA_CENTER[2].x} ${FIGMA_CENTER[2].y}L${FIGMA_CENTER[3].x} ${FIGMA_CENTER[3].y}`);
+      clone.style.transition='none';clone.style.strokeDasharray='none';clone.style.strokeDashoffset='0';
+      clone.style.opacity='0';parent.appendChild(clone);
+      void clone.getBoundingClientRect();
+      clone.style.transition='opacity 235ms ease-in-out';clone.style.opacity='1';
+      old.style.transition='opacity 235ms ease-in-out';old.style.opacity='0';
+    }
+  });
+  at(dissolveAt+235,()=>{
+    screens.mission.classList.remove('opening-crossfade');
+    // I4/01 stable: commit the full constellation in precisely the same coordinates.
+    document.querySelectorAll('.mission-four-dissolve-line').forEach(e=>e.remove());
+    segment.line.style.opacity='1';segment.shadow.style.opacity='1';
+    setConstellation(step,false);
+    $('activeBloom').setAttribute('opacity','0');
+    applyFigmaMissionGlow(track[4],0);
+    $('orbitHalo').style.opacity='1';
+    moveMissionNucleus(track[4],39,0,true);
+    const nextLight=$('missionFourthLight');
+    if(nextLight){nextLight.style.opacity='0';nextLight.remove();}
+    $('missionKicker').textContent='QUEST/'+pad(step);
+    $('missionKicker').style.opacity='0';
+    $('missionEyebrow').textContent='새로운 미션!';$('missionTitle').textContent=data.title;
+    $('missionDesc').textContent=data.description;
+    $('missionText').style.transition='opacity 260ms ease-in-out, transform 260ms ease-in-out';
+    $('missionDesc').style.transition='opacity 260ms ease-in-out, transform 260ms ease-in-out';
+    $('missionConfirm').style.transition='opacity 260ms ease-in-out, transform 260ms ease-in-out';
+  });
+  at(dissolveAt+270,()=>{
+    // Figma I4/02: the text, explanation and CTA enter WITH the brief star pulse.
+    applyFigmaMissionGlow(track[5],260,'cubic-bezier(.42,0,.58,1)');
+    moveMissionNucleus(track[5],54,260,true);
+    $('missionKicker').style.opacity='1';
+    ['missionText','missionDesc','missionConfirm'].forEach(id=>$(id).classList.add('visible'));
+  });
+  at(dissolveAt+555,()=>{
+    // Figma M4 final frame: glow settles, nucleus disperses without another line jump.
+    applyFigmaMissionGlow(track[6],390,'cubic-bezier(.42,0,.58,1)');
+    moveMissionNucleus(track[6],54,390,false);
+  });
+  at(dissolveAt+945,()=>{lockButtons(false);state.phase='stable';stateUI()});
+ }else{
+   setConstellation(step,false);$('activeBloom').setAttribute('opacity','.64');stopMissionGlow();
+   if(!animate){['missionText','missionDesc','missionConfirm'].forEach(id=>$(id).classList.add('visible'));lockButtons(false);state.phase='stable'}
+   else{
+     delay(50,()=>{$('missionText').classList.add('visible');$('missionDesc').classList.add('visible')});
+     delay(430,()=>{$('missionConfirm').classList.add('visible')});
+     delay(810,()=>{lockButtons(false);state.phase='stable';stateUI()});
+   }
+ }
+ stateUI();
+}
+
+// Each keyframe below was measured from Figma 1280:78337 → 78453 → 78568 → 78683 → 78798.
+// Local coordinates are relative to HERO(334×248) within the reward screen at (28,203).
+// Each graphic keeps its ORIGINAL vector artwork: glow ellipses and common ribbon badge.
+const HERO_KEYFRAMES=[
+ {wash:[102,59,130,.20],main:[107,64,120,.58],inner:[135,92,64,.40],ring:[113,70,108,.19],ring2:[126,83,82,.15],star:.42,badge:[132.43,87.9,69.13,79.13,0]},
+ {wash:[72,29,190,.36],main:[76,33,182,.58],inner:[109,66,116,.40],ring:[88.5,45.5,157,.32],ring2:[111,68,112,.26],star:.85,badge:[127.97,84.14,78.05,89.34,0]},
+ {wash:[32,-11,270,.84],main:[38,-5,258,.58],inner:[75,32,184,.56],ring:[50.5,7.5,233,.53],ring2:[84.5,41.5,165,.41],star:.025,badge:[121.28,78.51,91.44,104.66,0]},
+ {wash:[22,-21,290,.78],main:[27,-16,280,.58],inner:[72,29,190,.40],ring:[39.5,-3.5,255,.63],ring2:[79,36,176,.48],star:0,badge:[93.41,55.04,147.19,168.48,1]},
+ {wash:[78,35,178,.12],main:[55.5,12.5,223,.58],inner:[91,48,152,.40],ring:[82,39,170,.18],ring2:[104,61,126,.17],star:0,badge:[85.6,48.47,162.8,186.35,1]}
+];
+const rewardNodes={};
+function setupRewardHero(){
+  rewardNodes.wash=$('rewardWashCircle');rewardNodes.main=$('rewardMainGlowCircle');
+  rewardNodes.inner=$('rewardInnerGlowCircle');rewardNodes.ring=$('rewardOuterRingCircle');
+  rewardNodes.ring2=$('rewardInnerRingCircle');rewardNodes.star=$('rewardOrb').querySelector('svg');
+  rewardNodes.badge=$('ribbonBadge');
+}
+function rewardHeroFrame(index,duration=0){
+  const k=HERO_KEYFRAMES[index];
+  const easing='cubic-bezier(0,0,.58,1)';
+  for(const name of ['wash','main','inner','ring','ring2']){
+    const [x,y,d,alpha]=k[name],el=rewardNodes[name];
+    el.style.transition='r '+duration+'ms '+easing+',opacity '+duration+'ms '+easing;
+    el.style.r=(d/2)+'px';
+    el.style.opacity=String(alpha);
+  }
+  rewardNodes.star.style.transition='opacity '+duration+'ms '+easing;
+  rewardNodes.star.style.opacity=k.star;
+  const [x,y,w,h,alpha]=k.badge,elem=rewardNodes.badge,scale=w/162.8;
+  elem.style.transition='left '+duration+'ms '+easing+',top '+duration+'ms '+easing+',width '+duration+'ms '+easing+',height '+duration+'ms '+easing+',opacity '+duration+'ms '+easing;
+  // Raw native source SVG measures 210×214 including 22.8728×27.4473 internal inset.
+  elem.style.left=(x-22.8728*scale)+'px';elem.style.top=(y-27.4473*scale)+'px';
+  elem.style.width=(210*scale)+'px';elem.style.height=(214*scale)+'px';elem.style.opacity=String(alpha);
+}
+function showReward(step){
+ ++loadGeneration;loadRequest=null;
+ clearJobs();resetOverlays();state.step=step;state.phase='star';activate('reward');lockButtons(false);
+ $('rewardKicker').textContent='REWARD/00';$('rewardName').textContent=COMMON_REWARD.name;$('rewardExplanation').textContent=COMMON_REWARD.description;$('decorateAppliedTitle').textContent=COMMON_REWARD.name;
+ $('rewardSymbol').className='';rewardHeroFrame(0,0);$('rewardHint').style.opacity='1';
+ $('rewardHint').textContent='별을 눌러 보상을 확인하세요';
+ ['rewardDesc','rewardName','rewardActions','nextMission'].forEach(id=>$(id).classList.remove('visible'));
+ $('rewardOrb').disabled=false;stateUI();
+}
+function bloomReward(){
+ if(state.mode!=='reward'||state.phase!=='star'||lock)return;
+ lock=true;state.phase='bloom';$('rewardOrb').disabled=true;stateUI();
+ // Retain the same original five Figma reward keyframes, eased slightly slower
+ // (about +13% to the overall appearance) for more readable bloom and badge reveal.
+ rewardHeroFrame(1,430);$('rewardHint').textContent='새로운 보상이 나타나는 중이에요';
+ delay(485,()=>{rewardHeroFrame(2,520)});
+ delay(1085,()=>{rewardHeroFrame(3,540);$('rewardHint').style.opacity='0'});
+ delay(2250,()=>{rewardHeroFrame(4,810);$('rewardHint').textContent='보상을 받았어요';$('rewardHint').style.opacity='1';['rewardName','rewardDesc','rewardActions','nextMission'].forEach(id=>$(id).classList.add('visible'))});
+ delay(3060,()=>{state.phase='earned';state.completed[state.step-1]=true;lock=false;stateUI()});
+}
+function openDecorate(){if(state.mode!=='reward'||state.phase!=='earned')return;state.decorated[state.step-1]=true;$('decorateAppliedTitle').textContent=COMMON_REWARD.name;$('rewardFrame').classList.add('decorating');$('rewardHint').textContent='보상을 받았어요';$('decorateAppliedTitle').setAttribute('aria-hidden','false');$('decorateOverlay').classList.add('visible');$('decorateOverlay').setAttribute('aria-hidden','false');animateFigmaDecorate()}
+function finishDecorateDismiss(){
+  const overlay=$('decorateOverlay');
+  // Hide as one composited unit; reset positions only after it is no longer painted.
+  overlay.style.visibility='hidden';
+  overlay.classList.remove('visible');
+  overlay.setAttribute('aria-hidden','true');
+  clearDecorateAnimations();
+  $('rewardFrame').classList.remove('decorating');
+  $('rewardHint').textContent='보상을 받았어요';
+  $('decorateAppliedTitle').setAttribute('aria-hidden','true');
+  overlay.style.visibility='';
+}
+function closeDecorate(){
+  if(!$('decorateOverlay').classList.contains('visible') || decorateClosing)return;
+  decorateClosing=true;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){finishDecorateDismiss();return;}
+  // Exact same Figma stop coordinates played backwards, not a display:none jump.
+  slideDecorate(0,finishDecorateDismiss);
+}
+function openRewardDetail(){if(state.mode!=='reward'||state.phase!=='earned')return;
+ $('detailKicker').textContent='REWARD/00';$('detailTitle').textContent=COMMON_REWARD.name;$('detailExplanation').textContent=COMMON_REWARD.description;
+ // Mirror the exact shared Figma reference badge geometry in the detail view.
+ const svg=$('ribbonBadge').cloneNode(true);svg.removeAttribute('id');svg.style.cssText='position:static;opacity:1;transform:none;filter:drop-shadow(0 0 13px #d6c6ffb0);width:130px;height:130px';$('detailBadgeHolder').replaceChildren(svg);
+ $('detailOverlay').classList.add('visible');$('detailOverlay').setAttribute('aria-hidden','false');}
+function closeDetail(){$('detailOverlay').classList.remove('visible');$('detailOverlay').setAttribute('aria-hidden','true')}
+function route(name){
+ const host=window.LinkXMissionReward;
+ const payload={step:state.step,completed:[...state.completed],decorated:[...state.decorated]};
+ if(typeof host?.onNavigate==='function' && host.onNavigate(name,payload)===true)return;
+ if(name==='main'){
+   // The '미션 확인 완료' button only acknowledges receipt of the mission; it NEVER awards a reward.
+   // In the integrated GitHub module, navigate to the team's real main page.
+   const defaultMain=/\/modules\/mission\//.test(location.pathname)
+       ? '../main/index.html'
+       : 'https://dohee916-alt.github.io/LinkX/modules/main/index.html';
+   window.location.assign(new URL(host?.mainUrl||defaultMain,location.href).href);
+   return;
+ }
+ $('routeTitle').textContent=name==='reward-check'?'리워드 보관함 연결 지점':'다음 단계 연결 지점';
+ $('routeText').textContent=name==='reward-check'?'리워드 확인하기의 최종 연결 대상을 별도로 확인해야 해요.\n임의로 보관함 화면을 디자인하지 않았어요.':'피그마에는 4단계 이후의 새 미션 화면이 지정되어 있지 않아요.\n임의로 5단계 미션을 생성하지 않았어요.';
+ $('routeNotice').classList.add('visible');}
+function openNextMissionFromReward(){
+ // The reward and mission contain their own content. Crossfading both complete
+ // scenes left duplicated kicker/title, badge and CTA as visible ghosts.
+ // Use one 200ms transition: 100ms reward fade-out, then 100ms mission fade-in.
+ // The original seven 04A animation states (and approved later copy reveal)
+ // start after this transition. Never skip to the completed 4-star state here.
+ const oldReward=screens.reward;
+ oldReward.style.pointerEvents='none';
+ oldReward.style.transition='none';oldReward.style.opacity='1';
+ void oldReward.offsetWidth;
+ oldReward.style.transition='opacity 100ms ease-in-out';
+ oldReward.style.opacity='0';
+ delay(105,()=>{
+   // showMission clears old timers and resets the prior screen state. 04A begins
+   // at its real 03-completed scene with only the moving 8px tip and new line.
+   showMission(4,true,3,0);
+   screens.mission.style.transition='none';
+   screens.mission.style.opacity='0';
+   void screens.mission.offsetWidth;
+   screens.mission.style.transition='opacity 100ms ease-in-out';
+   screens.mission.style.opacity='1';
+   delay(110,()=>{
+     screens.mission.style.removeProperty('transition');
+     screens.mission.style.removeProperty('opacity');
+   });
+ });
+}
+function next(){if(state.mode!=='reward'||state.phase!=='earned')return;requestScreen('mission',4,openNextMissionFromReward)}
+// Errors are exclusively results of a real async operation that fails,
+// explicitly returns false, or has not settled after 10 real seconds.
+// The fully inlined standalone screens need no network load by default.
+let loadRequest=null,loadGeneration=0;
+function requestScreen(kind,step,onSuccess){
+  const provider=kind==='reward'?window.LinkXMissionReward?.loadReward:window.LinkXMissionReward?.loadMission;
+  if(typeof provider!=='function'){onSuccess();return;}
+  const current=++loadGeneration;
+  loadRequest={kind,step,onSuccess};
+  let result;
+  try{result=provider(step);}catch(error){doSystem('error',kind);return;}
+  if(result===false){doSystem('error',kind);return;}
+  if(!result || typeof result.then!=='function'){onSuccess();return;}
+  doSystem('loading',kind);
+  const guard=setTimeout(()=>{
+    if(current!==loadGeneration)return;
+    ++loadGeneration;
+    doSystem('error',kind);
+  },10000);
+  Promise.resolve(result).then(value=>{
+    if(current!==loadGeneration)return;
+    ++loadGeneration;clearTimeout(guard);
+    if(value===false)doSystem('error',kind);
+    else onSuccess();
+  },error=>{
+    if(current!==loadGeneration)return;
+    ++loadGeneration;clearTimeout(guard);
+    doSystem('error',kind);
+  });
+}
+function doSystem(kind,categoryOverride=null){
+ clearJobs();resetOverlays();
+ let category=categoryOverride || (state.mode==='system'?state.prevMode:state.mode);
+ if(category!=='reward')category='mission';state.prevMode=category;
+ state.phase=kind;activate('system');
+ $('sysKicker').textContent=category==='reward'?'REWARD/'+(kind==='loading'?'LOAD':'ERROR'):'QUEST/'+(kind==='loading'?'LOAD':'ERROR');
+ $('sysLoadingTitle').textContent=category==='reward'?'리워드 불러오는 중…':'미션 불러오는 중…';
+ $('sysErrorTitle').textContent=category==='reward'?'리워드를 불러오지 못했어요':'미션을 불러오지 못했어요';
+ $('loadingContent').style.display=kind==='loading'?'block':'none';
+ $('errorContent').style.display=kind==='error'?'block':'none';
+ const ic=$('errorIcon');ic.classList.remove('ready');ic.disabled=true;
+ ic.setAttribute('aria-label','오류 확인 중');state.errorReady=false;
+ if(kind==='error')delay(600,()=>{
+   state.errorReady=true;ic.classList.add('ready');ic.disabled=false;
+   ic.setAttribute('aria-label','다시 시도하기');stateUI();
+ });
+ stateUI();
+}
+function retry(){
+ if(state.mode!=='system'||state.phase!=='error'||!state.errorReady||!loadRequest)return;
+ const task=loadRequest;
+ requestScreen(task.kind,task.step,task.onSuccess);
+}
+function backFromSystem(){
+ ++loadGeneration;loadRequest=null;
+ const prev=state.prevMode;
+ if(prev==='reward')showReward(state.step);else showMission(state.step,false);
+}
+function fit(){
+ const viewport=$('viewport'),wrap=$('phoneWrap');const w=viewport.clientWidth,h=viewport.clientHeight;
+ const small=window.matchMedia('(max-width:699px)').matches;
+ // Desktop fits the complete bezel, mobile fills the available view without black gutters.
+ const scale=small?Math.max(w/390,h/844):Math.min((w-34)/406,(h-28)/860);
+ wrap.style.transform='translate(-50%,-50%) scale('+Math.max(.1,scale)+')';
+}
+$('missionConfirm').addEventListener('click',()=>{if($('missionConfirm').disabled)return;route('main')});
+$('rewardOrb').addEventListener('click',bloomReward);
+$('nextMission').addEventListener('click',next);
+$('seeReward').addEventListener('click',()=>route('reward-check'));
+$('decorateReward').addEventListener('click',openDecorate);
+$('toMain').addEventListener('click',()=>route('main'));
+$('decorateLater').addEventListener('click',closeDecorate);
+$('detailBack').addEventListener('click',closeDetail);
+$('detailClose').addEventListener('click',closeDetail);
+$('routeBack').addEventListener('click',()=>{$('routeNotice').classList.remove('visible');closeDecorate()});
+$('errorClose').addEventListener('click',backFromSystem);
+$('errorIcon').addEventListener('click',retry);
+
+function previewForward(){
+ if(state.mode==='system'){backFromSystem();return}
+ if(state.mode==='mission'){route('main');return}
+ if(state.mode==='reward'){
+  if(state.phase==='star'){bloomReward();return}
+  if(state.phase==='bloom'){return}
+  openNextMissionFromReward()
+ }
+}
+function previewBackward(){
+ if(state.mode==='system'){backFromSystem();return}
+ if(state.mode==='reward'){showMission(state.step,false);return}
+ if(state.mode==='mission'){
+  if(state.step===3){showMission(3,false);return;}
+  if(state.step===4){showReward(3);rewardHeroFrame(4,0);$('rewardHint').textContent='보상을 받았어요';$('rewardHint').style.opacity='1';['rewardName','rewardDesc','rewardActions','nextMission'].forEach(id=>$(id).classList.add('visible'));state.phase='earned';state.completed[2]=true;lock=false;stateUI()}
+  else showMission(3,false);
+ }
+}
+$('previewNext').addEventListener('click',previewForward);
+$('previewPrev').addEventListener('click',previewBackward);
+$('qaMenuToggle').addEventListener('click',()=>{const opened=document.body.classList.toggle('qa-open');$('qaMenuToggle').setAttribute('aria-expanded',String(opened))});
+document.querySelectorAll('#panel [data-go]').forEach(b=>b.addEventListener('click',()=>{const mode=b.dataset.go,step=+b.dataset.step;if(mode==='reward')showReward(state.step===4?4:3);else showMission(step,true);document.body.classList.remove('qa-open');$('qaMenuToggle').setAttribute('aria-expanded','false')}));
+window.addEventListener('resize',fit);window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDetail();closeDecorate();$('routeNotice').classList.remove('visible')}});
+window.LinkXMissionReward={
+ onNavigate:null,
+ // Set this to the team's preferred home route when hosting the module elsewhere.
+ mainUrl:null,
+ start(type='mission',step=3){step=+step===4?4:3; if(type==='reward')showReward(step);else showMission(step,true)},
+ openMission(step=3){showMission(+step===4?4:3,true)},
+ goMission(step=3){showMission(+step===4?4:3,true)},
+ goReward(step=3){showReward(+step===4?4:3)},
+ goMain(){route('main')},
+ loadMission:null,loadReward:null,retry,
+ previewState(id){
+    if(id==='mission-3'||id==='mission-4'){showMission(id==='mission-4'?4:3,true);return}
+    if(id==='next-quest-1'){showMission(4,true,3);return}
+    if(id==='next-quest-7'){showMission(4,false);return}
+    showReward(3);
+    if(id==='reward-1')return;
+    $('rewardOrb').disabled=true;
+    if(id==='reward-2'||id==='reward-2-1'){
+      rewardHeroFrame(id==='reward-2'?1:3,0);
+      $('rewardHint').textContent='새로운 보상이 나타나는 중이에요';
+      state.phase='bloom';stateUI();return
+    }
+    rewardHeroFrame(4,0);
+    $('rewardHint').textContent='보상을 받았어요';$('rewardHint').style.opacity='1';
+    ['rewardName','rewardDesc','rewardActions','nextMission'].forEach(key=>$(key).classList.add('visible'));
+    state.phase='earned';state.completed[2]=true;lock=false;stateUI();
+    if(id==='reward-decorate')openDecorate();
+  },
+  resume(){if(state.mode==='reward'&&state.phase==='bloom'&&!lock){showReward(3);bloomReward()}},
+  inspect(){return {mode:state.mode,step:state.step,phase:state.phase,completed:[...state.completed],decorated:[...state.decorated],reward:COMMON_REWARD.name}},
+ get screens(){return [{type:'mission',step:3,...STAGES[2]},{type:'mission',step:4,...STAGES[3]},{type:'reward',name:COMMON_REWARD.name}]}
+};
+function initialize(){stars();buildConstellation();setupRewardHero();buildFigmaSpinner();fit();const hash=location.hash.replace('#','');let stage=+new URLSearchParams(location.search).get('step')||3;stage=stage===4?4:3;if(hash==='reward')showReward(stage);else showMission(stage,true);}
+// Explicitly check the Figma-specified web fonts rather than assuming CSS font-family loaded them.
+if(document.fonts){
+  // document.fonts.check returns true even if a font face is missing and fallback is used.
+  // A nonempty FontFace[] is an actual positive signal that the IBM webfont stylesheet registered its faces.
+  Promise.race([
+    document.fonts.load('600 14px "IBM Plex Sans KR"','새로운 미션'),
+    new Promise(resolve=>setTimeout(()=>resolve([]),8000))
+  ]).then(faces=>{
+    const label=document.querySelector('#fontStatus');if(!label)return;
+    label.textContent=faces.length>0?'폰트: IBM Plex Sans KR 적용됨':'폰트: 원본 폰트 미로드 · 인터넷 연결 필요';
+    label.dataset.fontLoaded=faces.length>0?'true':'false';
+  }).catch(()=>{const label=document.querySelector('#fontStatus');if(label)label.textContent='폰트: 원본 폰트 미로드 · 인터넷 연결 필요';});
+}
+initialize();
+})();
+</script>
+<script defer src="../../shared/statusbar.js?v=2"></script>
+</body>
+</html>

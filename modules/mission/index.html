@@ -22,6 +22,10 @@
 .mr-anim.on{pointer-events:auto}
 .mr-stack{position:absolute;inset:0}
 .mr-stack img{position:absolute;inset:0;width:390px;height:844px;opacity:0;will-change:opacity}
+/* Native reward player, confined to the existing device. */
+.mr-phone.native-active{background:linear-gradient(180deg,#202426 0%,#352897 50%,#9180c3 75%,#c9abe5 100%)}
+.mr-native-flow{position:absolute;inset:0;width:390px;height:844px;border:0;display:block;z-index:20;background:transparent}
+.mr-phone.native-active>.lx-unified-status{display:none!important}
 </style>
 <script defer src="../../shared/statusbar.js?v=2"></script></head>
 <body>
@@ -102,10 +106,54 @@ const LOAD_TIMEOUT = 15000;  // 15초 이상 로딩 → 오류
 
 const API = window.LinkXMissionReward = {
   onNavigate: null,          // (id) => true 를 돌려주면 그 화면은 합친 쪽에서 처리
-  start, go, screens: S, current:()=>cur, inspect(id){if(!S[id])return;clearTimers();show(id,0);clearTimers();}, resume(){if(cur&&S[cur]?.auto){const a=S[cur].auto;go(a.go,a.t,a.e)}}
+  start, go, screens: S, current:currentScreen,
+  goMission(step=3){openNative(+step===4?'mission-4':'mission-3')},
+  goReward(){openNative('reward-1')},
+  loadMission:null,loadReward:null,
+  inspect(id){if(!S[id])return;if(NATIVE_STATES.has(id)){openNative(id);return}clearTimers();show(id,0);clearTimers();},
+  resume(){if(nativeFrame){nativeFrame.contentWindow?.LinkXMissionReward?.resume?.();return}if(cur&&S[cur]?.auto){const a=S[cur].auto;go(a.go,a.t,a.e)}}
 };
 
 let phone, animEl, cur = null, stacks = {}, raf = 0, prevBeforeGroup = null, timers = [], loaded = {}, failed = {};
+// Preserve existing legacy mission/chat routes. Reward animation uses the native player.
+const NATIVE_STATES=new Set(['reward-1','reward-2','reward-2-1','reward-3','reward-decorate','next-quest-1','next-quest-7']);
+let nativeFrame=null,nativeEntry=null;
+function closeNative(){
+  if(nativeFrame){nativeFrame.remove();nativeFrame=null;nativeEntry=null;}
+  if(phone)phone.classList.remove('native-active');
+}
+function currentScreen(){
+  if(!nativeFrame)return cur;
+  try{
+    const a=nativeFrame.contentWindow.LinkXMissionReward;
+    if(!a)return nativeEntry?.startsWith('mission-')?'quest-01-3':(nativeEntry||'reward-1');
+    const s=a.inspect();
+    if(s.mode==='reward')return s.phase==='star'?'reward-1':s.phase==='bloom'?'reward-2':'reward-3';
+    if(s.mode==='system')return (nativeEntry?.startsWith('mission-')?'quest':'reward')+'-'+(s.phase==='loading'?'loading':'error');
+    if(nativeEntry?.startsWith('mission-'))return 'quest-01-3';
+    return s.phase==='stable'?'next-quest-7':'next-quest-1';
+  }catch{return nativeEntry||'reward-1';}
+}
+function openNative(id){
+  clearTimers();closeNative();nativeEntry=id;
+  phone.querySelectorAll('.mr-screen').forEach(s=>{s.style.transitionDuration='0s';s.classList.remove('on');s.setAttribute('aria-hidden','true');});
+  phone.classList.add('native-active');cur=id;
+  const frame=document.createElement('iframe');nativeFrame=frame;frame.className='mr-native-flow';
+  frame.title='LinkX · 미션 및 리워드';frame.setAttribute('allow','autoplay');
+  frame.addEventListener('load',()=>{
+    if(nativeFrame!==frame)return;
+    const a=frame.contentWindow.LinkXMissionReward;if(!a)return;
+    a.onNavigate=(route,payload)=>{
+      if(route==='main'||route==='reward-check'){go(route);return true}
+      return false;
+    };
+    Object.defineProperty(a,'loadMission',{get:()=>API.loadMission,configurable:true});
+    Object.defineProperty(a,'loadReward',{get:()=>API.loadReward,configurable:true});
+    if(id!=='reward-1')a.previewState(id);
+  });
+  frame.src='native-flow.html?embedded=1&step=3#reward';
+  phone.appendChild(frame);
+}
 const forced = new URLSearchParams(location.search).get('force'); // 확인용: ?force=loading | error
 let forcedUsed = false;
 
@@ -156,6 +204,7 @@ function fit(){
 }
 function clearTimers(){ timers.forEach(clearTimeout); timers = []; if (raf){ cancelAnimationFrame(raf); raf = 0; } }
 function show(id, t, e){
+  closeNative();
   document.querySelectorAll('.mr-screen').forEach(s => {
     const on = s.id === 'mr-' + id;
     s.style.transitionDuration = (t||0) + 's';
@@ -176,6 +225,8 @@ function go(id, t = .28, e = 'ease-out'){
   if(id==='main'){location.href='../main/index.html';return;}
   clearTimers();
   if (API.onNavigate && API.onNavigate(id) === true) return;
+  if(NATIVE_STATES.has(id)){openNative(id);return;}
+  closeNative();
   const g = S[id].g, from = (cur && S[cur]) ? cur : null;
   if (g && (!from || S[from].g !== g)){          // 묶음(첫 미션 부여 등)에 처음 들어갈 때만 확인
     prevBeforeGroup = from;
@@ -234,7 +285,7 @@ function play(from, id, dur){
     raf = requestAnimationFrame(tick);
   });
 }
-function start(flow){ cur = null; go(flow === 'reward' ? 'chat-done-01' : 'chat-mission-01', 0); }
+function start(flow){cur=null; if(flow==='reward'){openNative('reward-1');return}closeNative();go('chat-mission-01',0);}
 
 build();
 start(location.hash.replace('#','') === 'reward' ? 'reward' : 'mission');
