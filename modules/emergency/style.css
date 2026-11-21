@@ -244,3 +244,12 @@
   content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:2;
   box-shadow:inset 0 0 2.1px rgba(248,243,230,.5)
 }
+
+/* Exact Figma 908:91938 error bubble: 35.36px high, 4.88px icon gap, 19.76px retry icon. */
+.lx-emergency .lx-error-row.lx-row{display:flex;flex-direction:row;align-items:center;gap:4.88px;min-height:35.36px;height:35.36px;width:348.4px;max-width:100%;margin:0;padding:0}
+.lx-emergency .lx-error-row .lx-error{display:flex;align-items:center;flex:0 0 auto;width:max-content;min-height:35.36px;height:35.36px;box-sizing:border-box;padding:8.32px 15.6px;border:1px solid #b72626;border-radius:20.8px;background:rgba(240,194,194,.8);color:#b72626;font:700 12.48px/18.72px "IBM Plex Sans KR",sans-serif;white-space:nowrap}
+.lx-emergency .lx-error-row .lx-micro{display:block;flex:0 0 19.76px;width:19.76px;height:19.76px;min-width:19.76px;max-width:19.76px;min-height:19.76px;max-height:19.76px;padding:0!important;margin:0;border:0;background:none!important;box-shadow:none!important}
+.lx-emergency .lx-error-row .lx-micro img{display:block;width:19.76px;height:19.76px;max-width:none;max-height:none;object-fit:contain}
+.lx-emergency #keyboard-keys button.lx-key-down{background:#77777f!important;color:#fff!important}
+.lx-emergency #keyboard-keys button.lx-key-expanded{background:#77777f!important;color:#fff!important}
+.lx-emergency #key-preview{display:none!important}
