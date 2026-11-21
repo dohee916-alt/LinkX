@@ -29,7 +29,7 @@ function updateChatLayout(){const inset=parseFloat(getComputedStyle(root).getPro
 function render({bottom=true}={}){if(list.contains(actor))root.appendChild(actor);list.replaceChildren();const first=state.messages.findIndex(m=>m.role==="ai");
 state.messages.forEach((m,index)=>{const row=document.createElement("div");row.className="lx-row "+m.role;if(index===newRow)row.classList.add("lx-arriving");if(index===first)row.dataset.characterAnchor="true";row.append(messageBubble(m));if(m.role==="ai"&&m.versions&&index===state.messages.length-1&&!pending){const tools=document.createElement("div");tools.className="lx-tools";if(m.version>0)tools.append(button("이전 답변","‹",()=>version(index,-1)));tools.append(button("답변 재생성",m.version===0&&m.versions.length===1?"first":"retry",()=>regenerate(index)));if(m.version<m.versions.length-1)tools.append(button("다음 답변","›",()=>version(index,1)));tools.dataset.multiple=String(m.versions.length>1);row.append(tools)}list.append(row)});
 if(pending){const dots=document.createElement("div");dots.className="lx-loading";dots.setAttribute("aria-label","응답 생성 중");for(let i=0;i<4;i++)dots.append(document.createElement("i"));const row=document.createElement("div");row.className="lx-row ai";row.append(dots);list.append(row)}
-if(state.error){const row=document.createElement("div");row.className="lx-error-row";const e=document.createElement("span");e.className="lx-error";e.textContent=errors[state.error]||errors.general;row.append(e,button("다시 시도","⟲",()=>{if(state.invalidInput)recoverInput();else generate()}));list.append(row)}
+if(state.error){const row=document.createElement("div");row.className="lx-error-row lx-row ai";const e=document.createElement("span");e.className="lx-error";e.textContent=errors[state.error]||errors.general;row.append(e,button("다시 시도","⟲",()=>{if(state.invalidInput)recoverInput();else generate()}));list.append(row)}
 newRow=-1;updateSendState();$("send").setAttribute("aria-label",pending?"생성 중지":"전송");$("send").replaceChildren();if(pending){const stop=document.createElement("img");stop.src="../../assets/emergency/label-stop.svg";stop.alt="";$("send").append(stop)}else{const a=document.createElement("img");a.src="../../assets/emergency/send.svg";a.alt="";$("send").append(a)}
 updateChatLayout();requestAnimationFrame(()=>{if(bottom)chat.scrollTop=chat.scrollHeight;syncScrollEdges(chat);preserve()});preserve()}
 function version(index,delta){if(state.timedOut)return;const m=state.messages[index];m.version=Math.max(0,Math.min(m.versions.length-1,m.version+delta));m.text=m.versions[m.version];render()}
@@ -192,21 +192,9 @@ function hangulAppend(s,k){const last=s.at(-1)||"",p=s.slice(0,-1),n=last.charCo
 function hangulDelete(s){const n=(s.at(-1)||"").charCodeAt(0)-0xAC00;if(!(n>=0&&n<11172))return s.slice(0,-1);const l=L[Math.floor(n/588)],v=V[Math.floor(n%588/28)],t=T[n%28],p=s.slice(0,-1);return t!==" "?p+syllable(l,v,splitFinal[t]?.[0]||" "):splitVowel[v]?p+syllable(l,splitVowel[v][0]):p+l}
 function demoStrokes(text){let out=[],value="";for(const ch of text){const n=ch.charCodeAt(0)-0xAC00;let seq=[ch];if(n>=0&&n<11172){const l=L[Math.floor(n/588)],v=V[Math.floor(n%588/28)],t=T[n%28];seq=[l,...(splitVowel[v]||[v]),...(t===" "?[]:splitFinal[t]||[t])]}for(const k of seq){value=/^[ㄱ-ㅎㅏ-ㅣ]$/.test(k)?hangulAppend(value,k):value+k;out.push({key:k,text:value})}}return out}
 let previewKey=null,previewTimer=null;
-function clearKey(){clearTimeout(previewTimer);if(previewKey){previewKey.classList.remove("lx-key-down","lx-key-expanded");previewKey=null} $("key-preview")?.remove()}
-function showKey(b,k){
+function clearKey(){clearTimeout(previewTimer);if(previewKey){previewKey.classList.remove("lx-key-down");previewKey=null}}
+function showKey(b){
  clearKey();if(!b)return;previewKey=b;b.classList.add("lx-key-down");
- if(!k||k===" ")return;
- b.classList.add("lx-key-expanded");
- const x=parseFloat(b.style.left),y=parseFloat(b.style.top),w=parseFloat(b.style.width),h=parseFloat(b.style.height);
- const W=61,H=48,px=Math.min(390-W-2,Math.max(2,x+w/2-W/2)),s=x-px,r=s+w,base=H+8+h;
- const pop=document.createElementNS("http://www.w3.org/2000/svg","svg");
- pop.id="key-preview";pop.setAttribute("viewBox","0 0 "+W+" "+base);
- Object.assign(pop.style,{left:px+"px",top:(y-H-8)+"px",width:W+"px",height:base+"px"});
- const path=document.createElementNS(pop.namespaceURI,"path");
- path.setAttribute("d",`M 9 0 H ${W-9} Q ${W} 0 ${W} 9 V ${H-8} Q ${W} ${H} ${W-8} ${H} C ${W-8} ${H+5} ${r} ${H+3} ${r} ${H+10} V ${base-5} Q ${r} ${base} ${r-5} ${base} H ${s+5} Q ${s} ${base} ${s} ${base-5} V ${H+10} C ${s} ${H+3} 8 ${H+5} 8 ${H} Q 0 ${H} 0 ${H-8} V 9 Q 0 0 9 0 Z`);
- path.setAttribute("fill","#77777F");pop.append(path);
- const label=document.createElementNS(pop.namespaceURI,"text");label.setAttribute("x",W/2);label.setAttribute("y",H/2+1);label.setAttribute("dominant-baseline","central");label.setAttribute("text-anchor","middle");label.setAttribute("fill","#fff");label.setAttribute("font-size","30");label.setAttribute("font-weight","400");label.textContent=k;pop.append(label);
- $("keyboard-keys").append(pop)
 }
 function flashKey(k){const plain={"ㄲ":"ㄱ","ㄸ":"ㄷ","ㅃ":"ㅂ","ㅆ":"ㅅ","ㅉ":"ㅈ","ㅒ":"ㅐ","ㅖ":"ㅔ"}[k]||k;const b=k===" "?$("keyboard-keys").querySelector('[data-key-name="Space"]'):keyButtons.find(x=>x.label===plain)?.b;showKey(b,k===" "?null:k);previewTimer=setTimeout(clearKey,105)}
 let touchShift=false,touchMode="ko";
