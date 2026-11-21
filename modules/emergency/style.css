@@ -222,3 +222,7 @@
 .lx-emergency .lx-tools{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:12.48px;width:348.4px;height:29px;min-height:29px;flex:none;padding:0;margin:0;overflow:visible}
 .lx-emergency .lx-tools .lx-micro.lx-round-control{position:relative!important;inset:auto!important;left:auto!important;top:auto!important;display:block;flex:0 0 29px;width:29px;min-width:29px;max-width:29px;height:29px;min-height:29px;max-height:29px;padding:0!important;margin:0!important;border:0!important;border-radius:14.5px;background:none!important;box-shadow:none!important;filter:none!important;transform:none!important;line-height:normal;overflow:visible!important}
 .lx-emergency .lx-tools .lx-micro.lx-round-control>img{display:block!important;position:static!important;inset:auto!important;width:29px!important;height:29px!important;max-width:none!important;max-height:none!important;object-fit:fill!important;opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important;pointer-events:none}
+
+/* Figma 29px controls: render SVG's crisp gradient/vector, then apply native inset effect over it. */
+.lx-emergency .lx-tools .lx-micro.lx-round-control{isolation:isolate;overflow:hidden!important;border-radius:50%!important}
+.lx-emergency .lx-tools .lx-micro.lx-round-control::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:2;box-shadow:inset 0 0 4.16px #f8f3e6}
