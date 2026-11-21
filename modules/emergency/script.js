@@ -39,15 +39,16 @@ const autoDemo=query.get("auto")!=="0"&&!isPreview;
 let demoTimer=null,typing=false,demoCancelled=false,autoFocus=false;
 const direct=()=>state.manual||!autoDemo;
 // Fast, fluent two-set keyboard input; hesitations belong between thoughts, not letters.
-const FIRST_THOUGHT=1550, SEND_PAUSE=300, AUTO_REPLY_PAUSE=1200;
+// Exhibition demo: very fast Korean typing, with short thinking pauses between turns.
+const FIRST_THOUGHT=650, SEND_PAUSE=120, AUTO_REPLY_PAUSE=650;
 const pace=(i,strokes)=>{const k=strokes[i]?.key,next=strokes[i+1]?.key;
- if(k===",")return 720;                   // formulate the next clause
- if(k==="?"||k==="!")return 380;
- if(k==="."&&next!==".")return 660;       // pause after a finished thought
- if(k===" ")return 115;
- return [61,72,64,78,66,70,59][i%7];
+ if(k===",")return 200;
+ if(k==="?"||k==="!")return 130;
+ if(k==="."&&next!==".")return 180;
+ if(k===" ")return 35;
+ return [22,26,24,29,23,27,21][i%7];
 };
-const reading=t=>Math.max(2300,Math.min(4300,t.length*52));
+const reading=t=>Math.max(1400,Math.min(2200,t.length*28));
 const typingDuration=strokes=>strokes.slice(0,-1).reduce((n,_,i)=>n+pace(i,strokes),0);
 const demoDuration=()=>100+FIRST_THOUGHT+exampleUser.reduce((sum,t,i)=>sum+typingDuration(demoStrokes(t))+SEND_PAUSE+AUTO_REPLY_PAUSE+reading(replies[i]),0)+FINAL_LEAD+150;
 function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing||(!state.manual&&!!input.value);stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
