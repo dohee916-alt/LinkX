@@ -232,3 +232,7 @@
 .lx-emergency .lx-tools[data-multiple="true"] .lx-round-control.lx-retryFirst{left:35px}
 .lx-emergency .lx-tools .lx-round-control.lx-prev{left:0}
 .lx-emergency .lx-tools .lx-round-control.lx-next{left:70px}
+
+/* Actual Figma button artwork must be drawn as a complete SVG image, not CSS background. */
+.lx-emergency .lx-tools .lx-micro.lx-round-control{background:none!important;overflow:visible!important}
+.lx-emergency .lx-tools .lx-micro.lx-round-control>img{position:absolute!important;inset:0!important;width:29px!important;height:29px!important;max-width:none!important;max-height:none!important;object-fit:fill!important;opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important;pointer-events:none}
