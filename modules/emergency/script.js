@@ -40,10 +40,10 @@ let demoTimer=null,demoFrame=null,typing=false,demoCancelled=false,autoFocus=fal
 const direct=()=>state.manual||!autoDemo;
 // Fast, fluent two-set keyboard input; hesitations belong between thoughts, not letters.
 // Exhibition demo: very fast Korean typing, with short thinking pauses between turns.
-const FIRST_THOUGHT=520,SEND_PAUSE=110,AUTO_REPLY_PAUSE=520;
-const reading=t=>Math.max(1100,Math.min(1800,t.length*24));
-// Real elapsed-time animation, not one setTimeout per Hangul jamo. 55 strokes/sec.
-const typingDuration=strokes=>Math.max(650,Math.round(strokes.length/55*1000));
+const FIRST_THOUGHT=700,SEND_PAUSE=180,AUTO_REPLY_PAUSE=850;
+const reading=t=>Math.max(1550,Math.min(2600,t.length*33));
+// Frame-based Korean typing at a quick but readable 18 two-set keystrokes/sec.
+const typingDuration=strokes=>Math.max(650,Math.round(strokes.length/18*1000));
 const demoDuration=()=>100+FIRST_THOUGHT+exampleUser.reduce((sum,t,i)=>sum+typingDuration(demoStrokes(t))+SEND_PAUSE+AUTO_REPLY_PAUSE+reading(replies[i]),0)+FINAL_LEAD+250;
 function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing||(!state.manual&&!!input.value);stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
 // Intent routing for the first real-life greeting mission. Priority matters for negation and mixed feelings.
