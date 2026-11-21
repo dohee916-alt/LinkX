@@ -38,9 +38,18 @@ function regenerate(index){if(state.timedOut)return;const m=state.messages[index
 const autoDemo=query.get("auto")!=="0"&&!isPreview;
 let demoTimer=null,typing=false,demoCancelled=false,autoFocus=false;
 const direct=()=>state.manual||!autoDemo;
-const pace=(i)=>[195,220,205,240,210,225,200][i%7];
-const reading=t=>Math.max(2500,Math.min(8500,t.length*75));
-const demoDuration=()=>100+2500+exampleUser.reduce((sum,t,i)=>sum+demoStrokes(t).reduce((n,_,j)=>n+pace(j),0)+650+2000+(i===0?reading(replies[0]):reading(replies[1])),0)+FINAL_LEAD;
+// Fast, fluent two-set keyboard input; hesitations belong between thoughts, not letters.
+const FIRST_THOUGHT=1550, SEND_PAUSE=300, AUTO_REPLY_PAUSE=1200;
+const pace=(i,strokes)=>{const k=strokes[i]?.key,next=strokes[i+1]?.key;
+ if(k===",")return 720;                   // formulate the next clause
+ if(k==="?"||k==="!")return 380;
+ if(k==="."&&next!==".")return 660;       // pause after a finished thought
+ if(k===" ")return 115;
+ return [61,72,64,78,66,70,59][i%7];
+};
+const reading=t=>Math.max(2300,Math.min(4300,t.length*52));
+const typingDuration=strokes=>strokes.slice(0,-1).reduce((n,_,i)=>n+pace(i,strokes),0);
+const demoDuration=()=>100+FIRST_THOUGHT+exampleUser.reduce((sum,t,i)=>sum+typingDuration(demoStrokes(t))+SEND_PAUSE+AUTO_REPLY_PAUSE+reading(replies[i]),0)+FINAL_LEAD+150;
 function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing||(!state.manual&&!!input.value);stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
 // Intent routing for the first real-life greeting mission. Priority matters for negation and mixed feelings.
 const branches=[
@@ -83,14 +92,14 @@ function scheduleDemo(delay=900){
   const strokes=demoStrokes(exampleUser[state.turn]);const chars=strokes.map(x=>x.text);let i=0;typing=true;autoFocus=true;input.focus();autoFocus=false;
   function step(){if(!typing||demoCancelled||state.phase!=="chat"||state.timedOut)return;
    flashKey(strokes[i].key);input.value=chars[i++];input.dispatchEvent(new Event("input",{bubbles:true}));
-   if(i<chars.length)demoTimer=setTimeout(step,pace(i-1));
-   else{typing=false;demoTimer=setTimeout(()=>{if(!demoCancelled&&state.phase==="chat"){input.blur();send()}},650)}
+   if(i<chars.length)demoTimer=setTimeout(step,pace(i-1,strokes));
+   else{typing=false;demoTimer=setTimeout(()=>{if(!demoCancelled&&state.phase==="chat"){input.blur();send()}},SEND_PAUSE)}
   }step();
  },delay);
 }
 input.addEventListener("pointerdown",beginManual);input.addEventListener("focus",()=>{if(!autoFocus)beginManual()});input.addEventListener("beforeinput",beginManual);input.addEventListener("keydown",e=>{if(!autoFocus&&!state.manual&&!isPreview)beginManual()});
 
-function generate(){if(state.timedOut||state.phase!=="chat")return;clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown&&state.turn>=Number(query.get("errorTurn")||2)){state.errorShown=true;state.error=forced;render();return}const result=direct()?responseOptions(state.messages.filter(m=>m.role==="user").at(-1)?.text||"",state.messages):null;if(result&&!result.options){state.invalidInput=result.intent;state.error="response";render();return}state.invalidInput=false;if(result)state.lastIntent=result.intent;const opts=result?.options||null;const text=opts?(opts.find(t=>!state.messages.some(m=>m.text===t))||opts[0]):(replies[Math.min(state.turn-1,1)]||replies[0]);const m={role:"ai",text};if(opts||state.turn===1){m.versions=[text];m.version=0;if(opts)m.options=[text,...opts.filter(t=>t!==text)]}newRow=state.messages.length;state.messages.push(m);render();if(!direct()){if(state.turn>=exampleUser.length){clearTimeout(finalTimer);finalTimer=setTimeout(showFinal,reading(text));}else scheduleDemo(reading(text));}},2000)}
+function generate(){if(state.timedOut||state.phase!=="chat")return;clearTimeout(timer);state.error=null;pending=true;render();timer=setTimeout(()=>{pending=false;const forced=query.get("error");if(forced&&errors[forced]&&!state.errorShown&&state.turn>=Number(query.get("errorTurn")||2)){state.errorShown=true;state.error=forced;render();return}const result=direct()?responseOptions(state.messages.filter(m=>m.role==="user").at(-1)?.text||"",state.messages):null;if(result&&!result.options){state.invalidInput=result.intent;state.error="response";render();return}state.invalidInput=false;if(result)state.lastIntent=result.intent;const opts=result?.options||null;const text=opts?(opts.find(t=>!state.messages.some(m=>m.text===t))||opts[0]):(replies[Math.min(state.turn-1,1)]||replies[0]);const m={role:"ai",text};if(opts||state.turn===1){m.versions=[text];m.version=0;if(opts)m.options=[text,...opts.filter(t=>t!==text)]}newRow=state.messages.length;state.messages.push(m);render();if(!direct()){if(state.turn>=exampleUser.length){clearTimeout(finalTimer);finalTimer=setTimeout(showFinal,reading(text));}else scheduleDemo(reading(text));}},direct()?2000:AUTO_REPLY_PAUSE)}
 function send(){if(state.phase!=="chat"||state.timedOut)return;clearTimeout(demoTimer);typing=false;if(pending){stopDemo();clearTimeout(timer);pending=false;render();return}const text=input.value.trim();if(!text)return;input.value="";resizeComposer();if(!state.messages.length){clearTimeout(greetingTimer);state.messages.push({role:"ai",text:greeting})}state.invalidInput=false;state.messages.push({role:"user",text});state.turn++;generate()}
 function departure(){$("diamond-glow").hidden=true;clearTimeout(timer);pending=false;state.phase="departure";$("chat-character").hidden=true;root.classList.remove("is-transition");root.classList.add("is-departure");for(const id of ["chat","ready-area","composer"])$(id).hidden=true;$("departure").hidden=false;$("departure-title").textContent=["unsafe","boundary","decline"].includes(state.lastIntent)?"오늘은 여기까지!":state.departureReason==="timeout"?"이제 진짜 가보자":"잘 다녀와!";if(["unsafe","boundary","decline"].includes(state.lastIntent)){$("departure").querySelector("p").textContent="네가 준비됐을 때 다시 시작하자."}clearTimeout(departureTimer);preserve()}
 function positionAt(now=Date.now()){return TRAVEL*Math.min(1,Math.max(0,(now-state.startedAt)/DURATION))}
@@ -99,7 +108,7 @@ function tick(){if(state.phase!=="chat")return;clearTimeout(finalTimer);clearTim
 function showFinal(){if(state.phase!=="chat"||state.timedOut)return;stopDemo();input.value="";resizeComposer();state.timedOut=true;clearTimeout(timer);clearTimeout(greetingTimer);pending=false;state.error=null;newRow=state.messages.length;state.messages.push({role:"ai",text:state.lastIntent==="unsafe"||state.lastIntent==="boundary"||state.lastIntent==="decline"?"오늘은 여기까지 해도 괜찮아. 네가 편할 때 다시 도전하자.":replies[2]});input.blur();input.readOnly=true;render()}
 function finishTimer(){if(state.phase!=="chat")return;if(!direct()&&!state.timedOut){if(state.error){return}if(pending||typing||state.turn<exampleUser.length){finishDeadline=setTimeout(finishTimer,500);return}showFinal();finishDeadline=setTimeout(()=>ready("timeout"),FINAL_LEAD);return}showFinal();ready("timeout")}
 function ready(reason="manual"){if(state.phase!=="chat")return;stopDemo();clearTimeout(finalTimer);clearTimeout(finishDeadline);state.departureReason=reason==="timeout"?"timeout":"manual";state.frozenX=readyAnimation?new DOMMatrixReadOnly(getComputedStyle($("ready-motion")).transform).m41:positionAt();if(readyAnimation){readyAnimation.cancel();readyAnimation=null}setReadyX(state.frozenX);cancelAnimationFrame(frameId);clearTimeout(greetingTimer);state.phase="transition";clearTimeout(timer);pending=false;const bx=20.8+state.frozenX+69.16;const by=$("ready-area").offsetTop+$("ready-motion").offsetTop+24.96;input.blur();root.classList.add("is-transition");preserve();playDiamond($("diamond-glow"),bx,by,departure)}
-function showGreeting(){if(state.phase!=="chat"||state.messages.length)return;newRow=0;state.messages.push({role:"ai",text:greeting});render();scheduleDemo(2500)}
+function showGreeting(){if(state.phase!=="chat"||state.messages.length)return;newRow=0;state.messages.push({role:"ai",text:greeting});render();scheduleDemo(FIRST_THOUGHT)}
 $("composer").addEventListener("submit",e=>{e.preventDefault();send()});$("saved").onclick=goSaved;$("back").onclick=()=>{$("confirm").hidden=false};$("continue").onclick=()=>{$("confirm").hidden=true;scheduleDemo()};$("leave").onclick=home;$("ready").onclick=()=>ready("manual");$("returned").onclick=()=>{saveConversation({id:state.id,type:"emergency",messages:state.messages,title:state.messages.find(m=>m.role==="user")?.text||greeting});updateStore({emergencyDraft:null});location.href="../feedback/index.html?entry=returned"};
 $("mic").onclick=()=>{beginManual();const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){showNotice("이 브라우저에서는 음성 입력을 지원하지 않아요.");return}try{const s=new Speech();s.lang="ko-KR";s.onresult=e=>input.value=e.results[0][0].transcript;s.onerror=()=>showNotice("음성 입력을 사용할 수 없어요.");s.start()}catch{showNotice("음성 입력을 사용할 수 없어요.")}};
 window.addEventListener("pagehide",preserve);chat.addEventListener("scroll",()=>{state.scroll=chat.scrollTop;syncScrollEdges(chat)},{passive:true});
