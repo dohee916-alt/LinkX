@@ -402,6 +402,129 @@ body,#stage,.screen,.btn,button{font-family:var(--figma-font)}
 #shell{display:block!important;grid-template-columns:none!important}
 #viewport{inset:0!important}
 #ios{display:none!important}
+/* REWARD/05 — Figma frame 1830:15338; exact typography, slots and button geometry.
+   Only the vector reveal timeline has been re-animated. */
+#panel,#qaMenuToggle{display:none!important}
+#rewardHead{top:127px!important}
+#rewardHead .kicker{font:600 11px/15px "IBM Plex Sans",sans-serif!important;letter-spacing:8.8px!important;color:#e0d7fc!important}
+#rewardHead h1{top:23px!important;font:700 30px/38px "IBM Plex Sans KR",sans-serif!important;color:#f8f3e6!important}
+#rewardSymbol{left:28px;top:204px;width:334px;height:248px;transform:none!important}
+#rewardSymbol #ribbonBadge{position:absolute!important;left:94px!important;top:57px!important;width:150px!important;height:138px!important;opacity:0;z-index:3!important;filter:none!important;transition:opacity .26s ease-out!important;overflow:visible}
+#rewardSymbol #rewardOrb{z-index:4}
+#rewardSymbol #rewardOrb svg{opacity:.42}
+/* Figma native reward intro rings are retained for initial star and charging stage only. */
+#rewardName{top:491px!important;font:600 22px/30px "IBM Plex Sans KR",sans-serif!important}
+#rewardHint{top:468px!important;font:500 12px/17px "IBM Plex Sans KR",sans-serif!important}
+#rewardDesc{top:536px!important;height:104px!important;min-height:104px!important;text-align:center!important;border-radius:25px!important}
+#rewardDesc p{font:400 14px/21.7px "IBM Plex Sans KR",sans-serif!important;white-space:pre-line!important}
+#rewardActions{top:656px!important;grid-template-columns:141px 185px!important;gap:8px!important}
+#rewardActions .btn{height:52px!important;border-radius:26px!important;font:600 12px/18px "IBM Plex Sans KR",sans-serif!important}
+#rewardFrame #decorateReward{opacity:.65}
+#nextMission{top:752px!important;height:56px!important;border-radius:27px!important;font:600 15px/21px "IBM Plex Sans KR",sans-serif!important}
+#rewardFrame #nextMission.visible{opacity:.6}
+#rewardFrame #nextMission.visible:hover{opacity:1}
+
+/* Common emphasis pulse used on highlighted buttons (reward-check etc.). */
+#rewardActions .btn.attention, #nextMission.attention{
+  position:relative;
+  isolation:isolate;
+  overflow:visible;
+}
+#rewardActions .btn.attention::before, #nextMission.attention::before{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:inherit;
+  background:radial-gradient(circle, rgba(248,243,230,.18) 0%, rgba(224,215,252,.16) 42%, rgba(224,215,252,0) 74%);
+  opacity:.18;
+  z-index:-1;
+  animation:ctaGlowPulse 2.15s ease-in-out infinite;
+}
+#rewardActions .btn.attention{
+  box-shadow:inset 0 0 8px rgba(248,243,230,.35),0 0 0 rgba(224,215,252,0),0 0 0 rgba(248,243,230,0);
+  animation:ctaShadowPulse 2.15s ease-in-out infinite;
+}
+#rewardActions .btn.inactive, #nextMission.inactive{
+  opacity:.34 !important;
+  filter:saturate(.82) brightness(.98);
+}
+#rewardActions .btn.inactive:hover, #nextMission.inactive:hover{opacity:.34!important;filter:saturate(.82) brightness(.98)!important}
+
+/* Preview-only inactive actions still react to touch and click; they never navigate. */
+#rewardActions .btn.inactive, #nextMission.inactive{
+  cursor:pointer !important;
+  touch-action:manipulation;
+  transition:transform 100ms ease-out,filter 110ms ease-out,background-color 100ms ease-out !important;
+}
+#rewardActions .btn.inactive:active, #nextMission.inactive:active,
+#rewardActions .btn.inactive.pressed, #nextMission.inactive.pressed{
+  transform:scale(.965) !important;
+  filter:brightness(.76) saturate(.85) !important;
+  box-shadow:inset 0 1px 13px rgba(30,20,77,.30),inset 0 0 8px rgba(248,243,230,.16) !important;
+}
+@keyframes ctaShadowPulse{
+  0%{box-shadow:inset 0 0 8px rgba(248,243,230,.32),0 0 0 rgba(224,215,252,0),0 0 0 rgba(248,243,230,0)}
+  18%{box-shadow:inset 0 0 8px rgba(248,243,230,.34),0 0 12px rgba(224,215,252,.30),0 0 22px rgba(248,243,230,.12)}
+  36%{box-shadow:inset 0 0 8px rgba(248,243,230,.34),0 0 7px rgba(224,215,252,.18),0 0 10px rgba(248,243,230,.06)}
+  56%{box-shadow:inset 0 0 8px rgba(248,243,230,.34),0 0 16px rgba(224,215,252,.36),0 0 28px rgba(248,243,230,.17)}
+  78%{box-shadow:inset 0 0 8px rgba(248,243,230,.34),0 0 8px rgba(224,215,252,.16),0 0 12px rgba(248,243,230,.07)}
+  100%{box-shadow:inset 0 0 8px rgba(248,243,230,.32),0 0 0 rgba(224,215,252,0),0 0 0 rgba(248,243,230,0)}
+}
+@keyframes ctaGlowPulse{
+  0%{transform:scale(1);opacity:.12}
+  18%{transform:scale(1.05);opacity:.32}
+  36%{transform:scale(1.015);opacity:.18}
+  56%{transform:scale(1.07);opacity:.36}
+  78%{transform:scale(1.025);opacity:.20}
+  100%{transform:scale(1);opacity:.12}
+}
+/* Exact Figma arrow and bow paths from 1835:6647; no round spotlight behind final reward. */
+#ribbonBadge .vector-halo,#ribbonBadge .vector-halo-close{opacity:0}
+#ribbonBadge.drawing .bow-string,#ribbonBadge.drawing .bow-arc,#ribbonBadge.drawing .arc-highlight,#ribbonBadge.drawing .arrow-shaft{stroke-dasharray:100;stroke-dashoffset:100}
+#ribbonBadge.drawing .bow-string{animation:reward05Draw .78s cubic-bezier(.25,.5,.38,1) .10s forwards}
+#ribbonBadge.drawing .bow-arc{animation:reward05Draw 1.08s cubic-bezier(.2,.5,.3,1) .2s forwards}
+#ribbonBadge.drawing .arc-highlight{animation:reward05Draw 1.05s ease .32s forwards}
+#ribbonBadge.drawing .arrow-shaft{animation:reward05Draw .79s cubic-bezier(.2,.5,.5,1) 1.15s forwards}
+#ribbonBadge.drawing .node-start{animation:reward05Emerge .42s ease-out .2s both}
+/* Finish the bow and arrow as one connected drawing, rather than scaling the
+   end pieces from the SVG's top-left origin (which made them jump). */
+#ribbonBadge .node-end,#ribbonBadge .arrowtail{
+  transform-box:fill-box;
+  transform-origin:center;
+}
+#ribbonBadge.drawing .node-end{
+  animation:reward05BowEnd .42s cubic-bezier(.22,.7,.23,1) .96s both;
+}
+#ribbonBadge.drawing .arrowtail{
+  transform-origin:right center;
+  animation:reward05ArrowTail .48s cubic-bezier(.18,.7,.22,1) 1.10s both;
+}
+#ribbonBadge.drawing .star-head{transform-box:fill-box;transform-origin:center;animation:reward05Star .7s cubic-bezier(.15,.8,.2,1) 1.65s both}
+#ribbonBadge.drawing .vector-halo{animation:reward05Wide 2.38s ease-in-out 0s both}
+#ribbonBadge.drawing .vector-halo-close{animation:reward05Close 2.3s ease-in-out .1s both}
+#ribbonBadge.finished .vector-halo{opacity:.40}
+#ribbonBadge.finished .vector-halo-close{opacity:.34}
+@keyframes reward05Draw{to{stroke-dashoffset:0}}
+@keyframes reward05Emerge{0%{opacity:0;transform:scale(.85)}100%{opacity:1;transform:scale(1)}}
+/* The lower circle becomes visible *as the bow curve reaches it*. */
+@keyframes reward05BowEnd{
+  0%{opacity:0;transform:scale(.86)}
+  43%{opacity:.45;transform:scale(.95)}
+  100%{opacity:1;transform:scale(1)}
+}
+/* The fletching unfolds from the start of the arrow shaft, not from offscreen. */
+@keyframes reward05ArrowTail{
+  0%{opacity:0;transform:scaleX(.12) scaleY(.86)}
+  38%{opacity:.65;transform:scaleX(.68) scaleY(.96)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes reward05Star{0%{opacity:0;transform:scale(.35)}56%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes reward05Wide{0%,5%{opacity:0}25%{opacity:.19}60%{opacity:.33}82%{opacity:.7}100%{opacity:.40}}
+@keyframes reward05Close{0%,5%{opacity:0}25%{opacity:.16}60%{opacity:.3}82%{opacity:.65}100%{opacity:.34}}
+
+/* Inactive remains dim even on hover; press/touch feedback stays visible. */
+#rewardFrame #nextMission.visible.inactive:hover{opacity:.34!important;filter:saturate(.82) brightness(.98)!important}
+
 </style>
 </head>
 <body>
@@ -502,33 +625,39 @@ body,#stage,.screen,.btn,button{font-family:var(--figma-font)}
             <button id="rewardOrb" aria-label="별을 눌러 보상 확인" title="별을 눌러 보상을 확인하세요">
               <svg viewBox="0 0 32 32"><path d="M16 0.5C19.1 7.73333 24.2667 12.9 31.5 16C24.2667 19.1 19.1 24.2667 16 31.5C12.9 24.2667 7.73333 19.1 0.5 16C7.73333 12.9 12.9 7.73333 16 0.5Z" fill="#F3F0E7" opacity=".42"/></svg>
             </button>
-            <svg id="ribbonBadge" xmlns="http://www.w3.org/2000/svg" width="210" height="214" viewBox="0 0 210 214" fill="none" role="img" aria-label="피그마 원본 LUMINOUS RIBBON">
-<defs>
-<radialGradient id="refGlowOne" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(104.946 101.918) scale(178.531 172.71)"><stop stop-color="#BFA7FF" stop-opacity=".96"/><stop offset=".56" stop-color="#A8BEFF" stop-opacity=".6"/><stop offset="1" stop-color="#252344" stop-opacity="0"/></radialGradient>
-<radialGradient id="refGlowTwo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(104.273 100.775) scale(141.014)"><stop stop-color="#F0E8FF" stop-opacity=".96"/><stop offset=".56" stop-color="#BFA7FF" stop-opacity=".6"/><stop offset="1" stop-color="#282055" stop-opacity="0"/></radialGradient>
-<linearGradient id="refLeftRibbon" x1="56.5957" y1="140.419" x2="109.372" y2="182.325" gradientUnits="userSpaceOnUse"><stop stop-color="#C5E8FF"/><stop offset=".55" stop-color="#899CE3"/><stop offset="1" stop-color="#6865B6"/></linearGradient>
-<linearGradient id="refRightRibbon" x1="109.506" y1="139.255" x2="163.109" y2="183.145" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE0FF"/><stop offset=".55" stop-color="#B79CD8"/><stop offset="1" stop-color="#6662B4"/></linearGradient>
-<radialGradient id="refMedalOuter" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(100.645 88.219) scale(93.1216 93.2659)"><stop stop-color="#E7E4FF"/><stop offset=".53" stop-color="#7774CA"/><stop offset="1" stop-color="#29244F"/></radialGradient>
-<radialGradient id="refMedalInner" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(104.273 97.9091) scale(95.0412 95.1885)"><stop stop-color="#F0E8FF" stop-opacity=".96"/><stop offset=".56" stop-color="#A8BEFF" stop-opacity=".6"/><stop offset="1" stop-color="#29244F" stop-opacity="0"/></radialGradient>
-<radialGradient id="refSheen" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(106.627 81.6023) scale(70.507 48.514)"><stop stop-color="white" stop-opacity=".96"/><stop offset=".56" stop-color="#F0E8FF" stop-opacity=".6"/><stop offset="1" stop-color="#BFA7FF" stop-opacity="0"/></radialGradient>
-<filter id="refBroadBlur" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="6.05"/></filter>
-<filter id="refMedalShadow" x="-45%" y="-45%" width="190%" height="190%"><feGaussianBlur stdDeviation="8.41"/></filter>
-<filter id="refRealRibbonContour" x="-55%" y="-55%" width="210%" height="210%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="8.409" result="soft"/><feFlood flood-color="#BFA7FF" flood-opacity=".72"/><feComposite in2="soft" operator="in" result="halo"/><feMerge><feMergeNode in="halo"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<filter id="refRealInnerLight" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="4.7" result="shadow"/><feOffset dx="2.69" dy="3.36"/><feComposite in2="SourceAlpha" operator="in" result="inner"/><feFlood flood-color="#2A2156" flood-opacity=".43"/><feComposite in2="inner" operator="in" result="shade"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="shade"/></feMerge></filter>
-<filter id="refFineGlow" x="-35%" y="-35%" width="170%" height="170%"><feGaussianBlur stdDeviation="2.35"/></filter>
-</defs>
-<ellipse opacity=".3" filter="url(#refBroadBlur)" cx="104.945" cy="101.918" rx="92.8364" ry="89.8091" fill="url(#refGlowOne)"/>
-<circle opacity=".62" filter="url(#refBroadBlur)" cx="104.273" cy="100.775" r="73.3273" fill="url(#refGlowTwo)"/>
-<circle cx="104.273" cy="98.7564" r="60.1418" stroke="#A8BEFF" stroke-opacity=".4" stroke-width=".807273"/>
-<path d="M74.0386 140.419L99.6214 153.23L87.9928 194.605L72.8757 182.738L56.5957 191.292L74.0386 140.419Z" fill="url(#refLeftRibbon)"/>
-<path d="M109.506 152.648L136.251 139.255L154.276 190.62L138.577 181.975L122.297 193.933L109.506 152.648Z" fill="url(#refRightRibbon)"/>
-<path filter="url(#refRealRibbonContour)" d="M164.741 97.909L163.352 103.086L160.386 107.82L158.189 112.38L157.817 117.429L158.02 123.013L156.642 128.19L152.851 131.975L147.921 134.59L143.74 137.437L140.897 141.624L138.286 146.563L134.507 150.359L129.338 151.74L123.762 151.536L118.721 151.908L114.169 154.11L109.442 157.079L104.273 158.471L99.1039 157.079L94.3769 154.11L89.8243 151.908L84.7833 151.536L79.2074 151.74L74.0385 150.359L70.2592 146.563L67.6486 141.624L64.8054 137.437L60.6249 134.59L55.6944 131.975L51.9035 128.19L50.5255 123.013L50.729 117.429L50.3569 112.38L48.1591 107.82L45.1938 103.086L43.8042 97.909L45.1938 92.732L48.1591 87.9977L50.3569 83.4381L50.729 78.3893L50.5255 72.8047L51.9035 67.6278L55.6944 63.8427L60.6249 61.228L64.8054 58.3804L67.6486 54.1935L70.2592 49.2553L74.0385 45.4585L79.2074 44.0784L84.7833 44.2822L89.8243 43.9095L94.3769 41.7083L99.1039 38.7384L104.273 37.3467L109.442 38.7384L114.169 41.7083L118.721 43.9095L123.762 44.2822L129.338 44.0784L134.507 45.4585L138.286 49.2553L140.897 54.1935L143.74 58.3804L147.921 61.228L152.851 63.8427L156.642 67.6278L158.02 72.8047L157.817 78.3893L158.189 83.4381L160.386 87.9977L163.352 92.732L164.741 97.909Z" fill="url(#refMedalOuter)" stroke="#D9D5FF" stroke-opacity=".98" stroke-width="2.89273" stroke-linejoin="round"/>
-<path d="M104.273 147.407C131.567 147.407 153.694 125.246 153.694 97.9091C153.694 70.5721 131.567 48.4111 104.273 48.4111C76.978 48.4111 54.8513 70.5721 54.8513 97.9091C54.8513 125.246 76.978 147.407 104.273 147.407Z" fill="url(#refMedalInner)" stroke="#D9D5FF" stroke-opacity=".55" stroke-width="1.14364"/>
-<path d="M148.461 97.9094C148.461 122.352 128.677 142.166 104.273 142.166C79.8681 142.166 60.0842 122.352 60.0842 97.9094C60.0842 73.4669 79.8681 53.6523 104.273 53.6523C128.677 53.6523 148.461 73.4669 148.461 97.9094Z" stroke="#BCEEFF" stroke-opacity=".67" stroke-width="1.00909"/>
-<ellipse opacity=".26" filter="url(#refBroadBlur)" cx="106.627" cy="81.6023" rx="36.6636" ry="25.2273" fill="url(#refSheen)"/>
-<circle cx="56.8455" cy="69.4925" r="1.00909" fill="#BCEEFF" fill-opacity=".82"/>
-<circle cx="149.345" cy="77.2292" r="1.34545" fill="#BCEEFF" fill-opacity=".82"/>
-</svg>
+            <svg id="ribbonBadge" width="150" height="138" viewBox="0 0 150 138" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="활과 별 · 첫마디 명사수 보상"><defs>
+<lineargradient gradientUnits="objectBoundingBox" id="sky" x1="0" x2=".55" y1="0" y2="1"><stop stop-color="#1D2426"></stop><stop offset=".17" stop-color="#222344"></stop><stop offset=".42" stop-color="#362B92"></stop><stop offset=".7" stop-color="#806CBF"></stop><stop offset="1" stop-color="#CDADE0"></stop></lineargradient>
+<lineargradient gradientUnits="userSpaceOnUse" id="bow-grad" x1="25" x2="130" y1="5" y2="91"><stop stop-color="#B8D7FF"></stop><stop offset=".48" stop-color="#AAA4F4"></stop><stop offset="1" stop-color="#DDB2F3"></stop></lineargradient>
+<lineargradient gradientUnits="userSpaceOnUse" id="star-grad" x1="108" x2="147" y1="13" y2="45"><stop stop-color="#FFFAFF"></stop><stop offset=".47" stop-color="#C9C5FF"></stop><stop offset="1" stop-color="#F1D7FF"></stop></lineargradient>
+<lineargradient id="node-grad" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#E1E9FF"></stop><stop offset=".3" stop-color="#BFC4FF"></stop><stop offset=".8" stop-color="#9F99EC"></stop><stop offset="1" stop-color="#D3B3FB"></stop></lineargradient>
+<lineargradient gradientUnits="userSpaceOnUse" id="arrowtail-grad" x1="0" x2="18" y1="0" y2="18"><stop stop-color="#FFFAFF"></stop><stop offset=".47" stop-color="#C9C5FF"></stop><stop offset="1" stop-color="#F1D7FF"></stop></lineargradient>
+<lineargradient id="card" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#D8B9F1" stop-opacity=".36"></stop><stop offset=".58" stop-color="#DDD2F4" stop-opacity=".18"></stop><stop offset="1" stop-color="#D7B6EC" stop-opacity=".35"></stop></lineargradient>
+<lineargradient id="btn" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#C5A9F7" stop-opacity=".48"></stop><stop offset="1" stop-color="#A68DD7" stop-opacity=".18"></stop></lineargradient>
+<filter height="200%" id="halo-wide" width="200%" x="-50%" y="-50%"><fegaussianblur stddeviation="8.5"></fegaussianblur></filter>
+<filter height="200%" id="halo-close" width="200%" x="-50%" y="-50%"><fegaussianblur stddeviation="3.2"></fegaussianblur></filter>
+<filter height="300%" id="star-glint" width="300%" x="-100%" y="-100%"><fegaussianblur stddeviation="2"></fegaussianblur></filter>
+</defs><g>
+<g class="vector-halo" fill="#C0A8FF" filter="url(#halo-wide)" opacity="0" stroke="#C0A8FF" stroke-linecap="round" stroke-linejoin="round">
+<path d="M32.7899 7.1582L13.3275 92.6236L104.716 130.702" fill="none" stroke-width="4"></path>
+<path d="M32.7899 7.1582C108.947 7.1582 129.256 69.7764 104.716 130.702" fill="none" stroke-width="12"></path>
+<path d="M7.40417 96.0093L124.179 32.5449" fill="none" stroke-width="6"></path>
+<path d="M125.384 12.438C125.713 11.372 126.212 11.2838 126.885 12.1734L132.602 19.7491C133.269 20.6397 134.16 21.0756 135.274 21.0568L144.774 20.8939C145.882 20.8761 146.119 21.3242 145.483 22.2381L140.042 30.0201C139.406 30.9284 139.266 31.9096 139.624 32.9635L142.712 41.9481C143.076 43.0011 142.724 43.3637 141.658 43.0362L132.577 40.2639C131.512 39.9418 130.534 40.1143 129.643 40.7811L122.058 46.4922C121.169 47.1646 120.714 46.944 120.696 45.8302L120.524 36.3314C120.5 35.2186 120.033 34.3443 119.125 33.7082L111.35 28.2568C110.441 27.6151 110.51 27.1132 111.557 26.751L120.54 23.6547C121.594 23.2915 122.281 22.5774 122.603 21.5124L125.384 12.438Z" stroke="none"></path>
+</g>
+<g class="vector-halo-close" fill="#DFD4FF" filter="url(#halo-close)" opacity="0" stroke="#DFD4FF" stroke-linecap="round" stroke-linejoin="round">
+<path d="M32.7899 7.1582L13.3275 92.6236L104.716 130.702" fill="none" stroke-width="3.8"></path>
+<path d="M32.7899 7.1582C108.947 7.1582 129.256 69.7764 104.716 130.702" fill="none" stroke-width="10"></path>
+<path d="M7.40417 96.0093L124.179 32.5449" fill="none" stroke-width="5"></path>
+<path d="M125.384 12.438C125.713 11.372 126.212 11.2838 126.885 12.1734L132.602 19.7491C133.269 20.6397 134.16 21.0756 135.274 21.0568L144.774 20.8939C145.882 20.8761 146.119 21.3242 145.483 22.2381L140.042 30.0201C139.406 30.9284 139.266 31.9096 139.624 32.9635L142.712 41.9481C143.076 43.0011 142.724 43.3637 141.658 43.0362L132.577 40.2639C131.512 39.9418 130.534 40.1143 129.643 40.7811L122.058 46.4922C121.169 47.1646 120.714 46.944 120.696 45.8302L120.524 36.3314C120.5 35.2186 120.033 34.3443 119.125 33.7082L111.35 28.2568C110.441 27.6151 110.51 27.1132 111.557 26.751L120.54 23.6547C121.594 23.2915 122.281 22.5774 122.603 21.5124L125.384 12.438Z" stroke="none"></path>
+</g>
+<path class="bow-string" d="M32.7899 7.1582L13.3275 92.6236L104.716 130.702" fill="none" pathLength="100" stroke="#B4A3ED" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.48"></path>
+<path class="bow-arc" d="M32.7899 7.1582C108.947 7.1582 129.256 69.7764 104.716 130.702" fill="none" pathLength="100" stroke="url(#bow-grad)" stroke-linecap="round" stroke-linejoin="round" stroke-width="9.2"></path>
+<path class="arc-highlight" d="M32.7899 4.62109C109.793 6.31348 130.948 69.7779 106.409 129.858" fill="none" pathLength="100" stroke="#D8D6FF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3"></path>
+<circle class="node-start" cx="32.79" cy="7.16" fill="url(#node-grad)" r="6.77"></circle>
+<circle class="node-end" cx="104.72" cy="130.7" fill="url(#node-grad)" r="6.77"></circle>
+<path class="arrow-shaft" d="M7.40417 96.0093L124.179 32.5449" fill="none" pathLength="100" stroke="#F1DCFF" stroke-linecap="round" stroke-width="4.6"></path>
+<path class="arrowtail" d="M0.634644 95.1631L16.7123 86.7012L15.0199 97.7017L5.7118 104.471L0.634644 95.1631Z" fill="url(#arrowtail-grad)" stroke="#F1D7FF" stroke-width="1.38"></path>
+<path class="star-head" d="M125.384 12.438C125.713 11.372 126.212 11.2838 126.885 12.1734L132.602 19.7491C133.269 20.6397 134.16 21.0756 135.274 21.0568L144.774 20.8939C145.882 20.8761 146.119 21.3242 145.483 22.2381L140.042 30.0201C139.406 30.9284 139.266 31.9096 139.624 32.9635L142.712 41.9481C143.076 43.0011 142.724 43.3637 141.658 43.0362L132.577 40.2639C131.512 39.9418 130.534 40.1143 129.643 40.7811L122.058 46.4922C121.169 47.1646 120.714 46.944 120.696 45.8302L120.524 36.3314C120.5 35.2186 120.033 34.3443 119.125 33.7082L111.35 28.2568C110.441 27.6151 110.51 27.1132 111.557 26.751L120.54 23.6547C121.594 23.2915 122.281 22.5774 122.603 21.5124L125.384 12.438Z" fill="url(#star-grad)" stroke="#E0D7FF" stroke-width="1.84"></path>
+</g></svg>
           </div>
           <p id="rewardHint" aria-live="polite">별을 눌러 보상을 확인하세요</p>
           <h2 id="rewardName" aria-live="polite">시작의 증표</h2>
@@ -1000,44 +1129,98 @@ function setupRewardHero(){
   rewardNodes.ring2=$('rewardInnerRingCircle');rewardNodes.star=$('rewardOrb').querySelector('svg');
   rewardNodes.badge=$('ribbonBadge');
 }
-function rewardHeroFrame(index,duration=0){
-  const k=HERO_KEYFRAMES[index];
-  const easing='cubic-bezier(0,0,.58,1)';
-  for(const name of ['wash','main','inner','ring','ring2']){
-    const [x,y,d,alpha]=k[name],el=rewardNodes[name];
-    el.style.transition='r '+duration+'ms '+easing+',opacity '+duration+'ms '+easing;
-    el.style.r=(d/2)+'px';
-    el.style.opacity=String(alpha);
+function setRewardGlow(cfg,duration=0){
+  const map={wash:rewardNodes.wash,main:rewardNodes.main,inner:rewardNodes.inner,ring:rewardNodes.ring,ring2:rewardNodes.ring2};
+  for(const key of Object.keys(map)){
+    const node=map[key];
+    const [radius,opacity]=cfg[key];
+    node.style.transition='r '+duration+'ms ease-out, opacity '+duration+'ms ease-out';
+    node.setAttribute('r',radius);node.style.opacity=String(opacity);
   }
-  rewardNodes.star.style.transition='opacity '+duration+'ms '+easing;
-  rewardNodes.star.style.opacity=k.star;
-  const [x,y,w,h,alpha]=k.badge,elem=rewardNodes.badge,scale=w/162.8;
-  elem.style.transition='left '+duration+'ms '+easing+',top '+duration+'ms '+easing+',width '+duration+'ms '+easing+',height '+duration+'ms '+easing+',opacity '+duration+'ms '+easing;
-  // Raw native source SVG measures 210×214 including 22.8728×27.4473 internal inset.
-  elem.style.left=(x-22.8728*scale)+'px';elem.style.top=(y-27.4473*scale)+'px';
-  elem.style.width=(210*scale)+'px';elem.style.height=(214*scale)+'px';elem.style.opacity=String(alpha);
+  if(cfg.star!=null){
+    rewardNodes.star.style.transition='opacity '+duration+'ms ease-out';
+    rewardNodes.star.style.opacity=String(cfg.star);
+  }
 }
+function setRewardButtonsState(active){
+  $('seeReward').classList.toggle('attention',active);
+  $('decorateReward').classList.toggle('inactive',active);
+  $('nextMission').classList.toggle('inactive',active);
+}
+function rewardHeroFrame(index,duration=0){
+  const e=rewardNodes.badge, star=rewardNodes.star;
+  const val={
+   0:{wash:[65,.20],main:[60,.38],inner:[32,.28],ring:[54,.19],ring2:[41,.15],star:.42},
+   1:{wash:[95,.33],main:[91,.53],inner:[58,.41],ring:[78,.28],ring2:[56,.24],star:.70},
+   2:{wash:[135,.63],main:[129,.60],inner:[92,.45],ring:[116,.34],ring2:[83,.30],star:0},
+   3:{wash:[145,.23],main:[140,.21],inner:[95,.15],ring:[115,.16],ring2:[87,.14],star:0},
+   4:{wash:[106,0],main:[94,0],inner:[71,0],ring:[93,0],ring2:[66,0],star:0}
+  }[index];
+  for(const [key,node] of [['wash',rewardNodes.wash],['main',rewardNodes.main],['inner',rewardNodes.inner],['ring',rewardNodes.ring],['ring2',rewardNodes.ring2]]){
+    const [radius,opacity]=val[key];
+    node.style.transition='r '+duration+'ms ease-out, opacity '+duration+'ms ease-out';
+    node.setAttribute('r',radius);node.style.opacity=String(opacity);
+  }
+  star.style.transition='opacity '+duration+'ms ease-out';star.style.opacity=String(val.star);
+  if(index===0){
+    e.classList.remove('drawing','finished');e.style.transition='none';e.style.opacity='0';
+    star.style.opacity='.42';
+  }else if(index===3){
+    e.classList.remove('finished','drawing');void e.getBoundingClientRect();
+    e.style.opacity='1';e.classList.add('drawing');
+  }else if(index===4){
+    e.classList.remove('drawing');e.classList.add('finished');e.style.opacity='1';
+  }
+}
+
 function showReward(step){
  ++loadGeneration;loadRequest=null;
  clearJobs();resetOverlays();state.step=step;state.phase='star';activate('reward');lockButtons(false);
- $('rewardKicker').textContent='REWARD/00';$('rewardName').textContent=COMMON_REWARD.name;$('rewardExplanation').textContent=COMMON_REWARD.description;$('decorateAppliedTitle').textContent=COMMON_REWARD.name;
+ $('rewardKicker').textContent='REWARD/05';$('rewardName').textContent=COMMON_REWARD.name;$('rewardExplanation').textContent=COMMON_REWARD.description;$('decorateAppliedTitle').textContent=COMMON_REWARD.name;
  $('rewardSymbol').className='';rewardHeroFrame(0,0);$('rewardHint').style.opacity='1';
  $('rewardHint').textContent='별을 눌러 보상을 확인하세요';
  ['rewardDesc','rewardName','rewardActions','nextMission'].forEach(id=>$(id).classList.remove('visible'));
+ setRewardButtonsState(false);
  $('rewardOrb').disabled=false;stateUI();
 }
 function bloomReward(){
  if(state.mode!=='reward'||state.phase!=='star'||lock)return;
  lock=true;state.phase='bloom';$('rewardOrb').disabled=true;stateUI();
- // Retain the same original five Figma reward keyframes, eased slightly slower
- // (about +13% to the overall appearance) for more readable bloom and badge reveal.
- rewardHeroFrame(1,430);$('rewardHint').textContent='새로운 보상이 나타나는 중이에요';
- delay(485,()=>{rewardHeroFrame(2,520)});
- delay(1085,()=>{rewardHeroFrame(3,540);$('rewardHint').style.opacity='0'});
- delay(2250,()=>{rewardHeroFrame(4,810);$('rewardHint').textContent='보상을 받았어요';$('rewardHint').style.opacity='1';['rewardName','rewardDesc','rewardActions','nextMission'].forEach(id=>$(id).classList.add('visible'))});
- delay(3060,()=>{state.phase='earned';state.completed[state.step-1]=true;lock=false;stateUI()});
+ setRewardButtonsState(false);
+ $('rewardHint').textContent='새로운 보상이 나타나는 중이에요';
+ // Figma REWARD 7: star brightens first, while the halo expands.
+ rewardHeroFrame(1,390);
+ // Figma REWARD 2-1: large luminous ring, NO star, NO bow icon.
+ // The SVG star finishes fading to opacity=0 before any bow-vector is visible.
+ delay(390,()=>{
+   rewardHeroFrame(2,580);
+   rewardNodes.badge.style.opacity='0';
+ });
+ // Hold the completed REWARD 2-1 frame for ~260 ms before the icon drawing.
+ delay(1240,()=>{
+   const badge=rewardNodes.badge;
+   rewardNodes.star.style.transition='none';
+   rewardNodes.star.style.opacity='0';
+   badge.classList.remove('finished','drawing');
+   void badge.getBoundingClientRect();
+   badge.style.opacity='1';
+   badge.classList.add('drawing');
+ });
+ delay(1690,()=>{ $('rewardHint').style.opacity='0'; });
+ // Let the bow, arrow shaft, and final star complete their path animations
+ // before converting to the stable badge. Avoid the previous abrupt cut.
+ delay(3670,()=>{
+   rewardHeroFrame(4,520);
+   $('rewardSymbol').classList.add('settled');
+   $('rewardHint').textContent='보상을 받았어요';
+   $('rewardHint').style.opacity='1';
+   ['rewardName','rewardDesc','rewardActions','nextMission'].forEach(id=>$(id).classList.add('visible'));
+   setRewardButtonsState(true);
+ });
+ delay(4220,()=>{state.phase='earned';state.completed[state.step-1]=true;lock=false;stateUI()});
 }
-function openDecorate(){if(state.mode!=='reward'||state.phase!=='earned')return;state.decorated[state.step-1]=true;$('decorateAppliedTitle').textContent=COMMON_REWARD.name;$('rewardFrame').classList.add('decorating');$('rewardHint').textContent='보상을 받았어요';$('decorateAppliedTitle').setAttribute('aria-hidden','false');$('decorateOverlay').classList.add('visible');$('decorateOverlay').setAttribute('aria-hidden','false');animateFigmaDecorate()}
+
+function openDecorate(){if(state.mode!=='reward'||state.phase!=='earned')return; if($('decorateReward').classList.contains('inactive')){return;} state.decorated[state.step-1]=true;$('decorateAppliedTitle').textContent=COMMON_REWARD.name;$('rewardFrame').classList.add('decorating');$('rewardHint').textContent='보상을 받았어요';$('decorateAppliedTitle').setAttribute('aria-hidden','false');$('decorateOverlay').classList.add('visible');$('decorateOverlay').setAttribute('aria-hidden','false');animateFigmaDecorate()}
 function finishDecorateDismiss(){
   const overlay=$('decorateOverlay');
   // Hide as one composited unit; reset positions only after it is no longer painted.
@@ -1106,7 +1289,7 @@ function openNextMissionFromReward(){
    });
  });
 }
-function next(){if(state.mode!=='reward'||state.phase!=='earned')return;requestScreen('mission',4,openNextMissionFromReward)}
+function next(){if(state.mode!=='reward'||state.phase!=='earned')return; if($('nextMission').classList.contains('inactive')){return;} requestScreen('mission',4,openNextMissionFromReward)}
 // Errors are exclusively results of a real async operation that fails,
 // explicitly returns false, or has not settled after 10 real seconds.
 // The fully inlined standalone screens need no network load by default.
@@ -1175,6 +1358,18 @@ function fit(){
 $('missionConfirm').addEventListener('click',()=>{if($('missionConfirm').disabled)return;route('main')});
 $('rewardOrb').addEventListener('click',bloomReward);
 $('nextMission').addEventListener('click',next);
+// Same pressed-state feedback for both inactive secondary CTAs.
+for(const id of ['decorateReward','nextMission']){
+  const el=$(id);
+  el.addEventListener('click',()=>{
+    if(!el.classList.contains('inactive'))return;
+    el.classList.remove('pressed');
+    void el.offsetWidth;
+    el.classList.add('pressed');
+    setTimeout(()=>el.classList.remove('pressed'),185);
+  });
+}
+
 $('seeReward').addEventListener('click',()=>route('reward-check'));
 $('decorateReward').addEventListener('click',openDecorate);
 $('toMain').addEventListener('click',()=>route('main'));
