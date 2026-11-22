@@ -151,7 +151,7 @@ function openNative(id){
     Object.defineProperty(a,'loadReward',{get:()=>API.loadReward,configurable:true});
     if(id!=='reward-1')a.previewState(id);
   });
-  frame.src='native-flow.html?embedded=1&step=3#reward';
+  frame.src='native-flow.html?embedded=1&step=3&v=reward05-20261123-d6db01c#reward';
   phone.appendChild(frame);
 }
 const forced = new URLSearchParams(location.search).get('force'); // 확인용: ?force=loading | error
