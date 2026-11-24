@@ -18,31 +18,41 @@ const middle=diamondFrames.center.map(geometry),right=diamondFrames.end.map(geom
 const mix=(a,b,t)=>a+(b-a)*t;
 const smooth=t=>t*t*(3-2*t);
 export const GLOW_DURATION=1800; // Existing transition duration; Figma provides three visual examples.
-// Feather the outer diamond well past its former sharp edge.
-// Keep the warm central glow and the original Figma timing/geometry.
-const FEATHER_REACH=1.55;
-let glowPixels=null;
-export function drawDiamond(ctx,cx,cy,rx,ry,opacity=1){
- if(!glowPixels||glowPixels.width!==W||glowPixels.height!==H){
-  glowPixels=ctx.createImageData(W,H);
-  const data=glowPixels.data;
-  for(let i=0;i<data.length;i+=4){data[i]=255;data[i+1]=249;data[i+2]=232;}
- }
- const pixels=glowPixels.data;
- const ix=1/Math.max(1,rx),iy=1/Math.max(1,ry);
- const strength=Math.max(0,Math.min(1,opacity))*255;
- let k=3;
- for(let y=0;y<H;y++){
-  const dy=Math.abs(y+.5-cy)*iy;
-  for(let x=0;x<W;x++,k+=4){
-   // L1 metric maintains the four-pointed Figma star silhouette.
-   const d=(Math.abs(x+.5-cx)*ix+dy)/FEATHER_REACH;
-   const t=Math.max(0,1-d);
-   // Smoothstep reaches zero with a flat slope: no visible cutoff contour.
-   pixels[k]=Math.round(strength*t*t*(3-2*t));
+// Cache a single smooth, feathered L1 star texture. Animation frames only
+// transform/composite this image; they never recalculate 390x844 alpha pixels.
+const FEATHER_REACH=1.95;
+const TEXTURE_SIZE=768;
+let starTexture;
+function getStarTexture(){
+ if(starTexture)return starTexture;
+ const texture=document.createElement("canvas");
+ texture.width=texture.height=TEXTURE_SIZE;
+ const tctx=texture.getContext("2d",{willReadFrequently:false});
+ const img=tctx.createImageData(TEXTURE_SIZE,TEXTURE_SIZE);
+ const data=img.data;
+ for(let y=0;y<TEXTURE_SIZE;y++){
+  const ny=Math.abs(2*(y+.5)/TEXTURE_SIZE-1);
+  for(let x=0;x<TEXTURE_SIZE;x++){
+   const nx=Math.abs(2*(x+.5)/TEXTURE_SIZE-1);
+   const t=Math.max(0,1-nx-ny);
+   const i=(y*TEXTURE_SIZE+x)*4;
+   data[i]=255;data[i+1]=249;data[i+2]=232;
+   data[i+3]=Math.round(255*t*t*(3-2*t));
   }
  }
- ctx.putImageData(glowPixels,0,0);
+ tctx.putImageData(img,0,0);
+ starTexture=texture;
+ return texture;
+}
+export function drawDiamond(ctx,cx,cy,rx,ry,opacity=1){
+ ctx.clearRect(0,0,W,H);
+ const w=Math.max(1,rx)*FEATHER_REACH,h=Math.max(1,ry)*FEATHER_REACH;
+ ctx.save();
+ ctx.globalAlpha=Math.max(0,Math.min(1,opacity));
+ ctx.imageSmoothingEnabled=true;
+ ctx.imageSmoothingQuality="high";
+ ctx.drawImage(getStarTexture(),cx-w,cy-h,2*w,2*h);
+ ctx.restore();
 }
 export function playDiamond(canvas,buttonX,buttonY,done){
  const ctx=canvas.getContext("2d");canvas.hidden=false;
