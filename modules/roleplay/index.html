@@ -520,7 +520,10 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
   $('#btnClose').addEventListener('click', openModal);
   modal.addEventListener('click', e => { if (!e.target.closest('.popup-card')) closeModal(); });
   $('#btnFeedback').addEventListener('click', () => leave('finished')); /* 연습을 끝까지 마치고 나가면 텍스트 모드에서 연습 로그·피드백 */
-  $('#btnStar').addEventListener('click', () => toast('즐겨찾기 — 연결 예정'));
+  $('#btnStar').addEventListener('click', () => {
+    clearTimers();
+    location.href = '../saved/index.html?tab=saved';
+  });
 
   /* ── 키보드 (발표·점검용) ─────────────────────── */
   document.addEventListener('keydown', e => {
