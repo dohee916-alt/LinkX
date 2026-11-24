@@ -126,7 +126,66 @@ function showFinalLoading(){
 }
 function showFinal(){if(state.phase!=="chat"||state.timedOut)return;stopDemo();input.value="";resizeComposer();state.timedOut=true;clearTimeout(timer);clearTimeout(greetingTimer);pending=false;state.error=null;newRow=state.messages.length;state.messages.push({role:"ai",text:state.lastIntent==="unsafe"||state.lastIntent==="boundary"||state.lastIntent==="decline"?"오늘은 여기까지 해도 괜찮아. 네가 편할 때 다시 도전하자.":replies[2]});input.blur();input.readOnly=true;if(!direct()){clearTimeout(finishDeadline);clearTimeout(finalTimer);if(readyAnimation){readyAnimation.onfinish=null;readyAnimation.cancel();readyAnimation=null}state.startedAt=Date.now()-DURATION;setReadyX(TRAVEL);finalTimer=setTimeout(()=>ready("timeout"),FINAL_READ_HOLD)}render()}
 function finishTimer(){if(state.phase!=="chat")return;if(!direct()){if(state.timedOut)return;if(state.error||pending||typing||state.turn<exampleUser.length){finishDeadline=setTimeout(finishTimer,500);return}showFinal();return}showFinal();ready("timeout")}
-function ready(reason="manual"){if(state.phase!=="chat")return;stopDemo();clearTimeout(finalTimer);clearTimeout(finishDeadline);state.departureReason=reason==="timeout"?"timeout":"manual";state.frozenX=readyAnimation?new DOMMatrixReadOnly(getComputedStyle($("ready-motion")).transform).m41:positionAt();if(readyAnimation){readyAnimation.cancel();readyAnimation=null}setReadyX(state.frozenX);cancelAnimationFrame(frameId);clearTimeout(greetingTimer);state.phase="transition";clearTimeout(timer);pending=false;const bx=20.8+state.frozenX+69.16;const by=$("ready-area").offsetTop+$("ready-motion").offsetTop+24.96;input.blur();root.classList.add("is-transition");preserve();playDiamond($("diamond-glow"),bx,by,departure)}
+// Close the keyboard first; start the button travel only after the layout has settled.
+async function waitForKeyboardDismissal(){
+ input.blur();
+ keyboardLayout(); // dismiss desktop preview keyboard immediately
+ const view=window.visualViewport;
+ const keyboardIsVisible=()=>view&&view.height<baselineHeight-70;
+ // Native keyboards resize visualViewport asynchronously after blur.
+ const start=performance.now();
+ while(keyboardIsVisible()&&performance.now()-start<1800){
+  await new Promise(resolve=>requestAnimationFrame(resolve));
+ }
+ // Wait two layout frames so the ready bar has its final (keyboard-free) position.
+ await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+ keyboardLayout();
+}
+async function ready(reason="manual"){
+ if(state.phase!=="chat")return;
+ const motion=$("ready-motion");
+ const transform=getComputedStyle(motion).transform;
+ const measuredX=transform&&transform!=="none"?new DOMMatrixReadOnly(transform).m41:positionAt();
+ const startX=Math.min(TRAVEL,Math.max(0,measuredX));
+ state.frozenX=startX;
+ state.departureReason=reason==="timeout"?"timeout":"manual";
+ state.phase="transition"; // prevent duplicate clicks / timeout handlers
+ stopDemo();
+ clearTimeout(finalTimer);
+ clearTimeout(finishDeadline);
+ clearTimeout(timer);
+ clearTimeout(greetingTimer);
+ pending=false;
+ if(readyAnimation){
+  readyAnimation.onfinish=null;
+  readyAnimation.cancel();
+  readyAnimation=null;
+ }
+ cancelAnimationFrame(frameId);
+ setReadyX(startX);
+ root.classList.add("is-transition");
+ $("ready").disabled=true;
+ await waitForKeyboardDismissal();
+ if(state.phase!=="transition")return;
+ // Existing bar moves horizontally to its true end before the glow starts.
+ const distance=TRAVEL-startX;
+ if(distance>0.5){
+  const glide=motion.animate(
+   [{transform:`translate3d(${startX}px,0,0)`},{transform:`translate3d(${TRAVEL}px,0,0)`}],
+   {duration:Math.max(240,Math.round(780*distance/TRAVEL)),easing:"cubic-bezier(.22,1,.36,1)",fill:"forwards"}
+  );
+  try{await glide.finished}catch{return}
+  if(state.phase!=="transition")return;
+  setReadyX(TRAVEL);
+  glide.cancel();
+ }else setReadyX(TRAVEL);
+ state.frozenX=TRAVEL;
+ // Figma final-position glow center: X=300.04, Y follows the closed-keyboard bar.
+ const bx=20.8+TRAVEL+69.16;
+ const by=$("ready-area").offsetTop+motion.offsetTop+24.96;
+ preserve();
+ playDiamond($("diamond-glow"),bx,by,departure);
+}
 function showGreeting(){if(state.phase!=="chat"||state.messages.length)return;newRow=0;state.messages.push({role:"ai",text:greeting});render();scheduleDemo(FIRST_THOUGHT)}
 $("composer").addEventListener("submit",e=>{e.preventDefault();send()});$("saved").onclick=()=>{const b=$("saved");if(b.classList.contains("lx-pressed"))return;b.classList.add("lx-pressed");setTimeout(()=>{b.classList.remove("lx-pressed");goSaved()},140)};$("back").onclick=()=>{$("confirm").hidden=false};$("continue").onclick=()=>{$("confirm").hidden=true;scheduleDemo()};$("leave").onclick=home;$("ready").onclick=()=>ready("manual");$("returned").onclick=()=>{saveConversation({id:state.id,type:"emergency",messages:state.messages,title:state.messages.find(m=>m.role==="user")?.text||greeting});updateStore({emergencyDraft:null});location.href="../textmode/index.html?entry=returned&v=guided-flow-03"};
 $("mic").onclick=()=>{beginManual();const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech)return;try{const s=new Speech();s.lang="ko-KR";s.onresult=e=>{input.value=e.results[0][0].transcript;input.dispatchEvent(new Event("input",{bubbles:true}))};s.onerror=()=>{};s.start()}catch{}};
