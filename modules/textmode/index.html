@@ -598,6 +598,9 @@ addEventListener('keydown',function(e){
   /* 빛나는 캐릭터 아이콘은 터치 가능: 누르면 빛남 연출을 한 번 더 재생 (동작 [자료 없음], AI 보강) */
   charEl.style.pointerEvents='auto';charEl.style.cursor='pointer';
   charEl.addEventListener('click',function(){if(step===26||step===29)navTo('rp')});
+  // The ready-to-practice speech bubble also enters roleplay, not only the mascot.
+  msgs.pr.style.cursor='pointer';
+  msgs.pr.addEventListener('click',function(){if(step===29)navTo('rp')});
   (function(){function hit(l,t,w,h,lab,fn){var b=el('button','hit');b.type='button';b.setAttribute('aria-label',lab);b.style.cssText='left:'+l+'px;top:'+t+'px;width:'+w+'px;height:'+h+'px';b.addEventListener('click',function(e){e.stopPropagation();fn()});phone.appendChild(b)}
    hit(6,46,44,44,'뒤로가기',function(){clearTimeout(timer);navTo('main')}); /* 좌상단 뒤로가기 → 02 MAIN · 연습 후 · PLAN B (사용자 요청) */
    hit(336,44,44,44,'북마크 목록',function(){clearTimeout(timer);navTo('saved')}); /* 우상단 북마크 → 저장목록 · 빈 화면 · 01 (사용자 요청) */
