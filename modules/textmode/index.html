@@ -13,7 +13,7 @@
   --dev-name:"모바일 · Figma 프레임";--dev-w:390px;--dev-h:844px;
   --dur:240ms;--ease:cubic-bezier(.2,.8,.2,1);
   --bg:#ecebf3;--fg:#202426;--card:#fff;--line:#d8d4e6;
-  --kb-h:262px;
+  --kb-h:263.12px;
 }
 @media(prefers-color-scheme:dark){:root{--bg:#15131c;--fg:#eee;--card:#211e2b;--line:#34304a}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -154,18 +154,16 @@ body{background:var(--bg);color:var(--fg);font:13px system-ui,"Apple SD Gothic N
 #home i{position:absolute;left:50%;bottom:8.68px;width:139.36px;height:5.2px;margin-left:-69.68px;border-radius:104px;background:rgba(248,243,230,.6)}
 .kb #home{opacity:0}
 /* keyboard (visual only) */
-#kbd{position:absolute;left:0;right:0;bottom:0;height:var(--kb-h);background:#d1d5db;transform:translateY(100%);transition:transform var(--dur) var(--ease);padding:8px 3px 0;z-index:30;font-family:-apple-system,"Apple SD Gothic Neo",system-ui,sans-serif}
+#kbd{position:absolute;left:0;bottom:0;width:390px;height:263.12px;background:#212126;transform:translateY(100%);transition:transform var(--dur) var(--ease);z-index:30}
 .kb #kbd{transform:none}
-#kbd .r{display:flex;gap:6px;margin-bottom:12px;justify-content:center}
-#kbd .k{flex:1 1 0;max-width:34px;height:42px;border-radius:5px;background:#fff;box-shadow:0 1px 0 #898a8d;display:flex;align-items:center;justify-content:center;font-size:21px;color:#000;transition:background-color 80ms var(--ease)}
-#kbd .k:active{background:#b9bec6}
-#kbd .k.sp{background:#adb3bc;max-width:none;flex:0 0 42px;font-size:15px}
-#kbd .k.wide{flex:0 0 92px;max-width:none;font-size:15px;background:#adb3bc}
-#kbd .k.space{flex:1 1 auto;max-width:none;font-size:14px}
-#kbd .r2{padding:0 18px}
+#kbd img{position:absolute;inset:0;width:390px;height:263.12px;display:block}
+#kbd #kkeys{position:absolute;inset:0}
+#kbd #kkeys button{position:absolute;border:0;padding:0;background:transparent;border-radius:5px}
+#kbd #kkeys button.down{background:transparent;overflow:hidden}
+#kbd #kkeys button.down::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:url("../../assets/emergency/keyboard.svg");background-repeat:no-repeat;background-size:390px 263.12px;background-position:var(--kx) var(--ky);filter:brightness(.79);border-radius:inherit}
 /* mission toast */
-#tclip{left:96px;top:75px;width:294px;height:147px;overflow:hidden;pointer-events:none;z-index:20}
-#tw{position:absolute;left:12px;top:21px;width:270px;height:103px;filter:drop-shadow(0 5px 8.5px rgba(79,58,129,.19));transform:translateX(-300px);transition:transform 400ms cubic-bezier(0,0,.58,1);pointer-events:none}
+#tclip{left:96px;top:0;width:294px;height:222px;overflow:hidden;pointer-events:none;z-index:20}
+#tw{position:absolute;left:12px;top:96px;width:270px;height:103px;filter:drop-shadow(0 5px 8.5px rgba(79,58,129,.19));transform:translateY(-210px);transition:transform 400ms var(--ease);pointer-events:none}
 #tw.show{transform:none}
 #tw.show #tcard{pointer-events:auto}
 #tcard{position:absolute;inset:0;border:1px solid rgba(255,255,255,.86);border-radius:15px;background:rgba(255,255,255,.7);box-shadow:inset 0 0 8px rgba(255,255,255,.65);clip-path:inset(0 0 57px 0 round 15px);transition:clip-path 300ms cubic-bezier(0,0,.58,1);cursor:pointer}
@@ -512,36 +510,27 @@ function buildEvents(text){
   return ev;
 }
 var tT=[],typingOn=false;
-function flashKey(label){
-  var ks=kbd.querySelectorAll('.k');
-  for(var i=0;i<ks.length;i++)if(ks[i].textContent===label){(function(k){k.style.backgroundColor='#b9bec6';setTimeout(function(){k.style.backgroundColor=''},70)})(ks[i]);break}
-}
+function flashKey(label){var b=KB[label];if(!b)return;b.classList.add('down');setTimeout(function(){b.classList.remove('down')},105)}
 function cancelTyping(){tT.forEach(clearTimeout);tT=[];if(typingOn){typingOn=false;msg.value='';phone.classList.remove('kb')}}
 function startTyping(){
   cancelTyping();typingOn=true;msg.value='';openKb();
-  var text=msgs.rep.querySelector('span').textContent,ev=buildEvents(text),t=reduce?0:800;
+  var text=msgs.rep.querySelector('span').textContent,ev=buildEvents(text),t=reduce?0:850;
   ev.forEach(function(e,i){
-    t+=reduce?0:(60+((i*37)%17));
-    tT.push(setTimeout(function(){if(e.sh)flashKey('⇧');flashKey(e.k==='space'?'space':e.k);msg.value=e.val;msg.scrollLeft=msg.scrollWidth},t));
+    t+=reduce?0:100;
+    tT.push(setTimeout(function(){flashKey(e.k==='space'?'space':e.k);msg.value=e.val;msg.scrollLeft=msg.scrollWidth},t));
   });
-  t+=reduce?0:500;
+  t+=reduce?0:240;
   tT.push(setTimeout(function(){
     var sb=phone.querySelector('.send');sb.style.transform='scale(.9)';setTimeout(function(){sb.style.transform=''},120);
     typingOn=false;msg.value='';closeKb();setStep(20,true);
   },t));
 }
 
-var ROWS=[['ㅂ','ㅈ','ㄷ','ㄱ','ㅅ','ㅛ','ㅕ','ㅑ','ㅐ','ㅔ'],['ㅁ','ㄴ','ㅇ','ㄹ','ㅎ','ㅗ','ㅓ','ㅏ','ㅣ'],['ㅋ','ㅌ','ㅊ','ㅍ','ㅠ','ㅜ','ㅡ']];
-var kh='';
-ROWS.forEach(function(r,i){
-  kh+='<div class="r'+(i===1?' r2':'')+'">';
-  if(i===2)kh+='<div class="k sp">⇧</div>';
-  r.forEach(function(c){kh+='<div class="k">'+c+'</div>'});
-  if(i===2)kh+='<div class="k sp">⌫</div>';
-  kh+='</div>';
-});
-kh+='<div class="r"><div class="k wide">123</div><div class="k space">space</div><div class="k wide">return</div></div>';
-kbd.innerHTML=kh;
+var KEYMAP={"ㅂ":[5.2,3.12,33.28,45.76],"ㅈ":[43.68,3.12,33.28,45.76],"ㄷ":[82.16,3.12,33.28,45.76],"ㄱ":[120.64,3.12,33.28,45.76],"ㅅ":[159.12,3.12,33.28,45.76],"ㅛ":[197.6,3.12,33.28,45.76],"ㅕ":[236.08,3.12,33.28,45.76],"ㅑ":[274.56,3.12,33.28,45.76],"ㅐ":[313.04,3.12,33.28,45.76],"ㅔ":[351.52,3.12,33.28,45.76],"ㅁ":[23.92,57.2,33.28,45.76],"ㄴ":[62.4,57.2,33.28,45.76],"ㅇ":[100.88,57.2,33.28,45.76],"ㄹ":[139.36,57.2,33.28,45.76],"ㅎ":[177.84,57.2,33.28,45.76],"ㅗ":[216.32,57.2,33.28,45.76],"ㅓ":[254.8,57.2,33.28,45.76],"ㅏ":[293.28,57.2,33.28,45.76],"ㅣ":[331.76,57.2,33.28,45.76],"⇧":[4.16,111.28,47.84,45.76],"ㅋ":[56.16,111.28,35.36,45.76],"ㅌ":[95.68,111.28,35.36,45.76],"ㅊ":[135.2,111.28,35.36,45.76],"ㅍ":[174.72,111.28,35.36,45.76],"ㅠ":[214.24,111.28,35.36,45.76],"ㅜ":[253.76,111.28,35.36,45.76],"ㅡ":[293.28,111.28,35.36,45.76],"⌫":[334.88,111.28,49.92,45.76],"123":[5.2,166.4,49.92,46.8],"한/영":[60.32,166.4,44.72,46.8],"space":[111.28,166.4,188.24,46.8],"완료":[305.76,166.4,79.04,46.8]};
+/* 키보드: 긴급대화(modules/emergency)와 같은 Figma 키보드 이미지 + 키 위치 */
+kbd.innerHTML='<img src="../../assets/emergency/keyboard.svg" alt=""><div id="kkeys"></div>';
+var kk=document.getElementById('kkeys'),KB={};
+Object.keys(KEYMAP).forEach(function(l){var r=KEYMAP[l],b=document.createElement('button');b.type='button';b.tabIndex=-1;b.setAttribute('aria-label',l);b.style.cssText='left:'+r[0]+'px;top:'+r[1]+'px;width:'+r[2]+'px;height:'+r[3]+'px';b.style.setProperty('--kx',(-r[0])+'px');b.style.setProperty('--ky',(-r[1])+'px');kk.appendChild(b);KB[l]=b});
 kbd.addEventListener('pointerdown',function(e){e.preventDefault()}); /* 입력창 포커스 유지 */
 function openKb(){phone.classList.add('kb')}
 function closeKb(){phone.classList.remove('kb');msg.blur()}
