@@ -48,7 +48,20 @@ const typingDuration=strokes=>Math.max(650,Math.round(strokes.length/10*1000));
 // The travel countdown ends when the final '가보자' message APPEARS.
 // The final message's reading hold happens only AFTER the countdown has finished.
 const demoDuration=()=>100+FIRST_THOUGHT+exampleUser.reduce((sum,t,i)=>sum+typingDuration(demoStrokes(t))+SEND_PAUSE+AUTO_REPLY_PAUSE+reading(replies[i]),0)+FINAL_LOADING+300;
-function beginManual(){if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;const wasTyping=typing||(!state.manual&&!!input.value);stopDemo();if(wasTyping){input.value="";resizeComposer();updateSendState()}state.manual=true;DURATION=90000;if(readyAnimation)readyAnimation.cancel();tick();preserve()}
+function beginManual(){
+ if(isPreview||state.phase!=="chat"||state.timedOut||state.manual)return;
+ // Handoff, not reset: stop auto keystrokes without replacing what was typed.
+ // The native textarea keeps both its text and current selection, so a user's
+ // next physical or virtual keystroke continues naturally at the caret.
+ stopDemo();
+ state.manual=true;
+ DURATION=90000;
+ if(readyAnimation)readyAnimation.cancel();
+ tick();
+ resizeComposer();
+ updateSendState();
+ preserve();
+}
 // Intent routing for the first real-life greeting mission. Priority matters for negation and mixed feelings.
 const branches=[
 ["unsafe",/죽고 싶|죽고싶|자살|자해|죽여버|해치고 싶/ , "지금은 미션보다 네 안전이 먼저야. 잠시 멈추고 주변의 믿을 수 있는 사람에게 도움을 요청하자.","오늘 미션은 쉬어도 괜찮아. 안전한 곳에서 도움을 받아보자."],
@@ -97,6 +110,7 @@ function scheduleDemo(delay=520){
    const idx=Math.min(strokes.length-1,Math.floor(progress*strokes.length));
    if(idx!==previous){
     input.value=strokes[idx].text;
+    input.setSelectionRange(input.value.length,input.value.length);
     input.dispatchEvent(new Event("input",{bubbles:true}));
     if(now-lastFlash>=95||progress===1){flashKey(strokes[idx].key);lastFlash=now}
     previous=idx;
