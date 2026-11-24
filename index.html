@@ -73,7 +73,7 @@ function cancelRoute(){
   if(routeNext){routeNext.remove();routeNext=null}
   if(routePrevious){routePrevious.remove();routePrevious=null}
   phone.classList.remove('lx-route-in','lx-route-show','lx-route-previous');
-  phone.style.pointerEvents='';
+  phone.style.pointerEvents='';phone.style.opacity='';phone.style.zIndex='';
 }
 function routeTransition(url,prepare){
   cancelRoute();
@@ -82,13 +82,15 @@ function routeTransition(url,prepare){
   routeTimer=setTimeout(()=>{
     if(seq!==routeSeq)return;
     const old=phone, next=document.createElement('iframe');
-    routeNext=next;next.className='lx-route-in';next.style.opacity='0';next.style.zIndex='3';next.style.pointerEvents='none';next.style.transform=old.style.transform;
+    routeNext=next;next.className='lx-route-in';next.style.opacity='0';next.style.background='transparent';next.style.zIndex='3';next.style.pointerEvents='none';next.style.transform=old.style.transform;
     next.title=old.title||'실제 프로토타입';next.setAttribute('allow',old.getAttribute('allow')||'microphone; camera');next.setAttribute('aria-label','실제 프로토타입');
     old.style.pointerEvents='none';
-    next.addEventListener('load',()=>{
+    function ready(){
       if(seq!==routeSeq||routeNext!==next)return;
+      try{if(!modulePath(next.contentWindow.location.href)||next.contentDocument.readyState!=='complete')return;}catch{return;}
+      next.removeEventListener('load',ready);
       routeNext=null;routePrevious=old;
-      old.removeAttribute('id');old.classList.add('lx-route-previous');
+      old.removeAttribute('id');old.classList.add('lx-route-previous');old.style.zIndex='2';
       next.id='phone';phone=next;
       phone.addEventListener('load',onPhoneLoad);
       if(prepare)prepare();
@@ -98,7 +100,8 @@ function routeTransition(url,prepare){
         next.style.opacity='';next.classList.add('lx-route-show');
         routeTimer=setTimeout(()=>{if(seq!==routeSeq)return;old.remove();routePrevious=null;next.classList.remove('lx-route-in','lx-route-show');next.style.zIndex='';next.style.pointerEvents='';routeBusy=false;},210);
       }));
-    },{once:true});
+    }
+    next.addEventListener('load',ready);
     next.src=url;document.querySelector('#stage').appendChild(next);
   },70);
 }
@@ -108,7 +111,7 @@ function wireRoute(win){
     if(win.__lxRouteWired)return;win.__lxRouteWired=true;
     if(win.navigation)win.navigation.addEventListener('navigate',e=>{
       const from=modulePath(win.location.href),to=modulePath(e.destination.url);
-      if(splashOverlay||routeBypass||routeBusy||!e.cancelable||!e.canIntercept||!from||!to||from===to||e.navigationType==='traverse')return;
+      if(splashOverlay||routeBypass||routeBusy||!e.cancelable||!from||!to||from===to||e.navigationType==='traverse')return;
       if(new URL(e.destination.url).origin!==location.origin)return;
       e.preventDefault();const url=e.destination.url;
       routeTransition(url);
