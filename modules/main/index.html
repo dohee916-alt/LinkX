@@ -236,6 +236,12 @@ html,body{
      emergency:{item:['긴급대화','modules/emergency/index.html','','긴급대화'],fallback:'../emergency/index.html'}
    };
    const target=destinations[kind];if(!target)return;
+   // Enter the prepared feedback state directly; the outer navigator's F.go(5)
+   // would otherwise overwrite entry=practice and restart scenario selection.
+   if(kind==='text' && sessionStorage.getItem('linkx:guidedFlow')==='practice'){
+     window.location.assign('../textmode/index.html?entry=practice&v=guided-flow-01');
+     return;
+   }
    try{
      if(window.parent&&window.parent!==window&&typeof window.parent.choose==='function'){
        window.parent.choose(target.item);return;
@@ -250,7 +256,10 @@ html,body{
  }
  $('bookmark').addEventListener('click',()=>press($('bookmark'),()=>navigateTo('saved')));
  $('practice').addEventListener('click',()=>press($('practice'),()=>{
-   if(stage!=='first')return;sessionStorage.setItem(KEY,'second');
+   if(stage!=='first')return;
+   // The second home is unlocked only AFTER feedback, never upon entering practice.
+   sessionStorage.setItem(KEY,'first');
+   sessionStorage.setItem('linkx:guidedFlow','practice');
    sessionStorage.setItem('linkx:practiceContext','현재 미션 연습');
    sessionStorage.setItem('linkx:practiceTitle','짧게 먼저 말 걸어보기');
    navigateTo('text');
