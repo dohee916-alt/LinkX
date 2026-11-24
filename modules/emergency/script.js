@@ -199,7 +199,7 @@ new ResizeObserver(()=>{syncScrollEdges(chat)}).observe(chat);
 new ResizeObserver(()=>{updateChatLayout();syncScrollEdges(chat)}).observe(list);
 
 let baselineHeight=window.visualViewport?.height||window.innerHeight;
-const embedded=window.parent!==window;const nativeTouch=!embedded&&matchMedia("(pointer:coarse)").matches&&navigator.maxTouchPoints>0;if(embedded)input.inputMode="none";
+const embedded=window.parent!==window;const nativeTouch=!embedded&&matchMedia("(pointer:coarse)").matches&&navigator.maxTouchPoints>0;if(embedded)input.inputMode="text";
 let previewKeyboard=false;
 let keyboardOpen=false;
 function resizeComposer(){
@@ -269,6 +269,25 @@ function flashKey(k){const plain={"ㄲ":"ㄱ","ㄸ":"ㄷ","ㅃ":"ㅂ","ㅆ":"ㅅ
 let touchShift=false,touchMode="ko";
 function touchKey(k){const a=input.selectionStart,z=input.selectionEnd;let left=input.value.slice(0,a),right=input.value.slice(z);if(k==="Delete")left=a===z?hangulDelete(left):left;else if(touchMode==="ko"&&/^[ㄱ-ㅎㅏ-ㅣ]$/.test(k))left=hangulAppend(left,k);else left+=k;input.value=left+right;input.setSelectionRange(left.length,left.length)}
 
+// Real hardware typing uses the textarea's native input/IME. The matching
+// on-screen key only flashes; never intercept or replace composed Korean text.
+const hardwareHangulByCode={
+ KeyQ:"ㅂ",KeyW:"ㅈ",KeyE:"ㄷ",KeyR:"ㄱ",KeyT:"ㅅ",KeyY:"ㅛ",KeyU:"ㅕ",
+ KeyI:"ㅑ",KeyO:"ㅐ",KeyP:"ㅔ",KeyA:"ㅁ",KeyS:"ㄴ",KeyD:"ㅇ",
+ KeyF:"ㄹ",KeyG:"ㅎ",KeyH:"ㅗ",KeyJ:"ㅓ",KeyK:"ㅏ",KeyL:"ㅣ",
+ KeyZ:"ㅋ",KeyX:"ㅌ",KeyC:"ㅊ",KeyV:"ㅍ",KeyB:"ㅠ",KeyN:"ㅜ",KeyM:"ㅡ"
+};
+function hardwareKeyVisual(e){
+ if(e.metaKey||e.ctrlKey||e.altKey)return;
+ const keyName=e.code==="Space"?"Space":e.code==="Backspace"?"Delete":e.code==="Enter"?"Return":null;
+ const b=keyName?$("keyboard-keys").querySelector('[data-key-name="'+keyName+'"]'):
+   keyButtons.find(x=>x.label===hardwareHangulByCode[e.code] || x.name===e.code.slice(3))?.b;
+ if(!b)return;
+ showKey(b);
+}
+input.addEventListener("keydown",hardwareKeyVisual);
+input.addEventListener("keyup",()=>{clearTimeout(previewTimer);previewTimer=setTimeout(clearKey,85)});
+input.addEventListener("blur",clearKey);
 const keyButtons=[];function refreshKeys(){for(const {b,name,label} of keyButtons){let k=touchMode==="ko"?(touchShift?({"ㅂ":"ㅃ","ㅈ":"ㅉ","ㄷ":"ㄸ","ㄱ":"ㄲ","ㅅ":"ㅆ","ㅐ":"ㅒ","ㅔ":"ㅖ"}[label]||label):label):touchMode==="en"?(touchShift?name:name.toLowerCase()):"1234567890@#$%&*()-+!?.,:;".at(keyButtons.findIndex(x=>x.name===name));b.textContent=touchMode==="ko"&&!touchShift?"":k||"";b.dataset.output=k||label;b.classList.toggle("lx-key-relabel",!!b.textContent);b.style.color="";b.style.background="";b.style.fontSize=""}}
 for(const k of keys){const label=labels.find(l=>Math.abs(l.x-k.x)<.01&&Math.abs(l.y-k.y)<8);const b=document.createElement("button");b.type="button";b.tabIndex=-1;b.setAttribute("aria-label",label?.text||k.name);Object.assign(b.style,{left:k.x+"px",top:k.y+"px",width:k.w+"px",height:k.h+"px"});const name=k.name.split(" / ")[1];b.dataset.keyName=name;b.addEventListener("pointerdown",e=>{e.preventDefault();beginManual();showKey(b,name.length===1?b.dataset.output:null);try{b.setPointerCapture(e.pointerId)}catch{}});b.addEventListener("pointerup",()=>{previewTimer=setTimeout(clearKey,70)});b.addEventListener("pointercancel",clearKey);if(name.length===1&&label)keyButtons.push({b,name,label:label.text});b.addEventListener("click",()=>{beginManual();if(name==="Return"){input.blur();keyboardLayout();return}if(name==="Shift"){touchShift=!touchShift;refreshKeys();return}if(name==="한·영"){touchMode=touchMode==="ko"?"en":"ko";touchShift=false;refreshKeys();return}if(name==="숫자"){touchMode=touchMode==="num"?"ko":"num";refreshKeys();return}if(name==="Delete")touchKey("Delete");else if(name==="Space")touchKey(" ");else if(name.length===1&&label){touchKey(b.dataset.output||label.text);if(touchShift){touchShift=false;refreshKeys()}}else return;input.dispatchEvent(new Event("input",{bubbles:true}));input.focus()});$("keyboard-keys").append(b)}refreshKeys();
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.activeElement===input){input.blur();keyboardLayout()}});
