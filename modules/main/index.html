@@ -245,11 +245,11 @@ html,body{
    if(kind==='text' && sessionStorage.getItem('linkx:guidedFlow')==='practice'){
      try {
        if(window.parent!==window && typeof window.parent.choose==='function') {
-         window.parent.choose(['텍스트 모드 · 피드백','modules/textmode/index.html','start','텍스트 대화']);
+         window.parent.choose(['텍스트 모드 · 피드백','modules/textmode/index.html','5','텍스트 대화']);
          return;
        }
      } catch(e) {}
-     window.location.assign('../textmode/index.html?entry=practice&v=guided-flow-05&restart='+Date.now());
+     window.location.assign('../textmode/index.html?n=5&v=original-sidebar-02&restart='+Date.now());
      return;
    }
    try{
