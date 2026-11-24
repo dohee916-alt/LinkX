@@ -1,6 +1,6 @@
 import {keys,labels} from "./keyboard-layout.js";
 import {messageBubble} from "./components.js";
-import {playDiamond} from "./diamond-glow.js?v=cached-feather3";
+import {playDiamond} from "./diamond-glow.js?v=continuous-spline4";
 import {navigate,params,openSaved,syncScrollEdges} from "../../shared/navigation.js?v=edges1";
 import {getStore,updateStore,saveConversation} from "../../shared/store.js";
 import {greeting,exampleUser,replies,alternatives,errors} from "./scenario.js";
@@ -172,7 +172,7 @@ async function ready(reason="manual"){
  if(distance>0.5){
   const glide=motion.animate(
    [{transform:`translate3d(${startX}px,0,0)`},{transform:`translate3d(${TRAVEL}px,0,0)`}],
-   {duration:Math.max(380,Math.round(1500*Math.pow(distance/TRAVEL,.8))),easing:"cubic-bezier(.35,.12,.65,.88)",fill:"forwards"}
+   {duration:Math.max(720,Math.round(2250*Math.pow(distance/TRAVEL,.68))),easing:"cubic-bezier(.42,.04,.58,.96)",fill:"forwards"}
   );
   try{await glide.finished}catch{return}
   if(state.phase!=="transition")return;
