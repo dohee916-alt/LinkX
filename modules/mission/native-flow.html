@@ -1247,6 +1247,8 @@ function openRewardDetail(){if(state.mode!=='reward'||state.phase!=='earned')ret
  $('detailOverlay').classList.add('visible');$('detailOverlay').setAttribute('aria-hidden','false');}
 function closeDetail(){$('detailOverlay').classList.remove('visible');$('detailOverlay').setAttribute('aria-hidden','true')}
 function route(name){
+ // Unimplemented reward collection never opens a destination screen.
+ if(name==='reward-check'){showRewardComingSoon();return}
  const host=window.LinkXMissionReward;
  const payload={step:state.step,completed:[...state.completed],decorated:[...state.decorated]};
  if(typeof host?.onNavigate==='function' && host.onNavigate(name,payload)===true)return;
@@ -1259,8 +1261,8 @@ function route(name){
    window.location.assign(new URL(host?.mainUrl||defaultMain,location.href).href);
    return;
  }
- $('routeTitle').textContent=name==='reward-check'?'리워드 보관함 연결 지점':'다음 단계 연결 지점';
- $('routeText').textContent=name==='reward-check'?'리워드 확인하기의 최종 연결 대상을 별도로 확인해야 해요.\n임의로 보관함 화면을 디자인하지 않았어요.':'피그마에는 4단계 이후의 새 미션 화면이 지정되어 있지 않아요.\n임의로 5단계 미션을 생성하지 않았어요.';
+ $('routeTitle').textContent='다음 단계 연결 지점';
+ $('routeText').textContent='피그마에는 4단계 이후의 새 미션 화면이 지정되어 있지 않아요.\n임의로 5단계 미션을 생성하지 않았어요.';
  $('routeNotice').classList.add('visible');}
 function openNextMissionFromReward(){
  // The reward and mission contain their own content. Crossfading both complete
