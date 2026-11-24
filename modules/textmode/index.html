@@ -362,9 +362,9 @@ function navTo(k){
   if(k==='main'){goSecondHome();return}
   var N=window.__LXNAV;if(N){try{
     if(k==='saved'){N.openSaved('saved',{entry:'returned'});return}
-    if(k==='rw6'){N.navigate('reward');return}
-    if(k==='rp'){N.navigate('roleplay');return}
-    if(k==='rpResume'){N.navigate('roleplay',{resume:1});return}
+    if(k==='rw6'){N.navigate('reward',{v:'guided-flow-02'});return}
+    if(k==='rp'){N.navigate('roleplay',{v:'guided-flow-02'});return}
+    if(k==='rpResume'){N.navigate('roleplay',{resume:1,v:'guided-flow-02'});return}
   }catch(e){}}
   showScr(k)}
 function showScr(k){return;clearTimeout(scrT);scrCur=k;['main','rp','rw6','saved'].forEach(function(n){document.getElementById('scr_'+n).classList.toggle('on',k===n)});scrEl.classList.toggle('back',k==='rp'||k==='saved');scrEl.classList.add('show')}
