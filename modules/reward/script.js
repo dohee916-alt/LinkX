@@ -1,184 +1,82 @@
 import {getStore} from "../../shared/store.js";
-import {back} from "../../shared/navigation.js";
-
-const $ = id => document.getElementById(id);
-const unlockedDefault = [1,2,3,4,5];
-const rewards = {
-  1:{name:"시작의 증표"},
-  2:{name:"발견의 망원경"},
-  3:{name:"마주한 순간"},
-  4:{name:"작은 호감"},
-  5:{name:"첫마디 명사수",mission:"짧게 먼저 말 걸어보기"},
-  6:{name:"약속과 만남"},
-  7:{name:"마음이 담긴 글씨"},
-  8:{name:"별빛 추억"}
-};
-const placements = {
-  oldest:[
-    {id:1,x:6,y:16},{id:2,x:175,y:103},{id:3,x:142,y:264},
-    {id:4,x:9,y:342},{id:5,x:26,y:526},{id:6,x:168,y:620},
-    {id:7,x:143,y:796},{id:8,x:5,y:895}
-  ],
-  newest:[
-    {id:8,x:6,y:16},{id:7,x:175,y:103},{id:6,x:142,y:264},
-    {id:5,x:9,y:342},{id:4,x:26,y:526},{id:3,x:168,y:620},
-    {id:2,x:143,y:796},{id:1,x:5,y:895}
-  ]
-};
-const art = {
-  oldest:"./art/constellation-oldest.png",
-  newest:"./art/constellation-latest.png"
-};
-const state = {sort:"oldest",active:null,returnFocus:null,toastTimer:null};
-const toId = value => Number(value);
-function readUnlocked(){
-  const s=getStore();
-  const ids=s.unlockedRewards || s.rewardUnlocked || s.rewards?.unlocked;
-  if(!Array.isArray(ids)) return new Set(unlockedDefault);
-  return new Set(ids.map(toId).filter(n=>Number.isInteger(n)&&n>=1&&n<=8));
-}
-let unlocked=readUnlocked();
-
-function resizeDevice(){
-  const s=Math.min(1,window.innerWidth/390,window.innerHeight/844);
-  $("device").style.transform="scale("+Math.max(0.1,s)+")";
-}
-resizeDevice();
-window.addEventListener("resize",resizeDevice);
-
+import {navigate, registerRoute} from "../../shared/navigation.js";
+import {REWARDS, unlockedIds, sortedRewards, recordFor} from "./data.js";
+const $=id=>document.getElementById(id);
+const positions=[[6,16],[175,103],[142,264],[9,342],[26,526],[168,690],[143,866],[5,1015]];
+const state={sort:"newest",active:null,returnFocus:null};
+const artworkSizes={1:[76,77],2:[150,150],3:[89,89],4:[97,97],5:[94,94],6:[78,79],7:[95,95],8:[84,84]};
+const artwork=id=>"./art/reward-"+String(id).padStart(2,"0")+".png";
+let store=getStore(), unlocked=new Set(unlockedIds(store));
+function resizeDevice(){$("device").style.transform="scale("+Math.max(.1,Math.min(1,innerWidth/390,innerHeight/844))+")";}
+resizeDevice();window.addEventListener("resize",resizeDevice);
+function closeSort(){$("sort-menu").hidden=true;$("sort-toggle").setAttribute("aria-expanded","false");}
 function setSort(order){
-  if(!placements[order])return;
+  if(!["newest","oldest"].includes(order))return;
   state.sort=order;
+  const latest=sortedRewards(store,"newest").find(id=>unlocked.has(id));
   $("sort-label").textContent=order==="oldest"?"오래된순":"최신순";
-  $("constellation-art").src=art[order];
   $("count").textContent="모은 리워드 "+unlocked.size+"개";
-  const hits=$("reward-hits");
-  hits.replaceChildren();
-  for(const {id,x,y} of placements[order]){
-    const hit=document.createElement("button");
-    hit.type="button";
-    hit.className="reward-hit"+(unlocked.has(id)?"":" locked");
-    hit.style.left=x+"px";
-    hit.style.top=y+"px";
-    hit.dataset.id=String(id);
-    const label=String(id).padStart(2,"0")+" · "+rewards[id].name;
-    hit.setAttribute("aria-label",label+(unlocked.has(id)?" 리워드 상세 보기":" 아직 획득하지 않음"));
-    hit.title=label;
-    hit.addEventListener("click",()=>unlocked.has(id)?openReward(id,hit):toast("아직 획득하지 않은 리워드예요."));
-    hits.append(hit);
-  }
+  $("empty-state").hidden=unlocked.size!==0;$("reward-scroll").hidden=unlocked.size===0;$("sort-toggle").hidden=unlocked.size===0;
+  $("reward-hits").replaceChildren();
+  sortedRewards(store,order).forEach((id,i)=>{
+    const hit=document.createElement("button");hit.type="button";
+    hit.className="reward-hit"+(unlocked.has(id)?"":" locked")+(id===latest?" latest":"");
+    hit.style.left=positions[i][0]+"px";hit.style.top=positions[i][1]+"px";hit.dataset.id=String(id);
+    const name=String(id).padStart(2,"0")+" · "+REWARDS[id].name;
+    hit.setAttribute("aria-label",name+(unlocked.has(id)?" 리워드 상세 보기":" 미획득 리워드 안내"));
+    const image=document.createElement("img");image.src=artwork(id);image.alt="";image.width=76;image.height=76;
+    const title=document.createElement("span");title.className="reward-name";title.textContent=name;
+    const caption=document.createElement("span");caption.className="reward-caption";caption.textContent=id===5?"먼저 인사하기":unlocked.has(id)?"획득한 리워드":"다음 도전을 기다려요";
+    const status=document.createElement("span");status.className="reward-status";status.textContent=!unlocked.has(id)?"미획득":id===latest?"방금 획득":"획득";
+    const slot=document.createElement("span");slot.className="reward-art-slot";slot.style.setProperty("--art-width",artworkSizes[id][0]+"px");slot.style.setProperty("--art-height",artworkSizes[id][1]+"px");slot.append(image);
+    hit.append(slot,title,caption,status);hit.addEventListener("click",()=>openReward(id,hit));$("reward-hits").append(hit);
+  });
   $("reward-scroll").scrollTop=0;
-  for(const button of $("sort-menu").querySelectorAll("button[data-sort]")){
-    button.setAttribute("aria-checked",String(button.dataset.sort===order));
-  }
+  for(const option of $("sort-menu").querySelectorAll("[data-sort]"))option.setAttribute("aria-checked",String(option.dataset.sort===order));
   closeSort();
 }
-function closeSort(){
-  $("sort-menu").hidden=true;
-  $("sort-toggle").setAttribute("aria-expanded","false");
+$("sort-toggle").addEventListener("click",()=>{$("sort-menu").hidden=!$("sort-menu").hidden;$("sort-toggle").setAttribute("aria-expanded",String(!$("sort-menu").hidden));});
+for(const option of $("sort-menu").querySelectorAll("[data-sort]"))option.addEventListener("click",()=>{setSort(option.dataset.sort);$("sort-toggle").focus();});
+document.addEventListener("pointerdown",e=>{if(!$("sort-menu").contains(e.target)&&!$("sort-toggle").contains(e.target))closeSort();});
+function openReward(id,from){
+  if(!REWARDS[id])return;
+  closeSort();state.active=id;state.returnFocus=from || document.activeElement;
+  const owned=unlocked.has(id),record=recordFor(store,id),reward=REWARDS[id];
+  $("detail-art").src=artwork(id);$("detail-art-slot").style.setProperty("--art-width",artworkSizes[id][0]+"px");$("detail-art-slot").style.setProperty("--art-height",artworkSizes[id][1]+"px");$("detail-number").textContent="REWARD / "+String(id).padStart(2,"0");
+  $("detail-title").textContent=owned?reward.name:"아직 만나지 않은 별";
+  $("detail-meaning").textContent=owned?reward.meaning || reward.name:reward.name;
+  const mission=record?.missionTitle || reward.mission;
+  $("detail-mission").hidden=!owned || !mission;$("mission-name").textContent=mission || "";
+  $("detail-summary").hidden=owned && id!==5 && !record?.reflection;
+  $("summary-label").textContent=owned?"미션 돌아보기":"미획득 리워드";
+  $("summary-text").textContent=!owned?"다음 미션을 완료하면 새로운 별이 연결돼요. 먼저 현재 미션을 이어가 보세요.":record?.reflection || "아직 저장된 회고가 없어요. 리워드는 보관되어 있어요.";
+  $("show-history").hidden=!owned || !record?.reflection;$("close-detail").textContent=owned?"닫기":"확인";
+  $("gallery-shell").inert=true;$("modal-overlay").hidden=false;$("close-detail").focus();
 }
-function toggleSort(){
-  const menu=$("sort-menu");
-  menu.hidden=!menu.hidden;
-  $("sort-toggle").setAttribute("aria-expanded",String(!menu.hidden));
-}
-$("sort-toggle").addEventListener("click",toggleSort);
-for(const option of $("sort-menu").querySelectorAll("[data-sort]")){
-  option.addEventListener("click",()=>setSort(option.dataset.sort));
-}
-document.addEventListener("pointerdown",e=>{
-  if(!$("sort-menu").hidden&&!$("sort-menu").contains(e.target)&&!$("sort-toggle").contains(e.target))closeSort();
-});
-
-function missionSummary(id){
-  if(id!==5)return null;
-  const mission=getStore().mission;
-  if(!mission||typeof mission!=="object")return null;
-  const text=mission.feedbackSummary??mission.summary??mission.reviewSummary??null;
-  return typeof text==="string"&&text.trim()?text.trim():null;
-}
-function openReward(id,from=null){
-  const reward=rewards[id];
-  if(!reward||!unlocked.has(id))return;
-  closeSort();
-  state.active=id;
-  state.returnFocus=from||document.activeElement;
-  $("detail-title").textContent=String(id).padStart(2,"0")+" · "+reward.name;
-  const coords=placements.oldest.find(p=>p.id===id);
-  const icon=$("detail-art");
-  icon.style.backgroundImage='url("'+art.oldest+'")';
-  icon.style.backgroundPosition="-"+(coords.x+44)+"px -"+coords.y+"px";
-  const mission=$("detail-mission");
-  mission.hidden=!reward.mission;
-  $("mission-name").textContent=reward.mission||"";
-  const saved=missionSummary(id);
-  $("detail-summary").hidden=id!==5&&!saved;
-  $("summary-text").textContent=saved||"저장된 대화 요약이 아직 없어요.";
-  $("show-history").hidden=id!==5;
-  $("modal-overlay").hidden=false;
-  $("close-detail").focus();
-}
-function closeReward(){
-  $("modal-overlay").hidden=true;
-  state.active=null;
-  (state.returnFocus?.isConnected?state.returnFocus:$("sort-toggle")).focus();
-}
+function closeReward(){$("modal-overlay").hidden=true;$("gallery-shell").inert=false;state.active=null;(state.returnFocus?.isConnected?state.returnFocus:$("sort-toggle")).focus();}
 $("close-detail").addEventListener("click",closeReward);
-$("modal-overlay").addEventListener("click",e=>{
-  if(e.target?.dataset?.dismiss==="true")closeReward();
-});
-
+$("modal-overlay").addEventListener("click",e=>{if(e.target.dataset.dismiss==="true")closeReward();});
 function openHistory(){
-  if(state.active!==5)return;
-  $("history-view").hidden=false;
-  const frame=$("feedback-frame");
-  const showLog=()=>{
-    try{
-      const api=frame.contentWindow.LinkXFeedback;
-      if(api?.go)api.go(17,false);
-    }catch{toast("연습 기록을 열지 못했어요.");}
-  };
-  frame.addEventListener("load",showLog,{once:true});
-  frame.src="../feedback/index.html";
-  toast("연습 로그 화면을 열어요.");
-  $("close-history").focus();
+  const record=recordFor(store,state.active);if(!record?.reflection)return;
+  $("history-number").textContent="REWARD / "+String(state.active).padStart(2,"0");$("record-source").hidden=record.source!=="demo";
+  $("record-title").textContent=record.title || REWARDS[state.active].name;$("record-mission").textContent=record.missionTitle || REWARDS[state.active].mission || "";
+  $("record-reflection").textContent=record.reflection;
+  for(const key of ["achievement","next"]){$("record-"+key+"-box").hidden=!record[key];$("record-"+key).textContent=record[key] || "";}
+  $("modal-overlay").inert=true;$("history-view").hidden=false;$("close-history").focus();
 }
-function closeHistory(){
-  $("history-view").hidden=true;
-  $("feedback-frame").src="about:blank";
-  $("show-history").focus();
-}
-$("show-history").addEventListener("click",openHistory);
-$("close-history").addEventListener("click",closeHistory);
-
-function toast(message){
-  const elem=$("toast");
-  if(state.toastTimer)clearTimeout(state.toastTimer);
-  elem.textContent=message;
-  elem.hidden=false;
-  state.toastTimer=setTimeout(()=>{elem.hidden=true;},2600);
-}
-
-$("back").addEventListener("click",()=>{
-  if(!$("history-view").hidden){closeHistory();return;}
-  if(!$("modal-overlay").hidden){closeReward();return;}
-  back("home");
-});
+function closeHistory(){$("history-view").hidden=true;$("modal-overlay").inert=false;$("show-history").focus();}
+$("show-history").addEventListener("click",openHistory);$("close-history").addEventListener("click",closeHistory);$("return-to-detail").addEventListener("click",closeHistory);
+$("current-mission").addEventListener("click",()=>navigate("home"));
+$("back").addEventListener("click",()=>{if(new URLSearchParams(location.search).get("from")==="mission"){registerRoute("reward-receipt","modules/mission/index.html");navigate("reward-receipt",{view:"reward-3"});}else navigate("home");});
 document.addEventListener("keydown",e=>{
-  if(e.key!=="Escape")return;
-  if(!$("history-view").hidden){closeHistory();return;}
-  if(!$("modal-overlay").hidden){closeReward();return;}
-  if(!$("sort-menu").hidden){closeSort();$("sort-toggle").focus();}
+  if(e.key==="Escape"){if(!$("history-view").hidden)closeHistory();else if(!$("modal-overlay").hidden)closeReward();else{closeSort();$("sort-toggle").focus();}}
+  if(e.key!=="Tab")return;
+  const panel=!$("history-view").hidden?$("history-view"):!$("modal-overlay").hidden?$("modal-overlay"):null;if(!panel)return;
+  const buttons=[...panel.querySelectorAll("button")].filter(b=>!b.hidden&&!b.disabled),first=buttons[0],last=buttons.at(-1);
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
 });
-
-/** Integration hooks for LinkX main / mission module, without editing other teams' modules. */
-window.LinkXReward={
-  open:id=>openReward(Number(id)),
-  sort:setSort,
-  current:()=>({sort:state.sort,active:state.active,unlocked:[...unlocked]}),
-  refresh:()=>{unlocked=readUnlocked();setSort(state.sort)}
-};
-const params=new URLSearchParams(location.search);
-setSort(params.get("sort")==="newest"?"newest":"oldest");
-const requested=Number(params.get("reward"));
-if(unlocked.has(requested))openReward(requested);
+function refresh(){store=getStore();unlocked=new Set(unlockedIds(store));if(!$("history-view").hidden)closeHistory();if(!$("modal-overlay").hidden)closeReward();setSort(state.sort);}
+window.addEventListener("storage",e=>{if(e.key==="linkx:v1")refresh();});
+window.LinkXReward={open:id=>openReward(Number(id)),sort:setSort,current:()=>({sort:state.sort,active:state.active,unlocked:[...unlocked]}),refresh};
+const params=new URLSearchParams(location.search);setSort(params.get("sort")==="oldest"?"oldest":"newest");
+const requested=Number(params.get("reward"));if(REWARDS[requested])openReward(requested);
