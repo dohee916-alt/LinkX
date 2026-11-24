@@ -18,16 +18,31 @@ const middle=diamondFrames.center.map(geometry),right=diamondFrames.end.map(geom
 const mix=(a,b,t)=>a+(b-a)*t;
 const smooth=t=>t*t*(3-2*t);
 export const GLOW_DURATION=1800; // Existing transition duration; Figma provides three visual examples.
+// Feather the outer diamond well past its former sharp edge.
+// Keep the warm central glow and the original Figma timing/geometry.
+const FEATHER_REACH=1.55;
+let glowPixels=null;
 export function drawDiamond(ctx,cx,cy,rx,ry,opacity=1){
- ctx.clearRect(0,0,W,H);
- // Exact L1-distance alpha field. Four quadrants, each a linear ramp from #fff9e8 to transparent.
- for(const sx of [-1,1])for(const sy of [-1,1]){
-  const vx=sx/rx,vy=sy/ry,k=1/(vx*vx+vy*vy);
-  const g=ctx.createLinearGradient(cx,cy,cx+vx*k,cy+vy*k);
-  g.addColorStop(0,"rgba(255,249,232,"+opacity+")");
-  g.addColorStop(1,"rgba(255,249,232,0)");
-  ctx.fillStyle=g;ctx.fillRect(sx<0?0:cx,sy<0?0:cy,sx<0?cx:W-cx,sy<0?cy:H-cy);
+ if(!glowPixels||glowPixels.width!==W||glowPixels.height!==H){
+  glowPixels=ctx.createImageData(W,H);
+  const data=glowPixels.data;
+  for(let i=0;i<data.length;i+=4){data[i]=255;data[i+1]=249;data[i+2]=232;}
  }
+ const pixels=glowPixels.data;
+ const ix=1/Math.max(1,rx),iy=1/Math.max(1,ry);
+ const strength=Math.max(0,Math.min(1,opacity))*255;
+ let k=3;
+ for(let y=0;y<H;y++){
+  const dy=Math.abs(y+.5-cy)*iy;
+  for(let x=0;x<W;x++,k+=4){
+   // L1 metric maintains the four-pointed Figma star silhouette.
+   const d=(Math.abs(x+.5-cx)*ix+dy)/FEATHER_REACH;
+   const t=Math.max(0,1-d);
+   // Smoothstep reaches zero with a flat slope: no visible cutoff contour.
+   pixels[k]=Math.round(strength*t*t*(3-2*t));
+  }
+ }
+ ctx.putImageData(glowPixels,0,0);
 }
 export function playDiamond(canvas,buttonX,buttonY,done){
  const ctx=canvas.getContext("2d");canvas.hidden=false;
