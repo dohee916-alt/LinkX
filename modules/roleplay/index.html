@@ -395,8 +395,8 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
   function leave(entry) {
     try { if (entry === 'finished' || entry === 'practice') sessionStorage.removeItem(RP_KEY); else sessionStorage.setItem(RP_KEY, JSON.stringify({ state, regenTurn })); } catch (e) {}
     import('../../shared/navigation.js?v=edges1')
-      .then(m => { m.registerRoute('textmode', 'modules/textmode/index.html'); m.navigate('textmode', { entry, v: 'guided-flow-02' }); })
-      .catch(() => { location.href = '../textmode/index.html?entry=' + entry + '&v=guided-flow-02'; });
+      .then(m => { m.registerRoute('textmode', 'modules/textmode/index.html'); m.navigate('textmode', { entry, v: 'guided-flow-03' }); })
+      .catch(() => { location.href = '../textmode/index.html?entry=' + entry + '&v=guided-flow-03'; });
   }
   function startState() {
     try {
@@ -466,7 +466,7 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
         }
         if (turn === 1) regenTurn = 1;
         go(turn === 1 ? 'ready2' : 'done');
-      }, OUT_MS));
+      }, turn === 1 && sessionStorage.getItem('linkx:guidedFlow') === 'practice' ? 6000 : OUT_MS));
     }
   }
 
