@@ -307,6 +307,10 @@ var sel='카페';
 })();
 
 /* ---------- 상태 ---------- */
+// The exhibition opens with a clean, pre-assigned mission example, not the
+// already-populated end of the conversation. The ordinary sidebar sequence stays intact.
+var guidedIntro=new URLSearchParams(location.search).get('entry')==='practice'
+   &&sessionStorage.getItem('linkx:guidedFlow')==='practice';
 var STEPS=[
  {g:'인트로 (상황 선택)',n:'기본',v:[],next:[700,1]},
  {n:'상황 제시 01',v:['ai'],next:[700,2]},
@@ -381,10 +385,14 @@ function setStep(n,animate){
   if(!STEPS[n].typing&&typeof cancelTyping==='function')cancelTyping();
   if(n===8&&!restoreLoad)loadT0=Date.now();
   var s=STEPS[n],before=snap();
-  if(s.v.indexOf('rp')<0)logOpen=false;
+  // Show the prepared-mission introductory messages one at a time.
+  // Do not reveal the previous scenario-selection conversation on entry.
+  var visible=guidedIntro&&(n===26||n===29)
+       ?(n===26?['rec']:['rec','pr']):s.v;
+  if(visible.indexOf('rp')<0)logOpen=false;
   if(n===8){rptShown=false;goShown=false}
   if(s.bm)bookmarked=true;
-  order.forEach(function(k){msgs[k].classList.toggle('on',s.v.indexOf(k)>-1||(k==='log'&&logOpen)||(k==='go'&&goShown&&!!s.rb)||(k==='rpt'&&rptShown&&!!s.rep)||(k==='act'&&!!s.rep&&bookmarked))});
+  order.forEach(function(k){msgs[k].classList.toggle('on',visible.indexOf(k)>-1||(k==='log'&&logOpen)||(k==='go'&&goShown&&!!s.rb)||(k==='rpt'&&rptShown&&!!s.rep)||(k==='act'&&!!s.rep&&bookmarked))});
   (function(){var last=null;order.forEach(function(k){if(msgs[k].classList.contains('on'))last=k});order.forEach(function(k){msgs[k].classList.toggle('last',k===last)})})(); /* 다음 채팅이 생기면 이전 AI 채팅의 새로고침 마크는 없어짐 */
   picked=s.cafe?sel:(n>=3?picked:picked);
   if(!s.cafe&&n<3&&n!==2)picked=null;
@@ -434,7 +442,19 @@ function setStep(n,animate){
   if(s.typing&&typeof startTyping==='function')startTyping();
   if(s.next)timer=setTimeout(function(){setStep(s.next[1],true)},s.next[0]);
   if(n===4)startSeq();
-  if(n===9&&!goShown)timer=setTimeout(function(){goShown=true;if(step===9){setStep(9,true);scrT=setTimeout(function(){if(step===9&&sessionStorage.getItem('linkx:guidedFlow')==='practice')goSecondHome()},2000)}},1000); /* 피드백이 나오고 상황 제시와 같은 간격(화면 기준 약 1초) 뒤에 AI가 '이제 직접 하러 가 보자!'를 보냄 */
+  // Let users read the example before inviting them into roleplay.
+  if(n===26&&guidedIntro)timer=setTimeout(function(){if(step===26)setStep(29,true)},4800);
+  if(n===9&&!goShown){
+    var exhibition=sessionStorage.getItem('linkx:guidedFlow')==='practice';
+    timer=setTimeout(function(){
+      if(step!==9)return;
+      goShown=true;
+      setStep(9,true); // reveal "이제 직접 하러 가 보자!"
+      if(exhibition) scrT=setTimeout(function(){
+        if(step===9&&sessionStorage.getItem('linkx:guidedFlow')==='practice')goSecondHome();
+      },6800); // keep the final message legible before the second main
+    },exhibition?4200:1000);
+  } /* 피드백이 나오고 상황 제시와 같은 간격(화면 기준 약 1초) 뒤에 AI가 '이제 직접 하러 가 보자!'를 보냄 */
 }
 function paintChips(){chipEls.forEach(function(b){b.classList.toggle('sel',b.dataset.t===picked)})}
 chipEls.forEach(function(b){b.addEventListener('click',function(){
@@ -618,7 +638,7 @@ addEventListener('keydown',function(e){
 
 (function(){var q=new URLSearchParams(location.search),e=q.get('entry');
   if(q.get('n')){setTimeout(function(){lxGo(q.get('n'))},0);setStep(4,false)}
-  else if(e==='paused')setStep(30,false);else if(e==='practice')setStep(29,false);else if(e==='finished')setStep(8,true);else if(e==='returned'){if(sessionStorage.getItem('linkx:guidedFlow')==='emergency'){rptShown=true;setStep(28,false)}else setStep(8,false)}else if(e==='certify'){rptShown=true;setStep(28,false)}else setStep(4,false)})(); /* 기본 시작: '카페에서 인사하는 상황'이 마지막 채팅으로 보이는 상태, 이후 자동 진행. entry 값은 [AI 보강] */
+  else if(e==='paused')setStep(30,false);else if(e==='practice')setStep(26,false);else if(e==='finished')setStep(8,true);else if(e==='returned'){if(sessionStorage.getItem('linkx:guidedFlow')==='emergency'){rptShown=true;setStep(28,false)}else setStep(8,false)}else if(e==='certify'){rptShown=true;setStep(28,false)}else setStep(4,false)})(); /* 기본 시작: '카페에서 인사하는 상황'이 마지막 채팅으로 보이는 상태, 이후 자동 진행. entry 값은 [AI 보강] */
 
 })();
 </script>
