@@ -172,7 +172,7 @@ async function ready(reason="manual"){
  if(distance>0.5){
   const glide=motion.animate(
    [{transform:`translate3d(${startX}px,0,0)`},{transform:`translate3d(${TRAVEL}px,0,0)`}],
-   {duration:Math.max(240,Math.round(780*distance/TRAVEL)),easing:"cubic-bezier(.22,1,.36,1)",fill:"forwards"}
+   {duration:Math.max(380,Math.round(1500*Math.pow(distance/TRAVEL,.8))),easing:"cubic-bezier(.35,.12,.65,.88)",fill:"forwards"}
   );
   try{await glide.finished}catch{return}
   if(state.phase!=="transition")return;
