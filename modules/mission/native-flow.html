@@ -660,9 +660,9 @@ body,#stage,.screen,.btn,button{font-family:var(--figma-font)}
 </g></svg>
           </div>
           <p id="rewardHint" aria-live="polite">별을 눌러 보상을 확인하세요</p>
-          <h2 id="rewardName" aria-live="polite">시작의 증표</h2>
-          <p id="decorateAppliedTitle" aria-hidden="true">시작의 증표</p>
-          <article id="rewardDesc" class="glass" aria-live="polite"><p id="rewardExplanation">대화를 시작할 준비가 된 사람만<br>가질 수 있는 특별한 증표예요.</p></article>
+          <h2 id="rewardName" aria-live="polite">첫마디 명사수</h2>
+          <p id="decorateAppliedTitle" aria-hidden="true">첫마디 명사수</p>
+          <article id="rewardDesc" class="glass" aria-live="polite"><p id="rewardExplanation">떨렸지만 침착하게, <br>밝은 목소리로 인사말을 건넸어요.<br>이제 이 정도는 간단해요!</p></article>
           <div id="rewardActions"><button id="seeReward" class="btn secondary">리워드 확인하기</button><button id="decorateReward" class="btn secondary">메인 화면에 장식하기</button></div>
           <button id="nextMission" class="btn primary">다음 미션 확인하기</button>
         </section>
@@ -695,7 +695,7 @@ const STAGES=[
  {title:'눈 마주치고 미소 짓기',description:'눈이 마주쳤을 때 가볍게 미소 지어 봐요.\n대화에 열려 있다는 신호를 전해요.'},
  {title:'짧게 먼저 말 걸어보기',description:'길게 대화하지 않아도 괜찮아요.\n외국 학생에게 짧게 인사하거나\n한 마디만 건네보세요.'}
 ];
-const COMMON_REWARD={name:'시작의 증표',description:'대화를 시작할 준비가 된 사람만\n가질 수 있는 특별한 증표예요.'};
+const COMMON_REWARD={name:'첫마디 명사수',description:'떨렸지만 침착하게, \n밝은 목소리로 인사말을 건넸어요.\n이제 이 정도는 간단해요!'};
 // Figma coordinates converted to 390x844 design canvas.
 const STARS=[{x:68,y:410},{x:124,y:309},{x:219,y:350},{x:293,y:244}];
 let state={mode:'mission',step:3,phase:'stable',prevMode:'mission',errorReady:false,completed:[],decorated:[]};
