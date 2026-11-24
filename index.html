@@ -32,7 +32,7 @@ function choose(item){
   selected=item;title.textContent=g+' / '+n;highlight(g,k);note.textContent='';
   const special=[R,M,F].includes(p)&&!guidedText;
   const url=p?([R,M,F].includes(p)?p:p+k):'';
-  const liveUrl=guidedText?F+'?n=5&v=original-sidebar-04&restart='+ ++guidedStartSeq:p===M?url+'?v=reward-guided-02':p==='modules/main/index.html'?p+'?stage=first&v=home-guided-06':p===F?url+'?v=feedback-guided-07':p===R?url+'?v=roleplay-revised-20261124-02':(p===E||p===S)?url+(url.includes('?')?'&':'?')+'v=bookmark-press-01':url;
+  const liveUrl=guidedText?F+'?n=5&v=original-sidebar-04&restart='+ ++guidedStartSeq:p===M?url+'?v=reward-copy-8b4f918':p==='modules/main/index.html'?p+'?stage=first&v=home-guided-06':p===F?url+'?v=feedback-guided-07':p===R?url+'?v=roleplay-revised-20261124-02':(p===E||p===S)?url+(url.includes('?')?'&':'?')+'v=bookmark-press-01':url;
   document.querySelector('#external').href=liveUrl||'#';
   if(!p){loaded='';pending=null;phone.srcdoc='<body style="font:16px system-ui;display:grid;place-items:center;height:95vh">구현 예정</body>';return}
   if(special&&loaded===p&&((p===R&&api().LinkXRoleplay)||(p===M&&api().LinkXMissionReward)||(p===F&&api().LinkXFeedback))){apply(item);return}
