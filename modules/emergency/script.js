@@ -1,6 +1,6 @@
 import {keys,labels} from "./keyboard-layout.js";
 import {messageBubble} from "./components.js";
-import {playDiamond} from "./diamond-glow.js?v=1";
+import {playDiamond} from "./diamond-glow.js?v=feather2";
 import {navigate,params,openSaved,syncScrollEdges} from "../../shared/navigation.js?v=edges1";
 import {getStore,updateStore,saveConversation} from "../../shared/store.js";
 import {greeting,exampleUser,replies,alternatives,errors} from "./scenario.js";
