@@ -9,6 +9,10 @@ button:focus-visible,.reward-scroll:focus-visible{outline:2px solid #fbe68e;outl
 .sky{position:absolute;inset:0;background-image:url("./art/starfield.png");background-repeat:no-repeat;background-size:390px 844px;pointer-events:none}
 .statusbar{position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 22px 0 38px;font:600 15px/1 -apple-system,BlinkMacSystemFont,sans-serif;z-index:2;pointer-events:none}
 .statusbar svg{margin-top:1px}
+/* Decorative layers must never intercept reward clicks or scrolling. */
+.statusbar,.sky,.constellation-track>img,.home-area{pointer-events:none}
+/* Hidden interaction surfaces stay inert even with Figma-style layered layouts. */
+.sort-menu[hidden],.modal-overlay[hidden],.history-view[hidden]{display:none!important;pointer-events:none!important}
 .header{position:absolute;top:46px;left:0;width:390px;height:60px;display:flex;align-items:center;justify-content:center;z-index:2}
 .header h1{font-size:18px;font-weight:650;letter-spacing:-.55px;margin:0}
 .back-button{position:absolute;left:20px;top:8px;width:44px;height:44px;border:0;background:transparent;color:#f7f3ff;display:grid;place-items:center;border-radius:14px}
