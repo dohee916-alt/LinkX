@@ -666,7 +666,7 @@ body{
   function routeFromHash(){ var m = location.hash.match(/^#\/([\w-]+)/); return m && screen(m[1]) ? m[1] : 'main'; }
   function go(route){
     if (busy || route === current || !screen(route)) return;
-    var destinations={fire:'../emergency/index.html',star:'../saved/index.html?tab=saved',practice:'../feedback/index.html', 'mission-certify':'../feedback/index.html?entry=certify'};
+    var destinations={fire:'../emergency/index.html',star:'../saved/index.html?tab=saved',practice:'../textmode/index.html', 'mission-certify':'../textmode/index.html?entry=certify'};
     if(destinations[route]){sessionStorage.setItem('linkx:practiceContext',state['mission/practiceContext']||'');sessionStorage.setItem('linkx:practiceTitle',state['mission/practiceTitle']||'');location.href=destinations[route];return;}
     history.pushState({lx: route, depth: (history.state && history.state.depth || 0) + 1}, '', '#/' + route);
     show(route, +1);
