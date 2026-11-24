@@ -395,8 +395,8 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
   function leave(entry) {
     try { if (entry === 'finished' || entry === 'practice') sessionStorage.removeItem(RP_KEY); else sessionStorage.setItem(RP_KEY, JSON.stringify({ state, regenTurn })); } catch (e) {}
     import('../../shared/navigation.js?v=edges1')
-      .then(m => { m.registerRoute('textmode', 'modules/textmode/index.html'); m.navigate('textmode', { entry }); })
-      .catch(() => { location.href = '../textmode/index.html?entry=' + entry; });
+      .then(m => { m.registerRoute('textmode', 'modules/textmode/index.html'); m.navigate('textmode', { entry, v: 'guided-flow-02' }); })
+      .catch(() => { location.href = '../textmode/index.html?entry=' + entry + '&v=guided-flow-02'; });
   }
   function startState() {
     try {
