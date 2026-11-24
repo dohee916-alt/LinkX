@@ -112,6 +112,7 @@ function openReward(id,from=null){
   mission.hidden=!reward.mission;
   $("mission-name").textContent=reward.mission||"";
   const saved=missionSummary(id);
+  $("detail-summary").hidden=id!==5&&!saved;
   $("summary-text").textContent=saved||"저장된 대화 요약이 아직 없어요.";
   $("show-history").hidden=id!==5;
   $("modal-overlay").hidden=false;
