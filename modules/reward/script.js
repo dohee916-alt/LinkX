@@ -107,7 +107,7 @@ function openReward(id,from=null){
   const coords=placements.oldest.find(p=>p.id===id);
   const icon=$("detail-art");
   icon.style.backgroundImage='url("'+art.oldest+'")';
-  icon.style.backgroundPosition="-"+(coords.x+40)+"px -"+(coords.y-4)+"px";
+  icon.style.backgroundPosition="-"+(coords.x+44)+"px -"+coords.y+"px";
   const mission=$("detail-mission");
   mission.hidden=!reward.mission;
   $("mission-name").textContent=reward.mission||"";
@@ -129,6 +129,7 @@ $("modal-overlay").addEventListener("click",e=>{
 });
 
 function openHistory(){
+  if(state.active!==5)return;
   $("history-view").hidden=false;
   const frame=$("feedback-frame");
   const showLog=()=>{
