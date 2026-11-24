@@ -16,7 +16,17 @@ const W=390,H=844;
 const geometry=({m:[a,c,e,f]})=>({x:W*(.5-c)/a,y:H*(.5-f)/e,rx:W*.5/a,ry:H*.5/e});
 const middle=diamondFrames.center.map(geometry),right=diamondFrames.end.map(geometry);
 const mix=(a,b,t)=>a+(b-a)*t;
-const smooth=t=>t*t*(3-2*t);
+// Cubic spline keeps expansion velocity continuous through all sampled Figma shapes.
+const catmull=(a,b,c,d,t)=>.5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t);
+const spline=(points,key,p)=>{
+ const u=Math.min(2.999999,Math.max(0,p*3));
+ const i=Math.floor(u),t=u-i;
+ const a=points[Math.max(0,i-1)][key],b=points[i][key],c=points[i+1][key],d=points[Math.min(3,i+2)][key];
+ // Extrapolate endpoint derivatives rather than pausing at the first/last knot.
+ const prev=i===0?b-(c-b):a;
+ const next=i===2?c+(c-b):d;
+ return catmull(prev,b,c,next,t);
+};
 export const GLOW_DURATION=1800; // Existing transition duration; Figma provides three visual examples.
 // Cache a single smooth, feathered L1 star texture. Animation frames only
 // transform/composite this image; they never recalculate 390x844 alpha pixels.
@@ -61,15 +71,19 @@ export function playDiamond(canvas,buttonX,buttonY,done){
   const b=right[i];
   return {x:buttonX+mix(a.x-195,b.x-300.04,blend),y:buttonY+mix(a.y-729.04,b.y-729.04,blend),rx:mix(a.rx,b.rx,blend),ry:mix(a.ry,b.ry,blend)};
  });
- // At the exact sampled button positions, these reproduce Figma's sampled geometry.
+ // The first third formerly interpolated frame[0] to itself, so the star
+ // looked frozen. Expand continuously from a small origin through all three
+ // Figma-sampled sizes, with no zero-velocity stop between them.
+ const opening={x:buttonX,y:buttonY,rx:frames[0].rx*.23,ry:frames[0].ry*.23};
+ const stops=[opening,...frames];
+ const texture=getStarTexture(); // Prebuild texture before starting the timed motion.
  const start=performance.now();
  const step=now=>{
   const elapsed=Math.max(0,now-start),p=Math.min(1,elapsed/GLOW_DURATION);
-  const q=p*3;
-  const i=Math.min(2,Math.floor(q)),t=smooth(q-i);
-  const to=frames[i],from=frames[Math.max(0,i-1)];
-  const alpha=i===0?t:1;
-  drawDiamond(ctx,mix(from.x,to.x,t),mix(from.y,to.y,t),mix(from.rx,to.rx,t),mix(from.ry,to.ry,t),alpha);
+  const cx=spline(stops,"x",p),cy=spline(stops,"y",p);
+  const rx=Math.max(1,spline(stops,"rx",p)),ry=Math.max(1,spline(stops,"ry",p));
+  const alpha=Math.min(1,p/.18);
+  drawDiamond(ctx,cx,cy,rx,ry,alpha);
   if(p<1)requestAnimationFrame(step);else done();
  };
  requestAnimationFrame(step);
