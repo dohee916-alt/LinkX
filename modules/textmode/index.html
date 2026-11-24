@@ -355,8 +355,8 @@ function goSecondHome(){
   sessionStorage.setItem('linkx:homeStage','second');
   sessionStorage.setItem('linkx:guidedFlow','emergency');
   var nav=window.__LXNAV;
-  if(nav){try{nav.navigate('home',{stage:'second'});return}catch(e){}}
-  location.assign('../main/index.html?stage=second');
+  if(nav){try{nav.navigate('home',{stage:'second',v:'home-guided-02'});return}catch(e){}}
+  location.assign('../main/index.html?stage=second&v=home-guided-02');
 }
 function navTo(k){
   if(k==='main'){goSecondHome();return}
