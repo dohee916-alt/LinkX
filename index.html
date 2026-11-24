@@ -45,9 +45,9 @@ function launchSplash(){
   }
   overlay.addEventListener('load',()=>{
     if(run!==splashRun)return;
-    try{overlay.contentDocument.addEventListener('splash:end',()=>{ended=true;finish()},{once:true})}catch{}
+    try{overlay.contentDocument.addEventListener('splash:end',()=>{clearTimeout(splashTimer);splashTimer=setTimeout(()=>{ended=true;finish()},500)},{once:true})}catch{}
     // Fallback for a cached splash file that does not emit the custom event.
-    splashTimer=setTimeout(()=>{ended=true;finish()},4100);
+    splashTimer=setTimeout(()=>{ended=true;finish()},4600);
   },{once:true});
   phone.addEventListener('load',()=>{
     if(run!==splashRun)return;
