@@ -254,3 +254,11 @@
 .lx-emergency #keyboard-keys button.lx-key-down{background:rgba(90,90,100,.30)!important;color:inherit!important}
 .lx-emergency #keyboard-keys button.lx-key-expanded{background:rgba(90,90,100,.30)!important;color:inherit!important}
 .lx-emergency #key-preview{display:none!important}
+
+/* The keyboard legends live in the background SVG. A pressed button overlays
+   that SVG, so redraw its matching legend ABOVE the pressed-state overlay. */
+.lx-emergency #keyboard-keys button.lx-key-down:not(.lx-key-relabel)[data-pressed-label]:not([data-pressed-label=""])::after{
+ content:attr(data-pressed-label);position:absolute;inset:0;display:grid;place-items:center;
+ color:#f9f9fb;font:500 19px/1 -apple-system,BlinkMacSystemFont,"IBM Plex Sans KR",sans-serif;
+ pointer-events:none;z-index:1
+}
