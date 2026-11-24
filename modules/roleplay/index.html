@@ -458,7 +458,15 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
       timers.push(setTimeout(() => go('out' + turn), GEN_MS));
     }
     if (kind === 'out') {
-      timers.push(setTimeout(() => { if (turn === 1) regenTurn = 1; go(turn === 1 ? 'ready2' : 'done'); }, OUT_MS));
+      timers.push(setTimeout(() => {
+        // Exhibition path: exactly one roleplay turn, then feedback automatically.
+        if (turn === 1 && sessionStorage.getItem('linkx:guidedFlow') === 'practice') {
+          leave('finished');
+          return;
+        }
+        if (turn === 1) regenTurn = 1;
+        go(turn === 1 ? 'ready2' : 'done');
+      }, OUT_MS));
     }
   }
 
