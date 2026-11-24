@@ -1217,7 +1217,7 @@ function bloomReward(){
    ['rewardName','rewardDesc','rewardActions','nextMission'].forEach(id=>$(id).classList.add('visible'));
    setRewardButtonsState(true);
  });
- delay(4220,()=>{state.phase='earned';state.completed[state.step-1]=true;lock=false;stateUI()});
+ delay(4220,()=>{state.phase='earned';state.completed[state.step-1]=true;lock=false;stateUI();import('../reward/data.js').then(m=>m.claimReward(5)).catch(showRewardLoadError)});
 }
 
 function openDecorate(){if(state.mode!=='reward'||state.phase!=='earned')return; if($('decorateReward').classList.contains('inactive')){return;} state.decorated[state.step-1]=true;$('decorateAppliedTitle').textContent=COMMON_REWARD.name;$('rewardFrame').classList.add('decorating');$('rewardHint').textContent='보상을 받았어요';$('decorateAppliedTitle').setAttribute('aria-hidden','false');$('decorateOverlay').classList.add('visible');$('decorateOverlay').setAttribute('aria-hidden','false');animateFigmaDecorate()}
@@ -1247,11 +1247,13 @@ function openRewardDetail(){if(state.mode!=='reward'||state.phase!=='earned')ret
  $('detailOverlay').classList.add('visible');$('detailOverlay').setAttribute('aria-hidden','false');}
 function closeDetail(){$('detailOverlay').classList.remove('visible');$('detailOverlay').setAttribute('aria-hidden','true')}
 function route(name){
- // Unimplemented reward collection never opens a destination screen.
- if(name==='reward-check'){showRewardComingSoon();return}
  const host=window.LinkXMissionReward;
  const payload={step:state.step,completed:[...state.completed],decorated:[...state.decorated]};
  if(typeof host?.onNavigate==='function' && host.onNavigate(name,payload)===true)return;
+ if(name==='reward-check'){
+   import('../reward/mission-entry.js').then(m=>m.openCollection()).catch(showRewardLoadError);
+   return;
+ }
  if(name==='main'){
    // The '미션 확인 완료' button only acknowledges receipt of the mission; it NEVER awards a reward.
    // In the integrated GitHub module, navigate to the team's real main page.
@@ -1372,17 +1374,16 @@ for(const id of ['decorateReward','nextMission']){
   });
 }
 
-// Reward collection screen is not implemented. Keep the user on this reward screen
-// and display one short, non-navigating notice instead of the former route screen.
+// Recoverable loading error: the same button retries opening the collection.
 let rewardSoonTimer=null;
-function showRewardComingSoon(){
+function showRewardLoadError(){
  let n=document.getElementById('rewardComingSoon');
  if(!n){
    n=document.createElement('div');
    n.id='rewardComingSoon';
    n.setAttribute('role','status');
    n.setAttribute('aria-live','polite');
-   n.textContent='구현 예정';
+   n.textContent='리워드를 열지 못했어요. 다시 시도해 주세요.';
    Object.assign(n.style,{
      position:'absolute',left:'50%',top:'602px',transform:'translateX(-50%)',
      zIndex:'999',minWidth:'126px',padding:'12px 20px',borderRadius:'24px',
@@ -1397,7 +1398,7 @@ function showRewardComingSoon(){
  n.style.opacity='1';
  rewardSoonTimer=setTimeout(()=>{n.style.opacity='0'},2100);
 }
-$('seeReward').addEventListener('click',showRewardComingSoon);
+$('seeReward').addEventListener('click',()=>{if(state.mode==='reward'&&state.phase==='earned')route('reward-check')});
 $('decorateReward').addEventListener('click',openDecorate);
 $('toMain').addEventListener('click',()=>route('main'));
 $('decorateLater').addEventListener('click',closeDecorate);

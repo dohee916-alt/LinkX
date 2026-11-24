@@ -63,3 +63,52 @@ button:focus-visible,.reward-scroll:focus-visible{outline:2px solid #fbe68e;outl
 .history-back:hover{background:#51468f}
 .toast{position:absolute;z-index:35;bottom:68px;left:38px;width:314px;text-align:center;background:#f0eafa;color:#352897;padding:13px 16px;border-radius:15px;box-shadow:0 8px 22px #0003;font-size:13px}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+/* A proposal: editable reward nodes, brighter original sky and complete detail. */
+:root{--reward-surface:#342d66;--reward-inset:#474071;--reward-lavender:#bfb2f6}
+.reward-device{color:var(--lx-cream);font-family:var(--lx-font)}
+.collection-caption{position:absolute;top:153px;left:20px;margin:0;width:350px;color:#f8f3e6b8;font-size:12px;line-height:19px;z-index:2}
+.reward-scroll{top:190px;height:618px}
+.constellation-track{height:1190px}
+.constellation-track>.trajectory{top:-40px;left:0;height:1120px;width:350px}
+.reward-hit{height:132px;display:flex;align-items:center;flex-direction:column;gap:3px;color:var(--lx-cream);line-height:1.55;overflow:visible}
+.reward-hit img{width:76px;height:76px;object-fit:contain;flex:none;pointer-events:none}
+.reward-name{font-size:13px;font-weight:500;white-space:nowrap}
+.reward-caption{font-size:11px;color:#f8f3e6c2}
+.reward-status{font-size:10px;color:#f8f3e6c2}
+.reward-hit.latest .reward-status{color:var(--reward-lavender);font-weight:650}
+.reward-hit.locked{opacity:.65;cursor:pointer}
+.modal-shade{background:#100d296b;backdrop-filter:none}
+.detail-card{width:320px;padding:20px 21px 16px;border-radius:24px;background:var(--reward-surface);max-height:calc(100% - 80px);color:var(--lx-cream)}
+.detail-art{display:block;width:76px;height:76px;object-fit:contain;margin:0 auto 12px;filter:none}
+.detail-number{font-size:11px;line-height:18px;letter-spacing:1.2px;color:var(--reward-lavender);margin:0 0 8px}
+.detail-card h2{font-size:22px;line-height:34px;margin:0 0 8px;color:var(--lx-cream)}
+.detail-meaning{font-size:13px;line-height:20px;margin:0 0 18px}
+.summary-box{background:var(--reward-inset);border:0;border-radius:16px;padding:12px;margin-bottom:12px;text-align:left}
+.summary-box .detail-label{font-size:12px;color:var(--reward-lavender);margin-bottom:8px}
+.summary-box p{font-size:14px;line-height:22px;color:var(--lx-cream);overflow-wrap:anywhere;white-space:pre-line}
+.detail-actions{display:flex;flex-direction:column;gap:4px}
+.history-button{height:48px;border:0;border-radius:24px;background:var(--reward-lavender);color:#352897;font-size:15px;font-weight:650;width:100%;padding:0 12px}
+.detail-actions .close-button{height:40px;background:transparent;border:0;color:var(--lx-cream);font-weight:500}
+.detail-actions .history-button[hidden]+.close-button{background:var(--reward-lavender);color:#352897}
+.history-view{background:linear-gradient(180deg,#202426 0%,#352897 66%,#352897 100%)}
+.history-view::before{content:"";position:absolute;inset:0;background:url('./art/starfield.png') 0 0/390px 844px no-repeat;pointer-events:none}
+.history-view .header{z-index:1}
+.history-view .header h2{margin:0;font-size:18px;font-weight:650}
+.history-content{position:absolute;top:132px;left:20px;width:350px;bottom:45px;overflow-y:auto;scrollbar-width:none}
+.history-content h3{font-size:28px;line-height:42px;margin:18px 0 14px;color:var(--lx-cream)}
+#record-mission{color:var(--reward-lavender);font-size:15px;margin:0 0 24px}
+.history-content .summary-box{margin-bottom:20px;padding:16px}
+.record-source{font-size:11px;color:var(--reward-lavender);margin:0 0 4px}
+.empty-state{position:absolute;top:255px;left:20px;width:350px;text-align:center;z-index:1}
+.empty-state img{opacity:.45}
+.empty-state h2{font-size:25px;margin:24px 0 18px}
+.empty-state p{font-size:15px;line-height:24px;margin:0 0 24px}
+
+.reward-art-slot{position:relative;width:76px;height:76px;flex:none;display:block}
+.reward-art-slot img{position:absolute;width:var(--art-width);height:var(--art-height);left:50%;top:50%;transform:translate(-50%,-50%);max-width:none;pointer-events:none}
+
+.detail-art-slot{position:relative;display:block;width:76px;height:76px;margin:0 auto 12px}
+.detail-art-slot .detail-art{position:absolute;margin:0;left:50%;top:50%;width:var(--art-width,94px);height:var(--art-height,94px);transform:translate(-50%,-50%)}
+/* Slightly smaller shelf artwork; preserve every label, slot and hit target. */
+.reward-art-slot img{transform:translate(-50%,-50%) scale(.92)}
+.detail-art-slot .detail-art{transform:translate(-50%,-50%) scale(.92)}

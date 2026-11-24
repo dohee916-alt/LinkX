@@ -1,49 +1,39 @@
-# LinkX · 나의 밤하늘 (Reward Gallery)
+# LinkX · 나의 밤하늘 — A안
 
-이 디렉터리는 **ZHUYUN 담당 리워드 보관함**의 독립 실행 가능한 HTML/CSS/JS 구현입니다. 390×844 기준, 프레임워크 없이 작동합니다. 기존 메인/미션/피드백 화면은 변경하지 않았습니다.
+390×844 순수 HTML/CSS/JS. 최신 zhuyun Figma A안의 별자리, 밝은 원본 배경, 중앙 상세 팝업과 미션 회고를 구현합니다.
 
-## 실행
+## 확인 경로
 
-프로젝트 최상위 폴더에서 `python -m http.server 8000`을 실행하고 다음 주소에 접속하세요.
+- 팀 전시 루트 → `리워드` → 별 누르기 → `리워드 확인하기` → 보관함
+- 전시 메뉴의 `나의 밤하늘` → 보관함 직접 진입
+- `/modules/reward/index.html?sort=newest` (기본) / `?sort=oldest`
+- `/modules/reward/index.html?reward=5` (상세 바로 열기)
 
-- `http://localhost:8000/modules/reward/index.html`
-- `http://localhost:8000/modules/reward/index.html?sort=newest` — 최신순으로 시작
-- `http://localhost:8000/modules/reward/index.html?reward=5` — 05번 리워드 상세 열기
+05 → 미션 회고 보기 → 상세로 돌아가기 → 닫기를 실제로 사용할 수 있습니다. 더 이상 존재하지 않는 `/modules/feedback/`를 iframe으로 열지 않습니다. 회고는 보관함 내부의 접근 가능한 화면으로 표시하므로 목록의 정렬과 스크롤 위치를 유지합니다.
 
-## 인터랙션
+수령 화면에서 보관함으로 들어온 경우 상단 뒤로 버튼은 `modules/mission/index.html?view=reward-3`로 돌아갑니다. 보상 애니메이션을 다시 재생하거나 보상을 중복 획득하지 않습니다.
 
-- `오래된순 / 최신순` 메뉴로 별자리 이미지와 클릭 위치를 함께 변경
-- 상하 스크롤로 01–08 리워드 탐색
-- 기본 전시 상태: 01–05 획득(클릭 가능), 06–08 미획득(45% 투명도, 안내 메시지)
-- 획득 리워드 선택 시 해당 아이콘과 이름을 표시하는 모달, 바깥 클릭/닫기/Escape로 닫기
-- 05번: 관련 미션 `짧게 먼저 말 걸어보기` 표시; 대화 요약은 실제 저장 데이터가 있을 때만 표시
-- `대화 기록 보기`: 기존 팀 `modules/feedback/index.html`의 **예시 연습 로그 화면(17번 상태)** 으로 연결. 실제 사용자 대화 저장 기록과의 연동은 후속 팀 합의 필요
-- 뒤로가기: 공통 `shared/navigation.js` 사용
+## 데이터 계약
 
-## 팀 통합 계약
+공통 `shared/store.js`의 `linkx:v1` 스토어를 사용합니다. 다른 팀 데이터는 덮어쓰지 않습니다.
 
-- `window.LinkXReward.open(5)`: 05번 리워드 상세 열기
-- `window.LinkXReward.sort("newest"|"oldest")`: 정렬
-- `window.LinkXReward.current()`: 현재 정렬/상세/획득 ID 반환
-- `window.LinkXReward.refresh()`: 공통 스토어에서 획득 상태 다시 읽기
+- `unlockedRewards: number[]`: 획득한 보상. 빈 배열은 빈 보관함입니다. 기존 `rewardUnlocked` / `rewards.unlocked`도 읽습니다.
+- `rewardRecords: { [rewardId]: { rewardId, missionId?, missionTitle?, acquiredAt?, reflection?, title?, achievement?, next?, source? } }`
+- `acquiredAt`: ISO 날짜. 획득한 보상끼리 시각순으로 정렬하고, 미획득 보상은 그 뒤에 둡니다. 예전 시각 없는 전시 데이터는 기존 01→05 획득 순서를 유지합니다.
+- `mission.rewardId` 또는 `mission.id === "greeting-05"`로 보상이 명확하게 연결된 경우 `reflection` / `feedbackSummary` / `summary` / `reviewSummary`를 읽습니다. 관련 없는 현재 미션의 요약을 05에 표시하지 않습니다.
+- `claimReward(5)`는 재호출해도 기존 획득 시각과 회고를 유지합니다.
 
-현재 저장소 `shared/store.js` 키 `linkx:v1`의 `unlockedRewards: number[]` 또는 `rewardUnlocked: number[]`가 있으면 획득 상태에 반영합니다. 데이터가 없으면 Figma 전시 샘플인 01–05 획득 상태로 표시합니다. 05번 요약은 `mission.summary` / `mission.feedbackSummary` 등 실제 저장 정보가 있으면 사용하고, 없으면 기록 미연결 상태를 명시합니다.
+기존 전시 기본값은 01–05 획득입니다. 저장 데이터가 전혀 없을 때만, 팀 Figma 및 텍스트모드의 학생회관 인사 보고를 바탕으로 한 05 예시 회고를 제공합니다. 회고 화면에서 `예시 회고`로 표시합니다. 명시적인 획득 목록/기록이 있으면 예시를 섞지 않고, 누락된 회고는 빈 상태로 표시합니다.
 
-팀 메인 통합자는 `modules/reward/index.html`을 실제 진입 경로로 연결해야 합니다. **이 PR은 다른 담당자의 `index.html`/모듈을 수정하지 않습니다.** 메인 전시 네비게이터의 기존 리워드 애니메이션(`modules/mission/`)은 별도 흐름이며, 이 보관함 화면으로 넘어오는 연결을 추후 조정해야 합니다.
+01–04의 미확정 획득 조건은 구현에 넣지 않았습니다. 기존 보상명과 의미 설명만 표시합니다. 실사용자 회고를 저장하는 상위 모듈은 위 데이터 계약으로 값을 전달해야 합니다.
 
-## Figma 원본
+## 소재 및 검증
 
-- Reward 오래된순: `1564:5657`
-- Reward 최신순: `1798:74305`
-- 팀 파일: https://www.figma.com/design/IRJ7lGiMvKZwZ5aTitqQQa/
-- `art/`의 PNG는 기존 팀 Figma 별자리와 배경에서 내보낸 리소스입니다. 새 캐릭터나 아이콘을 생성하지 않았습니다.
+`art/reward-01.png`~`reward-08.png`, `trajectory.png`는 같은 팀 Figma 원본의 투명 내보내기이며 실제 노드, 이름, 상태는 DOM으로 표시합니다. 고정 별자리 PNG의 순서/획득 상태에 UI를 의존하지 않습니다.
 
-## 점검 항목
+```
+python3 -m http.server 8765
+node --test tests/reward-data.test.mjs
+```
 
-- 모바일 390×844 및 작은 화면에서 좌표/스케일
-- 드롭다운 클릭, 2가지 정렬과 스크롤 시작 위치
-- 01–05 팝업 열기/닫기, 06–08 미획득 안내
-- 05번 미션/요약, 기존 피드백 연습 로그로 이동/돌아오기
-- 팀 메인·미션에서 리워드 보관함으로 들어오는 라우트 연결
-
-**아직 하지 않은 작업:** 실제 사용자 대화 기록의 영속적인 상세 연결과 최종 팀 전시 라우팅/엔드 투 엔드 브라우저 테스트.
+브라우저에서 수령→보관함→05→회고→반환, 양쪽 정렬, 미획득 06–08, 닫기/ESC, 수령 화면 반환을 확인합니다.

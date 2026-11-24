@@ -151,7 +151,7 @@ function openNative(id){
     Object.defineProperty(a,'loadReward',{get:()=>API.loadReward,configurable:true});
     if(id!=='reward-1')a.previewState(id);
   });
-  frame.src='native-flow.html?embedded=1&step=3&v=reward-copy-8b4f918#reward';
+  frame.src='native-flow.html?embedded=1&step=3&v=reward-a-20261125#reward';
   phone.appendChild(frame);
 }
 const forced = new URLSearchParams(location.search).get('force'); // 확인용: ?force=loading | error
@@ -223,6 +223,14 @@ function groupReady(g){
 function go(id, t = .28, e = 'ease-out'){
   if (!S[id]) return;
   if(id==='main'){location.href='../main/index.html';return;}
+  if(id==='reward-check'){
+    import('../reward/mission-entry.js').then(m=>m.openCollection()).catch(()=>{
+      let notice=document.getElementById('reward-entry-error');
+      if(!notice){notice=document.createElement('p');notice.id='reward-entry-error';notice.setAttribute('role','alert');document.getElementById('mr-root').append(notice);}
+      notice.textContent='리워드를 열지 못했어요. 다시 시도해 주세요.';
+    });
+    return;
+  }
   clearTimers();
   if (API.onNavigate && API.onNavigate(id) === true) return;
   if(NATIVE_STATES.has(id)){openNative(id);return;}
@@ -288,7 +296,8 @@ function play(from, id, dur){
 function start(flow){cur=null; if(flow==='reward'){openNative('reward-1');return}closeNative();go('chat-mission-01',0);}
 
 build();
-start(location.hash.replace('#','') === 'reward' ? 'reward' : 'mission');
+if(new URLSearchParams(location.search).get('view')==='reward-3')openNative('reward-3');
+else start(location.hash.replace('#','') === 'reward' ? 'reward' : 'mission');
 addEventListener('hashchange', () => start(location.hash.replace('#','')));
 })();
 
