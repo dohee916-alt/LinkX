@@ -460,12 +460,9 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
     }
     if (kind === 'out') {
       timers.push(setTimeout(() => {
-        // Exhibition path: exactly one roleplay turn, then feedback automatically.
-        if (turn === 1 && sessionStorage.getItem('linkx:guidedFlow') === 'practice') {
-          leave('finished');
-          return;
-        }
         if (turn === 1) regenTurn = 1;
+        // Keep the existing regeneration / next-input screen after the first answer.
+        // Feedback is entered only when the user explicitly taps its button.
         go(turn === 1 ? 'ready2' : 'done');
       }, turn === 1 && sessionStorage.getItem('linkx:guidedFlow') === 'practice' ? 6000 : OUT_MS));
     }
