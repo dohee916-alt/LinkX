@@ -349,9 +349,18 @@ var loadT0=0,restoreLoad=false,logOpen=false,rptShown=false,goShown=false,bookma
 var scrEl=document.getElementById('scr'),scrT=null;
 var scrCur=null;
 var LXNav=null; /* 저장소 안에서만 shared/navigation.js 로드. 단독 파일이면 실패해서 기존 Figma 이미지 화면 사용 */
+function goSecondHome(){
+  // Feedback completion and feedback back/exit both return to the SECOND home.
+  clearTimeout(timer);clearTimeout(scrT);clearTimeout(seqT);
+  sessionStorage.setItem('linkx:homeStage','second');
+  sessionStorage.setItem('linkx:guidedFlow','emergency');
+  var nav=window.__LXNAV;
+  if(nav){try{nav.navigate('home',{stage:'second'});return}catch(e){}}
+  location.assign('../main/index.html?stage=second');
+}
 function navTo(k){
+  if(k==='main'){goSecondHome();return}
   var N=window.__LXNAV;if(N){try{
-    if(k==='main'){N.navigate('home');return}
     if(k==='saved'){N.openSaved('saved',{entry:'returned'});return}
     if(k==='rw6'){N.navigate('reward');return}
     if(k==='rp'){N.navigate('roleplay');return}
@@ -425,7 +434,7 @@ function setStep(n,animate){
   if(s.typing&&typeof startTyping==='function')startTyping();
   if(s.next)timer=setTimeout(function(){setStep(s.next[1],true)},s.next[0]);
   if(n===4)startSeq();
-  if(n===9&&!goShown)timer=setTimeout(function(){goShown=true;if(step===9){setStep(9,true);scrT=setTimeout(function(){if(step===9)showScr('main')},2000)}},1000); /* 피드백이 나오고 상황 제시와 같은 간격(화면 기준 약 1초) 뒤에 AI가 '이제 직접 하러 가 보자!'를 보냄 */
+  if(n===9&&!goShown)timer=setTimeout(function(){goShown=true;if(step===9){setStep(9,true);scrT=setTimeout(function(){if(step===9&&sessionStorage.getItem('linkx:guidedFlow')==='practice')goSecondHome()},2000)}},1000); /* 피드백이 나오고 상황 제시와 같은 간격(화면 기준 약 1초) 뒤에 AI가 '이제 직접 하러 가 보자!'를 보냄 */
 }
 function paintChips(){chipEls.forEach(function(b){b.classList.toggle('sel',b.dataset.t===picked)})}
 chipEls.forEach(function(b){b.addEventListener('click',function(){
@@ -606,7 +615,7 @@ addEventListener('keydown',function(e){
 
 (function(){var q=new URLSearchParams(location.search),e=q.get('entry');
   if(q.get('n')){setTimeout(function(){lxGo(q.get('n'))},0);setStep(4,false)}
-  else if(e==='paused')setStep(30,false);else if(e==='practice')setStep(29,false);else if(e==='finished')setStep(8,true);else if(e==='returned')setStep(8,false);else if(e==='certify'){rptShown=true;setStep(28,false)}else setStep(4,false)})(); /* 기본 시작: '카페에서 인사하는 상황'이 마지막 채팅으로 보이는 상태, 이후 자동 진행. entry 값은 [AI 보강] */
+  else if(e==='paused')setStep(30,false);else if(e==='practice')setStep(29,false);else if(e==='finished')setStep(8,true);else if(e==='returned'){if(sessionStorage.getItem('linkx:guidedFlow')==='emergency'){rptShown=true;setStep(28,false)}else setStep(8,false)}else if(e==='certify'){rptShown=true;setStep(28,false)}else setStep(4,false)})(); /* 기본 시작: '카페에서 인사하는 상황'이 마지막 채팅으로 보이는 상태, 이후 자동 진행. entry 값은 [AI 보강] */
 
 })();
 </script>
