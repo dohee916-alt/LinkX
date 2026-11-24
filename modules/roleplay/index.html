@@ -75,6 +75,7 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
 }
 .btn-close { left: 14px; top: 46px; }
 .btn-star  { left: 332px; top: 46px; }
+.btn-star:active,.btn-star.lx-pressed{transform:scale(.97);opacity:.65}
 .chip {
   position: absolute; left: 20px; top: 54px; height: 29px; padding: 6px 14px;
   border-radius: 999px; background: var(--c-cream); color: var(--c-ink);
@@ -521,8 +522,9 @@ button:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
   modal.addEventListener('click', e => { if (!e.target.closest('.popup-card')) closeModal(); });
   $('#btnFeedback').addEventListener('click', () => leave('finished')); /* 연습을 끝까지 마치고 나가면 텍스트 모드에서 연습 로그·피드백 */
   $('#btnStar').addEventListener('click', () => {
-    clearTimers();
-    location.href = '../saved/index.html?tab=saved';
+    const b=$('#btnStar');if(b.classList.contains('lx-pressed'))return;
+    clearTimers();b.classList.add('lx-pressed');
+    setTimeout(()=>{b.classList.remove('lx-pressed');location.href='../saved/index.html?tab=saved';},140);
   });
 
   /* ── 키보드 (발표·점검용) ─────────────────────── */
