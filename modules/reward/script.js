@@ -2,8 +2,8 @@ import {getStore} from "../../shared/store.js";
 import {navigate, registerRoute} from "../../shared/navigation.js";
 import {REWARDS, unlockedIds, sortedRewards, recordFor} from "./data.js";
 const $=id=>document.getElementById(id);
-const positions=[[8,12],[170,172],[22,332],[158,492],[6,652],[168,812],[18,972],[160,1132]];
-const state={sort:"newest",active:null,returnFocus:null};
+const positions=[[6,16],[175,103],[142,264],[9,342],[26,526],[168,620],[143,796],[5,895]];
+const state={sort:"oldest",active:null,returnFocus:null};
 const artworkSizes={1:[76,77],2:[150,150],3:[89,89],4:[97,97],5:[94,94],6:[78,79],7:[95,95],8:[84,84]};
 const artwork=id=>"./art/reward-"+String(id).padStart(2,"0")+".png";
 let store=getStore(), unlocked=new Set(unlockedIds(store));
@@ -79,5 +79,5 @@ document.addEventListener("keydown",e=>{
 function refresh(){store=getStore();unlocked=new Set(unlockedIds(store));if(!$("history-view").hidden)closeHistory();if(!$("modal-overlay").hidden)closeReward();setSort(state.sort);}
 window.addEventListener("storage",e=>{if(e.key==="linkx:v1")refresh();});
 window.LinkXReward={open:id=>openReward(Number(id)),sort:setSort,current:()=>({sort:state.sort,active:state.active,unlocked:[...unlocked]}),refresh};
-const params=new URLSearchParams(location.search);setSort(params.get("sort")==="oldest"?"oldest":"newest");
+const params=new URLSearchParams(location.search);setSort(params.get("sort")==="newest"?"newest":"oldest");
 const requested=Number(params.get("reward"));if(REWARDS[requested])openReward(requested);
