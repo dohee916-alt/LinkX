@@ -69,7 +69,7 @@ button:focus-visible,.reward-scroll:focus-visible{outline:2px solid #fbe68e;outl
 .collection-caption{position:absolute;top:153px;left:20px;margin:0;width:350px;color:#f8f3e6b8;font-size:12px;line-height:19px;z-index:2}
 .reward-scroll{top:190px;height:618px}
 .constellation-track{height:1190px}
-.constellation-track>.trajectory{top:-40px;left:0;height:1120px;width:350px}
+.constellation-track>.trajectory{top:0;left:0;height:1190px;width:350px}
 .reward-hit{height:132px;display:flex;align-items:center;flex-direction:column;gap:3px;color:var(--lx-cream);line-height:1.55;overflow:visible}
 .reward-hit img{width:76px;height:76px;object-fit:contain;flex:none;pointer-events:none}
 .reward-name{font-size:13px;font-weight:500;white-space:nowrap}
