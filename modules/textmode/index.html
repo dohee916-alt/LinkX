@@ -199,7 +199,7 @@ html.linkx-embedded #phone{width:390px;height:844px;border-radius:0;box-shadow:n
 html.linkx-embedded #side{display:none}
 /* Shared status bar replaces only the old rasterized clock/icons, not the screen art. */
 #phone:has(> .lx-unified-status) #legacyStatusbar{display:none}
-</style>
+</style><style>#msg{pointer-events:none!important;opacity:1!important;-webkit-text-fill-color:currentColor}#phone:not(.kb) #kbd{pointer-events:none}</style>
 <script>if(window.parent!==window)document.documentElement.classList.add('linkx-embedded');</script>
 <script defer src="../../shared/statusbar.js?v=3"></script>
 <style>#lxBookmarkIcon{transition:transform 100ms cubic-bezier(.2,.8,.2,1),opacity 100ms;pointer-events:none}#phone:has(.hit[aria-label="북마크 목록"]:active) #lxBookmarkIcon,#lxBookmarkIcon.lx-pressed{transform:scale(.97);opacity:.65}</style></head>
@@ -451,6 +451,7 @@ function setStep(n,animate){
     },300);
   }
   step=n;
+  if(!s.typing)closeKb();
   document.querySelectorAll('#list button').forEach(function(b){b.classList.toggle('on',b.dataset.i===String(n))});
   if(!logOpen)chat.scrollTop=chat.scrollHeight; /* 로그가 펼쳐져 있으면 보던 위치 유지 */
   if(s.typing&&typeof startTyping==='function')startTyping();
@@ -532,9 +533,10 @@ kbd.innerHTML='<img src="../../assets/emergency/keyboard.svg" alt=""><div id="kk
 var kk=document.getElementById('kkeys'),KB={};
 Object.keys(KEYMAP).forEach(function(l){var r=KEYMAP[l],b=document.createElement('button');b.type='button';b.tabIndex=-1;b.setAttribute('aria-label',l);b.style.cssText='left:'+r[0]+'px;top:'+r[1]+'px;width:'+r[2]+'px;height:'+r[3]+'px';b.style.setProperty('--kx',(-r[0])+'px');b.style.setProperty('--ky',(-r[1])+'px');kk.appendChild(b);KB[l]=b});
 kbd.addEventListener('pointerdown',function(e){e.preventDefault()}); /* 입력창 포커스 유지 */
-function openKb(){phone.classList.add('kb')}
+function openKb(){if(typingOn && STEPS[step]?.typing)phone.classList.add('kb')}
 function closeKb(){phone.classList.remove('kb');msg.blur()}
 msg.addEventListener('focus',function(){msg.blur()});
+msg.disabled=true;
 document.getElementById('inputbar').addEventListener('pointerdown',function(e){if(e.target===msg||!e.target.closest('.send'))e.preventDefault()});
 ['chat','fade','title','char'].forEach(function(id){var n=document.getElementById(id);if(n)n.addEventListener('pointerdown',function(){if(phone.classList.contains('kb'))closeKb()})});
 msg.addEventListener('keydown',function(e){if(e.key==='Escape')closeKb()}); /* Enter / 전송: 반응 없음(요청 사항) */
