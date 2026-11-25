@@ -6,8 +6,8 @@ body{grid-template-columns:236px 1fr;background:#f4f3f7}#exhibit{display:content
 
 /* Exhibition composition — Figma 2160 × 3840, uniformly fitted. */
 body{display:block;position:relative;background:#202627;overflow:hidden}
-#exhibit{display:block;position:absolute;width:2160px;height:3840px;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--exhibit-scale,1));transform-origin:center;background:url('assets/exhibition/nebula.png') 0 0/2160px 3840px no-repeat,linear-gradient(180deg,#202627 0%,#352897 23.05%,#9180c3 59.62%,#e0d7fc 78.37%,#f8f3e6 100%);overflow:hidden}
-#exhibit:before{content:"";position:absolute;inset:0;background:url('assets/exhibition/stars.png') 295px 0/1865px 3840px no-repeat;pointer-events:none}
+#exhibit{display:block;position:absolute;width:2160px;height:3840px;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--exhibit-scale,1));transform-origin:center;background:url('assets/exhibition/nebula.png') center/2164px 3844px no-repeat,linear-gradient(180deg,#202627 0%,#352897 23.05%,#9180c3 59.62%,#e0d7fc 78.37%,#f8f3e6 100%);overflow:hidden;outline:1px solid transparent}
+#exhibit:before{content:"";position:absolute;inset:0;background:url('assets/exhibition/stars.svg') 0 0/2160px 3840px no-repeat;pointer-events:none}
 #exhibit aside{position:absolute;inset:0;display:block;padding:0;pointer-events:none}
 #exhibit header,#exhibit .bar,#exhibit #note,#exhibit #guide,#exhibit #search{display:none!important}
 #exhibit nav{position:absolute;left:104px;top:781px;width:485.65px;padding:0;overflow:visible;pointer-events:auto}
