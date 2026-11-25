@@ -2,7 +2,7 @@ import {getStore} from "../../shared/store.js";
 import {navigate, registerRoute} from "../../shared/navigation.js";
 import {REWARDS, unlockedIds, sortedRewards, recordFor} from "./data.js";
 const $=id=>document.getElementById(id);
-const positions=[[6,16],[175,103],[142,264],[9,342],[26,526],[168,690],[143,866],[5,1015]];
+const positions=[[8,12],[170,172],[22,332],[158,492],[6,652],[168,812],[18,972],[160,1132]];
 const state={sort:"newest",active:null,returnFocus:null};
 const artworkSizes={1:[76,77],2:[150,150],3:[89,89],4:[97,97],5:[94,94],6:[78,79],7:[95,95],8:[84,84]};
 const artwork=id=>"./art/reward-"+String(id).padStart(2,"0")+".png";
