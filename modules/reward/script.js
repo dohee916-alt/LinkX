@@ -42,7 +42,8 @@ function openReward(id,from){
   if(!REWARDS[id])return;
   closeSort();state.active=id;state.returnFocus=from || document.activeElement;
   const owned=unlocked.has(id),record=recordFor(store,id),reward=REWARDS[id];
-  $("detail-art").src=artwork(id);$("detail-art-slot").style.setProperty("--art-width",artworkSizes[id][0]+"px");$("detail-art-slot").style.setProperty("--art-height",artworkSizes[id][1]+"px");$("detail-number").textContent="REWARD / "+String(id).padStart(2,"0");
+  document.querySelector(".detail-card").dataset.state=owned?"earned":"locked";
+  $("detail-art").src=artwork(id);$("detail-art-slot").style.setProperty("--art-width",artworkSizes[id][0]+"px");$("detail-art-slot").style.setProperty("--art-height",artworkSizes[id][1]+"px");$("detail-number").textContent=(owned?"REWARD / ":"미획득 / ")+String(id).padStart(2,"0");
   $("detail-title").textContent=owned?reward.name:"아직 만나지 않은 별";
   $("detail-meaning").textContent=owned?reward.meaning || reward.name:reward.name;
   const mission=record?.missionTitle || reward.mission;
