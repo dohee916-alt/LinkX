@@ -112,3 +112,30 @@ button:focus-visible,.reward-scroll:focus-visible{outline:2px solid #fbe68e;outl
 /* Slightly smaller shelf artwork; preserve every label, slot and hit target. */
 .reward-art-slot img{transform:translate(-50%,-50%) scale(.92)}
 .detail-art-slot .detail-art{transform:translate(-50%,-50%) scale(.92)}
+/* Soft glass surfaces: hierarchy belongs to the reward, then its primary action. */
+.detail-card{background:linear-gradient(155deg,rgba(68,57,112,.97),rgba(41,34,79,.985));border:1px solid #d9c7ff66;border-radius:28px;box-shadow:0 20px 40px #09051e70,0 0 22px #b39af51a,inset 0 1px 0 #ffffff1f}
+.detail-art-slot{isolation:isolate;margin-bottom:16px}
+.detail-art-slot::before{content:"";position:absolute;z-index:-1;width:150px;height:150px;left:50%;top:50%;transform:translate(-50%,-50%);background:radial-gradient(ellipse,#c6a5ff35 0%,#ac83f515 38%,transparent 70%);pointer-events:none;animation:reward-halo 4.5s ease-in-out infinite}
+.detail-art-slot .detail-art{filter:drop-shadow(0 0 12px #be9bff70) drop-shadow(0 0 4px #eee0ff38)}
+.detail-card[data-state="locked"] .detail-art-slot::before{opacity:.5;animation:none}
+.detail-card[data-state="locked"] .detail-art{filter:drop-shadow(0 0 12px #c0a3ff38)}
+.detail-number{display:inline-flex;align-items:center;gap:7px;min-height:24px;padding:3px 10px;border:1px solid #dac4ff24;border-radius:12px;background:#dac4ff12;color:#f8f3e6;font-size:10px;letter-spacing:.8px;margin-bottom:10px}
+.detail-number::before{content:"";width:4px;height:4px;border-radius:50%;background:#d8c2ff;box-shadow:0 0 5px #c4a5ff80;flex:none}
+.detail-card h2{letter-spacing:-.5px;text-shadow:0 1px 12px #e5d5ff0d}
+.detail-meaning{color:#e5dcf2;margin-bottom:18px}
+.summary-box{background:linear-gradient(155deg,#e1d5ff18,#a78ceb0b);border:1px solid #dccbff24;padding:14px 12px;box-shadow:inset 0 1px 0 #ffffff05}
+.summary-box .detail-label{color:#c9b8ea;font-weight:500}
+.summary-box p{color:#f8f3e6}
+.history-button{background:linear-gradient(180deg,#e4d2ff,#b6a0ed);border:1px solid #f9efff66;box-shadow:0 4px 16px #ad83f238,inset 0 1px 0 #ffffff59;color:#352897;transition:box-shadow .2s ease,filter .2s ease}
+.history-button:hover{filter:brightness(1.035);box-shadow:0 5px 22px #b58af24a,inset 0 1px 0 #ffffff70}
+#show-history{display:flex;align-items:center;justify-content:center;gap:8px}
+#show-history span{font-size:15px;font-weight:600;vertical-align:baseline;margin-left:0}
+.detail-actions button:focus-visible{outline:2px solid #e4d2ff;outline-offset:3px}
+#show-history svg{flex:none}
+.detail-actions .close-button{color:#e0d6edb8;font-size:14px;box-shadow:none}
+.detail-actions .close-button:hover{color:#fff;background:#ffffff06}
+.detail-actions .history-button[hidden]+.close-button{background:linear-gradient(180deg,#e4d2ff,#b6a0ed);border:1px solid #f9efff66;color:#352897;box-shadow:0 4px 16px #ad83f238}
+.reward-hit.latest .reward-art-slot::before{content:"";position:absolute;width:124px;height:124px;left:50%;top:50%;transform:translate(-50%,-50%);background:radial-gradient(ellipse,#c2a6ff20,transparent 68%);pointer-events:none}
+@keyframes reward-halo{0%,100%{opacity:.65}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.detail-art-slot::before{animation:none}.history-button{transition:none}}
+.summary-box{background:linear-gradient(155deg,#e1d5ff18,#a78ceb0b),#2b235480}
