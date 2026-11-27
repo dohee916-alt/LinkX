@@ -55,7 +55,7 @@ function launchSplash(){
   overlay.id='splashOverlay';overlay.title='스플래시';overlay.style.transform=phone.style.transform;
   splashOverlay=overlay;phone.style.pointerEvents='none';
   let ended=false,ready=false,fading=false;
-  const homeUrl='modules/main/index.html?stage=first&v=home-glow-fbaf483';
+  const homeUrl='modules/main/index.html?stage=first&v=home-glow-aa5a83f';
   function finish(){
     if(run!==splashRun||!ended||!ready||fading)return;
     fading=true;
@@ -101,6 +101,7 @@ function cancelRoute(){
   phone.style.pointerEvents='';phone.style.opacity='';phone.style.zIndex='';
 }
 function routeTransition(url,prepare){
+  const target=new URL(url,location.href);if(modulePath(target.href)==='main'){target.searchParams.set('v','home-glow-aa5a83f');url=target.href;}
   cancelRoute();
   const seq=routeSeq;routeBusy=true;
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){if(prepare)prepare();phone.src=url;routeBusy=false;return;}
@@ -172,7 +173,7 @@ function choose(item){
   selected=item;title.textContent=g+' / '+n;highlight(g,k);note.textContent='';
   const special=[R,M,F].includes(p)&&!guidedText;
   const url=p?([R,M,F].includes(p)?p:p+k):'';
-  const liveUrl=guidedText?F+'?n=5&v=original-sidebar-04&restart='+ ++guidedStartSeq:p==='modules/splash/index.html'?url+'&v=splash-14f6320':p===M?url+'?v=reward-a-20261125':p==='modules/main/index.html'?p+'?stage=first&v=home-glow-fbaf483':p===F?url+'?v=feedback-guided-07':p===R?url+'?v=roleplay-revised-20261124-02':(p===E||p===S)?url+(url.includes('?')?'&':'?')+'v=bookmark-press-01':url;
+  const liveUrl=guidedText?F+'?n=5&v=original-sidebar-04&restart='+ ++guidedStartSeq:p==='modules/splash/index.html'?url+'&v=splash-14f6320':p===M?url+'?v=reward-a-20261125':p==='modules/main/index.html'?p+'?stage=first&v=home-glow-aa5a83f':p===F?url+'?v=feedback-guided-07':p===R?url+'?v=roleplay-revised-20261124-02':(p===E||p===S)?url+(url.includes('?')?'&':'?')+'v=bookmark-press-01':url;
   document.querySelector('#external').href=liveUrl||'#';
   if(p==='modules/splash/index.html'){launchSplash();return}
   if(!p){loaded='';pending=null;phone.srcdoc='<body style="font:16px system-ui;display:grid;place-items:center;height:95vh">구현 예정</body>';return}
