@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="150" viewBox="0 0 390 150" fill="none">
+<rect id="Header fade" width="390" height="150" fill="url(#paint1_linear_2021_13346)" />
+<defs>
+<linearGradient id="paint0_linear_2021_13346" x1="195" y1="0" x2="195" y2="844" gradientUnits="userSpaceOnUse">
+<stop stop-color="#202426" />
+<stop offset="0.66" stop-color="#352897" />
+<stop offset="1" stop-color="#352897" />
+</linearGradient>
+<linearGradient id="paint1_linear_2021_13346" x1="195" y1="0" x2="195" y2="150" gradientUnits="userSpaceOnUse">
+<stop stop-color="#202426" stop-opacity="0.95" />
+<stop offset="1" stop-color="#202426" stop-opacity="0" />
+</linearGradient>
+</defs>
+</svg>

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="85" height="85" viewBox="0 0 85 85" fill="none">
+<g id="Reward Â· 04 01 Â· ê¶¤ë ë³ë¹">
+<g id="01 Â· ê¶¤ë ë³ë¹" filter="url(#filter0_d_2021_13346)">
+<g id="01-orbit-spark">
+<g id="Group">
+<path id="Vector" d="M68.0589 42.2891C68.0589 56.5214 56.5213 68.059 42.289 68.059C28.0566 68.059 16.519 56.5214 16.519 42.2891C16.519 28.0567 28.0566 16.5192 42.289 16.5192C56.5213 16.5192 68.0589 28.0567 68.0589 42.2891Z" stroke-width="0.925074" stroke="url(#paint1_linear_2021_13346)" />
+<g id="Group_2">
+<path id="Vector_2" d="M42.289 25.1091C46.4122 37.1351 45.3814 39.1967 55.6894 42.2891C45.725 46.0687 45.0378 46.0687 42.289 59.469C38.5094 47.7867 39.1966 45.3815 28.8887 42.2891C38.1658 38.6813 39.0248 37.9941 42.289 25.1091Z" fill="url(#paint2_linear_2021_13346)" stroke-width="0.59469" stroke-linecap="round" stroke-linejoin="round" stroke="url(#paint3_linear_2021_13346)" />
+</g>
+<path id="Vector_3" d="M42.2891 58.1475C51.0474 58.1475 58.1475 51.0474 58.1475 42.2891C58.1475 33.5307 51.0474 26.4307 42.2891 26.4307C33.5307 26.4307 26.4307 33.5307 26.4307 42.2891C26.4307 51.0474 33.5307 58.1475 42.2891 58.1475Z" fill="url(#paint4_radial_2021_13346)" />
+<g id="Group_3">
+<path id="Vector_4" d="M42.2893 12.8849C43.1615 15.4289 42.9434 15.865 45.124 16.5192C43.0161 17.3187 42.8708 17.3187 42.2893 20.1534C41.4898 17.6821 41.6351 17.1733 39.4546 16.5192C41.4171 15.756 41.5988 15.6106 42.2893 12.8849Z" fill="url(#paint5_linear_2021_13346)" stroke-width="0.59469" stroke-linecap="round" stroke-linejoin="round" stroke="url(#paint6_linear_2021_13346)" />
+</g>
+<path id="Vector_5" d="M16.8498 49.2271C18.1271 49.2271 19.1625 48.1917 19.1625 46.9145C19.1625 45.6372 18.1271 44.6018 16.8498 44.6018C15.5725 44.6018 14.5371 45.6372 14.5371 46.9145C14.5371 48.1917 15.5725 49.2271 16.8498 49.2271Z" fill="url(#paint7_linear_2021_13346)" />
+<path id="Vector_6" d="M68.059 40.6372C69.1538 40.6372 70.0413 39.7497 70.0413 38.6549C70.0413 37.5601 69.1538 36.6726 68.059 36.6726C66.9642 36.6726 66.0767 37.5601 66.0767 38.6549C66.0767 39.7497 66.9642 40.6372 68.059 40.6372Z" fill="url(#paint8_linear_2021_13346)" />
+<path id="Vector_7" d="M35.0207 68.885C36.0243 68.885 36.8378 68.0714 36.8378 67.0678C36.8378 66.0643 36.0243 65.2507 35.0207 65.2507C34.0172 65.2507 33.2036 66.0643 33.2036 67.0678C33.2036 68.0714 34.0172 68.885 35.0207 68.885Z" fill="url(#paint9_linear_2021_13346)" />
+</g>
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_2021_13346" x="-5.28614" y="-5.28614" width="95.1504" height="95.1505" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset />
+<feGaussianBlur stdDeviation="2.64307" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.690196 0 0 0 0 0.643137 0 0 0 0 1 0 0 0 0.290196 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2021_13346" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2021_13346" result="shape" />
+</filter>
+<linearGradient id="paint0_linear_2021_13346" x1="195" y1="0" x2="195" y2="844" gradientUnits="userSpaceOnUse">
+<stop stop-color="#202426" />
+<stop offset="0.66" stop-color="#352897" />
+<stop offset="1" stop-color="#352897" />
+</linearGradient>
+<linearGradient id="paint1_linear_2021_13346" x1="16.519" y1="16.5192" x2="68.0589" y2="68.059" gradientUnits="userSpaceOnUse">
+<stop stop-color="#BFD4FF" />
+<stop offset="0.5" stop-color="#A7A1EE" />
+<stop offset="1" stop-color="#B9A5EE" />
+</linearGradient>
+<linearGradient id="paint2_linear_2021_13346" x1="28.8887" y1="25.1091" x2="59.6687" y2="51.7851" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFFAFF" />
+<stop offset="0.47" stop-color="#C9C5FF" />
+<stop offset="1" stop-color="#F1D7FF" />
+</linearGradient>
+<linearGradient id="paint3_linear_2021_13346" x1="28.8887" y1="25.1091" x2="62.2146" y2="51.1034" gradientUnits="userSpaceOnUse">
+<stop stop-color="white" />
+<stop offset="0.42" stop-color="#D4D9FF" />
+<stop offset="1" stop-color="#D6BFFF" />
+</linearGradient>
+<radialGradient id="paint4_radial_2021_13346" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(42.2891 42.2891) scale(15.8584)">
+<stop stop-color="#FFF7FF" stop-opacity="0.85" />
+<stop offset="0.28" stop-color="#EEE2FF" stop-opacity="0.4" />
+<stop offset="1" stop-color="#B6A2FF" stop-opacity="0" />
+</radialGradient>
+<linearGradient id="paint5_linear_2021_13346" x1="39.4546" y1="12.8849" x2="45.9657" y2="18.5279" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFFAFF" />
+<stop offset="0.47" stop-color="#C9C5FF" />
+<stop offset="1" stop-color="#F1D7FF" />
+</linearGradient>
+<linearGradient id="paint6_linear_2021_13346" x1="39.4546" y1="12.8849" x2="46.5043" y2="18.3837" gradientUnits="userSpaceOnUse">
+<stop stop-color="white" />
+<stop offset="0.42" stop-color="#D4D9FF" />
+<stop offset="1" stop-color="#D6BFFF" />
+</linearGradient>
+<linearGradient id="paint7_linear_2021_13346" x1="14.5371" y1="44.6018" x2="18.2374" y2="49.2271" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F8F5FF" />
+<stop offset="0.55" stop-color="#D4D7FF" />
+<stop offset="1" stop-color="#A9A1F3" />
+</linearGradient>
+<linearGradient id="paint8_linear_2021_13346" x1="66.0767" y1="36.6726" x2="69.2483" y2="40.6372" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F8F5FF" />
+<stop offset="0.55" stop-color="#D4D7FF" />
+<stop offset="1" stop-color="#A9A1F3" />
+</linearGradient>
+<linearGradient id="paint9_linear_2021_13346" x1="33.2036" y1="65.2507" x2="36.111" y2="68.885" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F8F5FF" />
+<stop offset="0.55" stop-color="#D4D7FF" />
+<stop offset="1" stop-color="#A9A1F3" />
+</linearGradient>
+<clipPath id="clip0_2021_13346">
+<rect width="390" height="844" fill="white" transform="translate(-223.711 -287.115)" />
+</clipPath>
+<clipPath id="clip1_2021_13346">
+<rect width="390" height="844" fill="white" transform="translate(-223.711 -287.115)" />
+</clipPath>
+<clipPath id="clip2_2021_13346">
+<rect width="1000" height="1500" fill="white" transform="translate(-223.711 -287.115)" />
+</clipPath>
+</defs>
+</svg>

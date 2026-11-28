@@ -8,24 +8,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/tokens.css">
-  <link rel="stylesheet" href="./style.css?v=reward-reference-exact-20261125">
+  <link rel="stylesheet" href="./style.css?v=reward-map-final-20261128">
 </head>
 <body>
 <div id="stage" class="reward-stage">
   <main id="device" class="reward-device" aria-label="나의 밤하늘 리워드 보관함">
-    <div class="sky" aria-hidden="true"></div>
-    <div class="statusbar" aria-hidden="true">
-      <span class="clock">9:41</span>
-      <svg viewBox="0 0 68 15" width="70" height="16" fill="none" aria-hidden="true">
-        <g fill="#F8F3E6"><rect x="0" y="10" width="3" height="4" rx="1"/><rect x="5" y="7" width="3" height="7" rx="1"/><rect x="10" y="4" width="3" height="10" rx="1"/><rect x="15" y="1" width="3" height="13" rx="1"/><path d="M23 5a11 11 0 0 1 16 0l-2 2a8 8 0 0 0-12 0zm3 3a7 7 0 0 1 10 0l-2 2a4 4 0 0 0-6 0zm3 3a3 3 0 0 1 4 0l-2 2z"/><rect x="46" y="3" width="18" height="9" rx="1.5"/></g><rect x="44" y="1.5" width="22" height="12" rx="3" stroke="#F8F3E6" stroke-opacity=".6"/>
-      </svg>
-    </div>
+    <div class="sky" aria-hidden="true"></div><img class="map-header-fade" src="./art/map/header-fade.svg" alt="" aria-hidden="true">
+    <img class="map-statusbar" src="./art/map/statusbar.svg" alt="" aria-hidden="true">
     <div id="gallery-shell">
     <header class="header">
       <button id="back" type="button" class="back-button" aria-label="이전 화면으로 돌아가기">
         <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 4-8 8 8 8"/></svg>
       </button>
-      <h1>나의 밤하늘</h1>
+      <h1>나의 밤하늘</h1><span class="map-edit-label" aria-disabled="true">편집</span>
     </header>
     <div class="reward-meta">
       <span id="count" aria-live="polite">모은 리워드 5개</span>
@@ -35,14 +30,13 @@
       </button>
     </div>
     <p class="collection-caption">작은 용기가 모여 나만의 별자리가 돼요</p>
-    <div id="reward-scroll" class="reward-scroll" role="region" tabindex="0" aria-label="별자리 리워드 목록. 세로 스크롤로 다른 리워드를 볼 수 있습니다.">
-      <div class="constellation-track">
-        <img class="trajectory" src="./art/trajectory.png?v=reward-reference-exact-20261125" alt="" draggable="false" width="350" height="1120">
-        <div id="reward-hits" class="reward-hits"></div>
-      </div>
+    <div id="reward-scroll" class="reward-scroll map-viewport" role="region" tabindex="0" aria-label="나의 밤하늘 지도. 드래그 또는 방향키로 이동하고 확대 및 축소 버튼으로 볼 수 있습니다.">
+      <div id="map-canvas" class="map-canvas"><div id="map-decor" aria-hidden="true"></div><svg id="map-paths" class="map-paths" width="1000" height="1500" viewBox="0 0 1000 1500" aria-hidden="true"></svg><div id="map-previews" aria-hidden="true"></div><div id="reward-hits" class="reward-hits"></div></div>
     </div>
+    <div class="map-zoom" role="group" aria-label="지도 확대 및 축소"><button type="button" id="zoom-in" aria-label="지도 확대">+</button><button type="button" id="zoom-out" aria-label="지도 축소">−</button></div>
+    <p id="map-status" class="sr-only" role="status" aria-live="polite"></p>
     <section id="empty-state" class="empty-state" hidden><img src="./art/reward-01.png" width="76" height="76" alt=""><h2>아직 연결되지 않은 밤하늘</h2><p>첫 미션을 마치면,<br>나만의 밤하늘에 첫 별이 생겨요.</p><button id="current-mission" class="history-button" type="button">현재 미션 확인하기</button></section>
-    <div class="home-area" aria-hidden="true"><div class="home-indicator"></div></div>
+    <img class="map-home" src="./art/map/home-indicator.svg" alt="" aria-hidden="true">
 
     <div id="sort-menu" class="sort-menu" role="menu" aria-label="리워드 정렬 방식" hidden>
       <button type="button" role="menuitemradio" aria-checked="false" data-sort="newest">최신순 <span class="check" aria-hidden="true">✓</span></button>
@@ -79,11 +73,11 @@
         <div id="record-next-box" class="summary-box"><span class="detail-label">다음에 시도해 볼 것</span><p id="record-next"></p></div>
         <button type="button" id="return-to-detail" class="history-button">리워드로 돌아가기</button>
       </div>
-      <div class="home-area" aria-hidden="true"><div class="home-indicator"></div></div>
+      <img class="map-home" src="./art/map/home-indicator.svg" alt="" aria-hidden="true">
     </section>
     <p id="toast" role="status" aria-live="polite" class="toast" hidden></p>
   </main>
 </div>
-<script type="module" src="./script.js?v=reward-reference-exact-20261125"></script>
+<script type="module" src="./script.js?v=reward-map-final-20261128"></script>
 </body>
 </html>

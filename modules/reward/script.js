@@ -2,7 +2,8 @@ import {getStore} from "../../shared/store.js";
 import {navigate, registerRoute} from "../../shared/navigation.js";
 import {REWARDS, unlockedIds, sortedRewards, recordFor} from "./data.js";
 const $=id=>document.getElementById(id);
-const positions=[[6,16],[175,103],[142,264],[9,342],[26,526],[168,620],[143,796],[5,895]];
+import {createRewardMap} from "./map.js";
+const map=createRewardMap();
 const state={sort:"oldest",active:null,returnFocus:null};
 const artworkSizes={1:[76,77],2:[150,150],3:[89,89],4:[97,97],5:[94,94],6:[78,79],7:[95,95],8:[84,84]};
 const artwork=id=>"./art/reward-"+String(id).padStart(2,"0")+".png";
@@ -18,20 +19,9 @@ function setSort(order){
   $("count").textContent="모은 리워드 "+unlocked.size+"개";
   $("empty-state").hidden=unlocked.size!==0;$("reward-scroll").hidden=unlocked.size===0;$("sort-toggle").hidden=unlocked.size===0;
   $("reward-hits").replaceChildren();
-  sortedRewards(store,order).forEach((id,i)=>{
-    const hit=document.createElement("button");hit.type="button";
-    hit.className="reward-hit"+(unlocked.has(id)?"":" locked")+(id===latest?" latest":"");
-    hit.style.left=positions[i][0]+"px";hit.style.top=positions[i][1]+"px";hit.dataset.id=String(id);
-    const name=String(id).padStart(2,"0")+" · "+REWARDS[id].name;
-    hit.setAttribute("aria-label",name+(unlocked.has(id)?" 리워드 상세 보기":" 미획득 리워드 안내"));
-    const image=document.createElement("img");image.src=artwork(id);image.alt="";image.width=76;image.height=76;
-    const title=document.createElement("span");title.className="reward-name";title.textContent=name;
-    const caption=document.createElement("span");caption.className="reward-caption";caption.textContent=id===5?"먼저 인사하기":unlocked.has(id)?"획득한 리워드":"다음 도전을 기다려요";
-    const status=document.createElement("span");status.className="reward-status";status.textContent=!unlocked.has(id)?"미획득":id===latest?"방금 획득":"획득";
-    const slot=document.createElement("span");slot.className="reward-art-slot";slot.style.setProperty("--art-width",artworkSizes[id][0]+"px");slot.style.setProperty("--art-height",artworkSizes[id][1]+"px");slot.append(image);
-    hit.append(slot,title,caption,status);hit.addEventListener("click",()=>openReward(id,hit));$("reward-hits").append(hit);
-  });
-  $("reward-scroll").scrollTop=0;
+  // Map geography is fixed to approved M01. Sorting retains the legacy API and
+  // changes keyboard traversal order, never the meaning or position of a node.
+  map.render(sortedRewards(store,order),unlocked,REWARDS,openReward);
   for(const option of $("sort-menu").querySelectorAll("[data-sort]"))option.setAttribute("aria-checked",String(option.dataset.sort===order));
   closeSort();
 }
@@ -78,6 +68,6 @@ document.addEventListener("keydown",e=>{
 });
 function refresh(){store=getStore();unlocked=new Set(unlockedIds(store));if(!$("history-view").hidden)closeHistory();if(!$("modal-overlay").hidden)closeReward();setSort(state.sort);}
 window.addEventListener("storage",e=>{if(e.key==="linkx:v1")refresh();});
-window.LinkXReward={open:id=>openReward(Number(id)),sort:setSort,current:()=>({sort:state.sort,active:state.active,unlocked:[...unlocked]}),refresh};
+window.LinkXReward={open:id=>openReward(Number(id)),sort:setSort,current:()=>({sort:state.sort,active:state.active,unlocked:[...unlocked],map:map.current()}),refresh};
 const params=new URLSearchParams(location.search);setSort(params.get("sort")==="newest"?"newest":"oldest");
 const requested=Number(params.get("reward"));if(REWARDS[requested])openReward(requested);
