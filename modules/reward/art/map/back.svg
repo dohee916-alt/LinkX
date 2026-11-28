@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+<g id="Reward / Back">
+<path id="Vector" d="M15 4L7 12L15 20" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" stroke="#F8F3E6" />
+</g>
+<defs>
+<linearGradient id="paint0_linear_2021_13346" x1="195" y1="0" x2="195" y2="844" gradientUnits="userSpaceOnUse">
+<stop stop-color="#202426" />
+<stop offset="0.66" stop-color="#352897" />
+<stop offset="1" stop-color="#352897" />
+</linearGradient>
+</defs>
+</svg>
